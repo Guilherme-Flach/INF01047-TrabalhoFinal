@@ -5,21 +5,17 @@ class Camera {
 
   protected:
     glm::vec4 position;
-    glm::vec4 up;
 
-    Camera(glm::vec4 position, glm::vec4 up) : position(position), up(up) {}
+    Camera(glm::vec4 position) : position(position) {}
 
-    constexpr static const auto DEFAULT_UP_VECTOR =
-        glm::vec4(0.0, 1.0, 0.0, 0.0);
+    inline static const glm::vec4 DEFAULT_UP_VECTOR = {0.0, 1.0, 0.0, 0.0};
 
   public:
     glm::vec4 get_position() { return position; }
-    virtual glm::vec4 get_view();
-    glm::vec4 get_up() { return up; }
+    virtual glm::vec4 get_view() = 0;
 
     void set_position(glm::vec4 position) { this->position = position; }
     void translate(glm::vec4 offset) { position += offset; }
-    void set_up(glm::vec4 up) { this->up = up; }
 };
 
 class LookAtCamera : public Camera {
@@ -28,7 +24,7 @@ class LookAtCamera : public Camera {
 
   public:
     LookAtCamera(glm::vec4 position, glm::vec4 target)
-        : Camera(position, DEFAULT_UP_VECTOR) {}
+        : Camera(position), target(target) {}
 
     glm::vec4 get_target() { return target; }
 
@@ -41,6 +37,9 @@ class FreeCamera : public Camera {
     float phi, theta;
 
   public:
+    FreeCamera(glm::vec4 position, float phi, float theta)
+        : Camera(position), phi(phi), theta(theta) {}
+
     float get_phi() { return phi; }
     float get_theta() { return theta; }
 
