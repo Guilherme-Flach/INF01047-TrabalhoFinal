@@ -1,15 +1,35 @@
+#include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
+#include <map>
 #include <string>
 #include "engine/loader.hpp"
+#include "engine/camera/camera.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <sstream>
 #include <fstream>
 
+std::map<KeyAction, std::function<void(void)>> keymaps;
+
 bool operator<(const KeyAction &first, const KeyAction &second) {
     return first.key > second.key ||
            (first.key <= second.key && first.action > second.action);
+}
+
+void addKeyMap(KeyAction data, std::function<void(void)> action) {
+    keymaps[data] = action;
+}
+
+void handleKeymaps(GLFWwindow *window, int key, int scan_code, int action,
+                   int mod) {
+    KeyAction key_action;
+    key_action.key = key;
+    key_action.action = action;
+    auto iterator = keymaps.find(key_action);
+    if (iterator == keymaps.end())
+        return;
+    keymaps[key_action]();
 }
 
 GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id) {

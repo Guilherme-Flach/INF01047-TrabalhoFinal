@@ -1,6 +1,7 @@
 #ifndef LOADER_HEADER
 #define LOADER_HEADER
 
+#include <functional>
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -9,13 +10,17 @@
 #include <string>
 #include <utils.h>
 #include <matrices.hpp>
-#include "camera/camera.hpp"
 #include "glm/ext/vector_float4.hpp"
 
 struct KeyAction {
     int key;
     int action;
 };
+
+void addKeyMap(KeyAction data, std::function<void(void)> action);
+
+void handleKeymaps(GLFWwindow *window, int key, int scan_code, int action,
+                   int mod);
 
 bool operator<(const KeyAction &first, const KeyAction &second);
 
