@@ -7,6 +7,11 @@
 #include <sstream>
 #include <fstream>
 
+bool operator<(const KeyAction &first, const KeyAction &second) {
+    return first.key > second.key ||
+           (first.key <= second.key && first.action > second.action);
+}
+
 GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id) {
 
     GLuint program_id = glCreateProgram();
@@ -38,13 +43,7 @@ GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id) {
 
         fprintf(stderr, "%s", output.c_str());
     }
-
     return program_id;
-}
-
-inline bool operator<(const KeyAction &first, const KeyAction &second) {
-    return first.key > second.key ||
-           (first.key <= second.key && first.action > second.action);
 }
 
 Loader::Loader(int width, int height, char title[]) {

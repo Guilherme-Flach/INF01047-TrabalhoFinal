@@ -9,6 +9,9 @@ set(SOURCES
   src/main.cpp
   src/textrendering.cpp
   src/glad.c
+  src/loader.cpp
+  src/matrices.cpp
+  src/camera.cpp
 )
 
 cmake_minimum_required(VERSION 3.5.0)

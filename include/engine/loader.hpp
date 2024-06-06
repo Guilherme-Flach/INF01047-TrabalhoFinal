@@ -1,3 +1,6 @@
+#ifndef LOADER_HEADER
+#define LOADER_HEADER
+
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -5,7 +8,7 @@
 #include <cstdlib>
 #include <string>
 #include <utils.h>
-#include <matrices.h>
+#include <matrices.hpp>
 #include "camera/camera.hpp"
 #include "glm/ext/vector_float4.hpp"
 
@@ -14,7 +17,8 @@ struct KeyAction {
     int action;
 };
 
-inline bool operator<(const KeyAction &first, const KeyAction &second);
+bool operator<(const KeyAction &first, const KeyAction &second);
+
 void TextRendering_Init();
 float TextRendering_LineHeight(GLFWwindow *window);
 float TextRendering_CharWidth(GLFWwindow *window);
@@ -63,3 +67,4 @@ class Loader {
 
     void start();
 };
+#endif // LOADER_HEADER

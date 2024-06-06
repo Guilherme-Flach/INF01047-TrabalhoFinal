@@ -1,6 +1,8 @@
 #include "engine/loader.hpp"
 #include "GLFW/glfw3.h"
+#include <functional>
 #include <iostream>
+#include <map>
 
 std::map<KeyAction, std::function<void(void)>> keymaps;
 
