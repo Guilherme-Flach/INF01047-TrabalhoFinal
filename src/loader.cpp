@@ -1,3 +1,4 @@
+#include <cmath>
 #include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -17,7 +18,7 @@ bool operator<(const KeyAction &first, const KeyAction &second) {
            (first.key <= second.key && first.action > second.action);
 }
 
-void addKeyMap(KeyAction data, std::function<void(void)> action) {
+void addKeymap(KeyAction data, std::function<void(void)> action) {
     keymaps[data] = action;
 }
 
@@ -200,6 +201,7 @@ void Loader::start() {
     glm::vec4 position = {0.0, 0.0, 0.0, 1.0};
     glm::vec4 target = {0.0, 0.0, 0.0, 1.0};
     LookAtCamera camera = LookAtCamera(position, target);
+    glfwSetKeyCallback(window, handleKeymaps);
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

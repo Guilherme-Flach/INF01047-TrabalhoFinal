@@ -17,7 +17,7 @@ struct KeyAction {
     int action;
 };
 
-void addKeyMap(KeyAction data, std::function<void(void)> action);
+void addKeymap(KeyAction data, std::function<void(void)> action);
 
 void handleKeymaps(GLFWwindow *window, int key, int scan_code, int action,
                    int mod);
