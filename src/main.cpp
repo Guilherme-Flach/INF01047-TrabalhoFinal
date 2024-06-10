@@ -2,8 +2,6 @@
 #include "GLFW/glfw3.h"
 #include <functional>
 #include <iostream>
-#include <vector>
-
 
 int main(int argc, char *argv[]) {
     int width = 800, height = 800;

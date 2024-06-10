@@ -1,18 +1,16 @@
-#include "engine/RenderObject.hpp"
+#include "engine/renderObject.hpp"
 #include "engine/loader.hpp"
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 #include <GLFW/glfw3.h>
-
-#include <iostream>
 #include <vector>
 
 RenderObject::RenderObject(std::vector<GLfloat> vertices_,
                            std::vector<GLuint> indices_,
                            std::vector<GLfloat> colors_, int renderType_)
-    : vertices(vertices_), indices(indices_), colors(colors_),
-      renderType(renderType_), vertexArrayId(0) {
+    : vertices(vertices_), colors(colors_), indices(indices_), vertexArrayId(0),
+      renderType(renderType_) {
 
     // Generating VertexArray
     glGenVertexArrays(1, &vertexArrayId);

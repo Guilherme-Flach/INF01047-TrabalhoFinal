@@ -1,3 +1,4 @@
+#include <iostream>
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <functional>
@@ -325,11 +326,11 @@ void Loader::start() {
 
     RenderObject cuboRender =
         RenderObject(vertices, indices, colors, GL_TRIANGLES);
-    GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
+    GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f}, program_id);
     cubo1.set_model(&cuboRender);
-    GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f});
+    GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f}, program_id);
     cubo2.set_model(&cuboRender);
-    GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f});
+    GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f}, program_id);
     cubo3.set_model(&cuboRender);
     cubo3.set_modelScaling(glm::vec3{0.5f, 0.5f, 0.5f});
     cubo1.addChild(&cubo3);
@@ -355,9 +356,9 @@ void Loader::start() {
         glUniformMatrix4fv(view_uniform, 1, GL_FALSE,
                            glm::value_ptr(camera.get_viewMatrix()));
 
-        cubo1.render(program_id);
+        cubo1.render();
         cubo1.translate({0.01f, 0.0f, 0.0f, 0.0f});
-        cubo2.render(program_id);
+        cubo2.render();
         cubo2.rotate({0.01f, 0.01f, 0.01f});
 
         glm::vec4 p_model(0.5f, 0.5f, 0.5f, 1.0f);

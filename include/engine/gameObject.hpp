@@ -3,6 +3,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
+#include "engine/loader.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "renderObject.hpp"
 
@@ -11,6 +12,7 @@
 class GameObject {
 
   protected:
+    GLuint program_id;
     glm::vec4 position;
     glm::vec3 rotation = {0.0f, 0.0f, 0.0f};
     glm::vec3 modelScaling = {1.0f, 1.0f, 1.0f};
@@ -19,7 +21,7 @@ class GameObject {
     RenderObject *model;
 
   public:
-    GameObject(glm::vec4 position);
+    GameObject(glm::vec4 position, GLuint program_id);
     std::vector<GameObject> get_children();
     RenderObject *get_model();
     glm::vec3 get_modelScaling();
@@ -37,7 +39,7 @@ class GameObject {
     void addChild(GameObject *child);
     void translate(glm::vec4 offset);
     void rotate(glm::vec<3, float, (glm::qualifier)0> rotation);
-    void render(int program_id);
+    void render();
 };
 
 #endif // GAMEOBJECT_HEADER

@@ -2,14 +2,16 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
-#include "engine/RenderObject.hpp"
+#include "engine/loader.hpp"
+#include "engine/renderObject.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "matrices.hpp"
 
 #include <vector>
 
-GameObject::GameObject(glm::vec4 position) : position(position) {}
+GameObject::GameObject(glm::vec4 position, GLuint program_id)
+    : program_id(program_id), position(position) {}
 
 glm::mat4 GameObject::get_model_matrix() {
     glm::mat4 parentTransform = Matrix_Identity();
@@ -48,9 +50,9 @@ void GameObject::translate(glm::vec4 offset) { position += offset; }
 
 void GameObject::rotate(glm::vec3 rotation) { this->rotation += rotation; }
 
-void GameObject::render(int program_id) {
+void GameObject::render() {
     for (GameObject child : children) {
-        child.render(program_id);
+        child.render();
     }
     GLint model_uniform = glGetUniformLocation(program_id, "model");
     glUniformMatrix4fv(model_uniform, 1, GL_FALSE,
