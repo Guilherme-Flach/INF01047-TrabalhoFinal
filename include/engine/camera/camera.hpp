@@ -1,5 +1,6 @@
 #ifndef CAMERA_HEADER
 #define CAMERA_HEADER
+#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include <cmath>
 
@@ -15,6 +16,7 @@ class Camera {
   public:
     glm::vec4 get_position();
     virtual glm::vec4 get_view() = 0;
+    glm::mat4 get_viewMatrix();
 
     void set_position(glm::vec4 position);
     void translate(glm::vec4 offset);

@@ -12,6 +12,8 @@ set(SOURCES
   src/loader.cpp
   src/matrices.cpp
   src/camera.cpp
+  src/gameObject.cpp
+  src/renderObject.cpp
 )
 
 cmake_minimum_required(VERSION 3.5.0)

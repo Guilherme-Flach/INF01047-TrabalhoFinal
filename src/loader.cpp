@@ -8,9 +8,66 @@
 #include <string>
 #include "engine/loader.hpp"
 #include "engine/camera/camera.hpp"
+#include "engine/gameObject.hpp"
+#include "engine/renderObject.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <sstream>
 #include <fstream>
+
+void TextRendering_ShowModelViewProjection(
+    GLFWwindow* window,
+    glm::mat4 projection,
+    glm::mat4 view,
+    glm::mat4 model,
+    glm::vec4 p_model
+)
+{
+    glm::vec4 p_world = model*p_model;
+    glm::vec4 p_camera = view*p_world;
+    glm::vec4 p_clip = projection*p_camera;
+    glm::vec4 p_ndc = p_clip / p_clip.w;
+
+    float pad = TextRendering_LineHeight(window);
+
+    TextRendering_PrintString(window, " Model matrix             Model     In World Coords.", -1.0f, 1.0f-pad, 1.0f);
+    TextRendering_PrintMatrixVectorProduct(window, model, p_model, -1.0f, 1.0f-2*pad, 1.0f);
+
+    TextRendering_PrintString(window, "                                        |  ", -1.0f, 1.0f-6*pad, 1.0f);
+    TextRendering_PrintString(window, "                            .-----------'  ", -1.0f, 1.0f-7*pad, 1.0f);
+    TextRendering_PrintString(window, "                            V              ", -1.0f, 1.0f-8*pad, 1.0f);
+
+    TextRendering_PrintString(window, " View matrix              World     In Camera Coords.", -1.0f, 1.0f-9*pad, 1.0f);
+    TextRendering_PrintMatrixVectorProduct(window, view, p_world, -1.0f, 1.0f-10*pad, 1.0f);
+
+    TextRendering_PrintString(window, "                                        |  ", -1.0f, 1.0f-14*pad, 1.0f);
+    TextRendering_PrintString(window, "                            .-----------'  ", -1.0f, 1.0f-15*pad, 1.0f);
+    TextRendering_PrintString(window, "                            V              ", -1.0f, 1.0f-16*pad, 1.0f);
+
+    TextRendering_PrintString(window, " Projection matrix        Camera                    In NDC", -1.0f, 1.0f-17*pad, 1.0f);
+    TextRendering_PrintMatrixVectorProductDivW(window, projection, p_camera, -1.0f, 1.0f-18*pad, 1.0f);
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    glm::vec2 a = glm::vec2(-1, -1);
+    glm::vec2 b = glm::vec2(+1, +1);
+    glm::vec2 p = glm::vec2( 0,  0);
+    glm::vec2 q = glm::vec2(width, height);
+
+    glm::mat4 viewport_mapping = Matrix(
+        (q.x - p.x)/(b.x-a.x), 0.0f, 0.0f, (b.x*p.x - a.x*q.x)/(b.x-a.x),
+        0.0f, (q.y - p.y)/(b.y-a.y), 0.0f, (b.y*p.y - a.y*q.y)/(b.y-a.y),
+        0.0f , 0.0f , 1.0f , 0.0f ,
+        0.0f , 0.0f , 0.0f , 1.0f
+    );
+
+    TextRendering_PrintString(window, "                                                       |  ", -1.0f, 1.0f-22*pad, 1.0f);
+    TextRendering_PrintString(window, "                            .--------------------------'  ", -1.0f, 1.0f-23*pad, 1.0f);
+    TextRendering_PrintString(window, "                            V                           ", -1.0f, 1.0f-24*pad, 1.0f);
+
+    TextRendering_PrintString(window, " Viewport matrix           NDC      In Pixel Coords.", -1.0f, 1.0f-25*pad, 1.0f);
+    TextRendering_PrintMatrixVectorProductMoreDigits(window, viewport_mapping, p_ndc, -1.0f, 1.0f-26*pad, 1.0f);
+}
 
 std::map<KeyAction, std::function<void(void)>> keymaps;
 
@@ -199,10 +256,56 @@ void Loader::start() {
     GLint render_as_black_uniform =
         glGetUniformLocation(program_id, "render_as_black");
 
-    glm::vec4 position = {0.0, 0.0, 0.0, 1.0};
+    glm::vec4 position = {2.0, 2.0, 2.0, 1.0};
     glm::vec4 target = {0.0, 0.0, 0.0, 1.0};
     LookAtCamera camera = LookAtCamera(position, target);
     glfwSetKeyCallback(window, handleKeymaps);
+
+    // DEBUG
+    std::vector<GLfloat> vertices = std::vector<GLfloat>({
+        -0.5f, 0.5f,  0.5f,  1.0f, // posição do vértice 0
+        -0.5f, -0.5f, 0.5f,  1.0f, // posição do vértice 1
+        0.5f,  -0.5f, 0.5f,  1.0f, // posição do vértice 2
+        0.5f,  0.5f,  0.5f,  1.0f, // posição do vértice 3
+        -0.5f, 0.5f,  -0.5f, 1.0f, // posição do vértice 4
+        -0.5f, -0.5f, -0.5f, 1.0f, // posição do vértice 5
+        0.5f,  -0.5f, -0.5f, 1.0f, // posição do vértice 6
+        0.5f,  0.5f,  -0.5f, 1.0f, // posição do vértice 7
+    });
+
+    std::vector<GLfloat> colors = std::vector<GLfloat>({
+        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 0
+        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 1
+        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 2
+        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 3
+        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 4
+        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 5
+        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 6
+        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 7
+    });
+
+    std::vector<GLuint> indices = std::vector<GLuint>({
+        0, 1, 2, // triângulo 1
+        7, 6, 5, // triângulo 2
+        3, 2, 6, // triângulo 3
+        4, 0, 3, // triângulo 4
+        4, 5, 1, // triângulo 5
+        1, 5, 6, // triângulo 6
+        0, 2, 3, // triângulo 7
+        7, 5, 4, // triângulo 8
+        3, 6, 7, // triângulo 9
+        4, 3, 7, // triângulo 10
+        4, 1, 0, // triângulo 11
+        1, 6, 2, // triângulo 12
+    });
+
+    RenderObject cuboRender =
+        RenderObject(vertices, indices, colors, GL_TRIANGLES);
+    GameObject cubo = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
+    cubo.set_model(&cuboRender);
+    GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f});
+    cubo2.set_model(&cuboRender);
+    // DEBUG END
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -213,13 +316,24 @@ void Loader::start() {
         float nearplane = -0.1f;
         float farplane = -10.0f;
 
+        // DEBUG:
+
         float field_of_view = M_PI / 3.0f;
         projection =
             Matrix_Perspective(field_of_view, 1.0f, nearplane, farplane);
-        glUniformMatrix4fv(view_uniform, 1, GL_FALSE,
-                           glm::value_ptr(camera.get_view()));
         glUniformMatrix4fv(projection_uniform, 1, GL_FALSE,
-                           glm::value_ptr(projection));
+                           glm::value_ptr(projection)); 
+
+        glUniformMatrix4fv(view_uniform, 1, GL_FALSE,
+                           glm::value_ptr(camera.get_viewMatrix()));
+        
+        cubo.render(program_id);
+        cubo2.render(program_id);
+
+        glm::vec4 p_model(0.5f, 0.5f, 0.5f, 1.0f);
+
+        //TextRendering_ShowModelViewProjection(window, projection, camera.get_viewMatrix(), cubo.get_model_matrix(), p_model);
+
         glfwSwapBuffers(window);
 
         glfwPollEvents();
