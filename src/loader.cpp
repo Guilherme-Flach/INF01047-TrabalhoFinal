@@ -14,59 +14,83 @@
 #include <sstream>
 #include <fstream>
 
-void TextRendering_ShowModelViewProjection(
-    GLFWwindow* window,
-    glm::mat4 projection,
-    glm::mat4 view,
-    glm::mat4 model,
-    glm::vec4 p_model
-)
-{
-    glm::vec4 p_world = model*p_model;
-    glm::vec4 p_camera = view*p_world;
-    glm::vec4 p_clip = projection*p_camera;
+void TextRendering_ShowModelViewProjection(GLFWwindow *window,
+                                           glm::mat4 projection, glm::mat4 view,
+                                           glm::mat4 model, glm::vec4 p_model) {
+    glm::vec4 p_world = model * p_model;
+    glm::vec4 p_camera = view * p_world;
+    glm::vec4 p_clip = projection * p_camera;
     glm::vec4 p_ndc = p_clip / p_clip.w;
 
     float pad = TextRendering_LineHeight(window);
 
-    TextRendering_PrintString(window, " Model matrix             Model     In World Coords.", -1.0f, 1.0f-pad, 1.0f);
-    TextRendering_PrintMatrixVectorProduct(window, model, p_model, -1.0f, 1.0f-2*pad, 1.0f);
+    TextRendering_PrintString(
+        window, " Model matrix             Model     In World Coords.", -1.0f,
+        1.0f - pad, 1.0f);
+    TextRendering_PrintMatrixVectorProduct(window, model, p_model, -1.0f,
+                                           1.0f - 2 * pad, 1.0f);
 
-    TextRendering_PrintString(window, "                                        |  ", -1.0f, 1.0f-6*pad, 1.0f);
-    TextRendering_PrintString(window, "                            .-----------'  ", -1.0f, 1.0f-7*pad, 1.0f);
-    TextRendering_PrintString(window, "                            V              ", -1.0f, 1.0f-8*pad, 1.0f);
+    TextRendering_PrintString(window,
+                              "                                        |  ",
+                              -1.0f, 1.0f - 6 * pad, 1.0f);
+    TextRendering_PrintString(window,
+                              "                            .-----------'  ",
+                              -1.0f, 1.0f - 7 * pad, 1.0f);
+    TextRendering_PrintString(window,
+                              "                            V              ",
+                              -1.0f, 1.0f - 8 * pad, 1.0f);
 
-    TextRendering_PrintString(window, " View matrix              World     In Camera Coords.", -1.0f, 1.0f-9*pad, 1.0f);
-    TextRendering_PrintMatrixVectorProduct(window, view, p_world, -1.0f, 1.0f-10*pad, 1.0f);
+    TextRendering_PrintString(
+        window, " View matrix              World     In Camera Coords.", -1.0f,
+        1.0f - 9 * pad, 1.0f);
+    TextRendering_PrintMatrixVectorProduct(window, view, p_world, -1.0f,
+                                           1.0f - 10 * pad, 1.0f);
 
-    TextRendering_PrintString(window, "                                        |  ", -1.0f, 1.0f-14*pad, 1.0f);
-    TextRendering_PrintString(window, "                            .-----------'  ", -1.0f, 1.0f-15*pad, 1.0f);
-    TextRendering_PrintString(window, "                            V              ", -1.0f, 1.0f-16*pad, 1.0f);
+    TextRendering_PrintString(window,
+                              "                                        |  ",
+                              -1.0f, 1.0f - 14 * pad, 1.0f);
+    TextRendering_PrintString(window,
+                              "                            .-----------'  ",
+                              -1.0f, 1.0f - 15 * pad, 1.0f);
+    TextRendering_PrintString(window,
+                              "                            V              ",
+                              -1.0f, 1.0f - 16 * pad, 1.0f);
 
-    TextRendering_PrintString(window, " Projection matrix        Camera                    In NDC", -1.0f, 1.0f-17*pad, 1.0f);
-    TextRendering_PrintMatrixVectorProductDivW(window, projection, p_camera, -1.0f, 1.0f-18*pad, 1.0f);
+    TextRendering_PrintString(
+        window, " Projection matrix        Camera                    In NDC",
+        -1.0f, 1.0f - 17 * pad, 1.0f);
+    TextRendering_PrintMatrixVectorProductDivW(window, projection, p_camera,
+                                               -1.0f, 1.0f - 18 * pad, 1.0f);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
 
     glm::vec2 a = glm::vec2(-1, -1);
     glm::vec2 b = glm::vec2(+1, +1);
-    glm::vec2 p = glm::vec2( 0,  0);
+    glm::vec2 p = glm::vec2(0, 0);
     glm::vec2 q = glm::vec2(width, height);
 
     glm::mat4 viewport_mapping = Matrix(
-        (q.x - p.x)/(b.x-a.x), 0.0f, 0.0f, (b.x*p.x - a.x*q.x)/(b.x-a.x),
-        0.0f, (q.y - p.y)/(b.y-a.y), 0.0f, (b.y*p.y - a.y*q.y)/(b.y-a.y),
-        0.0f , 0.0f , 1.0f , 0.0f ,
-        0.0f , 0.0f , 0.0f , 1.0f
-    );
+        (q.x - p.x) / (b.x - a.x), 0.0f, 0.0f,
+        (b.x * p.x - a.x * q.x) / (b.x - a.x), 0.0f, (q.y - p.y) / (b.y - a.y),
+        0.0f, (b.y * p.y - a.y * q.y) / (b.y - a.y), 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f);
 
-    TextRendering_PrintString(window, "                                                       |  ", -1.0f, 1.0f-22*pad, 1.0f);
-    TextRendering_PrintString(window, "                            .--------------------------'  ", -1.0f, 1.0f-23*pad, 1.0f);
-    TextRendering_PrintString(window, "                            V                           ", -1.0f, 1.0f-24*pad, 1.0f);
+    TextRendering_PrintString(
+        window, "                                                       |  ",
+        -1.0f, 1.0f - 22 * pad, 1.0f);
+    TextRendering_PrintString(
+        window, "                            .--------------------------'  ",
+        -1.0f, 1.0f - 23 * pad, 1.0f);
+    TextRendering_PrintString(
+        window, "                            V                           ",
+        -1.0f, 1.0f - 24 * pad, 1.0f);
 
-    TextRendering_PrintString(window, " Viewport matrix           NDC      In Pixel Coords.", -1.0f, 1.0f-25*pad, 1.0f);
-    TextRendering_PrintMatrixVectorProductMoreDigits(window, viewport_mapping, p_ndc, -1.0f, 1.0f-26*pad, 1.0f);
+    TextRendering_PrintString(
+        window, " Viewport matrix           NDC      In Pixel Coords.", -1.0f,
+        1.0f - 25 * pad, 1.0f);
+    TextRendering_PrintMatrixVectorProductMoreDigits(
+        window, viewport_mapping, p_ndc, -1.0f, 1.0f - 26 * pad, 1.0f);
 }
 
 std::map<KeyAction, std::function<void(void)>> keymaps;
@@ -301,10 +325,14 @@ void Loader::start() {
 
     RenderObject cuboRender =
         RenderObject(vertices, indices, colors, GL_TRIANGLES);
-    GameObject cubo = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
-    cubo.set_model(&cuboRender);
+    GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
+    cubo1.set_model(&cuboRender);
     GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f});
     cubo2.set_model(&cuboRender);
+    GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f});
+    cubo3.set_model(&cuboRender);
+    cubo3.set_modelScaling(glm::vec3{0.5f, 0.5f, 0.5f});
+    cubo1.addChild(&cubo3);
     // DEBUG END
 
     while (!glfwWindowShouldClose(window)) {
@@ -322,17 +350,20 @@ void Loader::start() {
         projection =
             Matrix_Perspective(field_of_view, 1.0f, nearplane, farplane);
         glUniformMatrix4fv(projection_uniform, 1, GL_FALSE,
-                           glm::value_ptr(projection)); 
+                           glm::value_ptr(projection));
 
         glUniformMatrix4fv(view_uniform, 1, GL_FALSE,
                            glm::value_ptr(camera.get_viewMatrix()));
-        
-        cubo.render(program_id);
+
+        cubo1.render(program_id);
+        cubo1.translate({0.01f, 0.0f, 0.0f, 0.0f});
         cubo2.render(program_id);
+        cubo2.rotate({0.01f, 0.01f, 0.01f});
 
         glm::vec4 p_model(0.5f, 0.5f, 0.5f, 1.0f);
 
-        //TextRendering_ShowModelViewProjection(window, projection, camera.get_viewMatrix(), cubo.get_model_matrix(), p_model);
+        // TextRendering_ShowModelViewProjection(window, projection,
+        // camera.get_viewMatrix(), cubo.get_model_matrix(), p_model);
 
         glfwSwapBuffers(window);
 
