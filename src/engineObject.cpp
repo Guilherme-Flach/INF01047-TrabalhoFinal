@@ -34,6 +34,15 @@ void EngineObject::addChild(EngineObject *child) {
 
 void EngineObject::translate(glm::vec4 offset) { position += offset; }
 
+void EngineObject::rotate(float angle_x, float angle_y, float angle_z) {
+    if (angle_x != 0)
+        this->basis.x = Matrix_Rotate_X(angle_x) * this->basis.x;
+    if (angle_y != 0)
+        this->basis.y = Matrix_Rotate_Y(angle_y) * this->basis.y;
+    if (angle_z != 0)
+        this->basis.z = Matrix_Rotate_Z(angle_z) * this->basis.z;
+}
+
 glm::vec4 EngineObject::get_global_position() {
     glm::vec4 new_position = this->position;
     EngineObject *current_node = this;

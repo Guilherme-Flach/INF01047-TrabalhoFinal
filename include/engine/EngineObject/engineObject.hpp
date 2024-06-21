@@ -12,7 +12,6 @@ class EngineObject {
     EngineObject(glm::vec4 position);
     EngineObject(glm::vec4 position, EngineObject *parent);
     glm::vec4 position;
-    glm::vec4 rotation;
     Basis basis;
     std::vector<EngineObject> children;
     EngineObject *parent;
@@ -28,6 +27,7 @@ class EngineObject {
 
     void addChild(EngineObject *child);
     void translate(glm::vec4 offset);
+    void rotate(float angle_x, float angle_y, float angle_z);
 };
 
 #endif // GAMEOBJECT_HEADER
