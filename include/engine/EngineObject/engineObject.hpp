@@ -4,6 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 #include <vector>
+#include "basis.hpp"
 
 class EngineObject {
 
@@ -12,6 +13,7 @@ class EngineObject {
     EngineObject(glm::vec4 position, EngineObject *parent);
     glm::vec4 position;
     glm::vec4 rotation;
+    Basis basis;
     std::vector<EngineObject> children;
     EngineObject *parent;
 
@@ -19,7 +21,7 @@ class EngineObject {
     std::vector<EngineObject> get_children();
     EngineObject *get_parent();
     glm::vec4 get_position();
-    glm::vec4 get_globalPosition();
+    glm::vec4 get_global_position();
 
     void set_parent(EngineObject *parent);
     void set_position(glm::vec4 position);

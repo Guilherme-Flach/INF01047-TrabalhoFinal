@@ -1,4 +1,5 @@
 #include "matrices.hpp"
+#include "engine/EngineObject/engineObject.hpp"
 
 glm::mat4 Matrix(float m00, float m01, float m02, float m03, float m10,
                  float m11, float m12, float m13, float m20, float m21,
@@ -164,6 +165,16 @@ glm::mat4 Matrix_Perspective(float field_of_view, float aspect, float n,
     glm::mat4 M = Matrix_Orthographic(l, r, b, t, n, f);
 
     return -M * P;
+}
+
+glm::mat4 Matrix_ChangeBasis(glm::vec4 origin_from, glm::vec4 origin_to,
+                             Basis basis) {
+    glm::vec4 displacement = origin_to - origin_from;
+    return Matrix(basis.x.x, basis.y.x, basis.z.x,
+                  dotproduct(-basis.x, displacement), basis.x.y, basis.y.y,
+                  basis.z.y, dotproduct(-basis.y, displacement), basis.x.z,
+                  basis.y.z, basis.z.z, dotproduct(-basis.z, displacement),
+                  0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void PrintMatrix(glm::mat4 M) {

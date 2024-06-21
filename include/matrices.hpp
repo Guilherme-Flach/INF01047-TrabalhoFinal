@@ -1,6 +1,7 @@
 #ifndef _MATRICES_H
 #define _MATRICES_H
 
+#include "engine/EngineObject/engineObject.hpp"
 #include <cstdio>
 #include <cstdlib>
 
@@ -41,6 +42,12 @@ glm::mat4 Matrix_Orthographic(float l, float r, float b, float t, float n,
 
 glm::mat4 Matrix_Perspective(float field_of_view, float aspect, float n,
                              float f);
+
+/* Calculates the change of basis matrix between two systems of coordinates.
+ * Be mindful that this requires both systems to be orthonormal.
+ */
+glm::mat4 Matrix_ChangeBasis(glm::vec4 origin_from, glm::vec4 origin_to,
+                             Basis basis);
 
 void PrintMatrix(glm::mat4 M);
 
