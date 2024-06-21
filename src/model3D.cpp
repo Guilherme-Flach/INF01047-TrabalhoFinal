@@ -1,4 +1,4 @@
-#include "engine/renderObject.hpp"
+#include "engine/Rendering/model3D.hpp"
 #include "engine/loader.hpp"
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-RenderObject::RenderObject(std::vector<GLfloat> vertices_,
+Model3D::Model3D(std::vector<GLfloat> vertices_,
                            std::vector<GLuint> indices_,
                            std::vector<GLfloat> colors_, int renderType_)
     : vertices(vertices_), colors(colors_), indices(indices_), vertexArrayId(0),
@@ -59,9 +59,9 @@ RenderObject::RenderObject(std::vector<GLfloat> vertices_,
     glBindVertexArray(0);
 }
 
-GLuint RenderObject::get_vertexArrayId() { return this->vertexArrayId; }
+GLuint Model3D::get_vertexArrayId() { return this->vertexArrayId; }
 
-void RenderObject::render() {
+void Model3D::render() {
     // for (auto ball : indices) {
     //   std::cout << (int) ball << " ";
     // }

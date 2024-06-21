@@ -8,9 +8,9 @@
 #include <map>
 #include <string>
 #include "engine/loader.hpp"
-#include "engine/camera/camera.hpp"
-#include "engine/gameObject.hpp"
-#include "engine/renderObject.hpp"
+#include "engine/EngineObject/camera/camera.hpp"
+#include "engine/EngineObject/gameObject.hpp"
+#include "engine/Rendering/model3D.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <sstream>
 #include <fstream>
@@ -324,8 +324,8 @@ void Loader::start() {
         1, 6, 2, // triângulo 12
     });
 
-    RenderObject cuboRender =
-        RenderObject(vertices, indices, colors, GL_TRIANGLES);
+    Model3D cuboRender =
+        Model3D(vertices, indices, colors, GL_TRIANGLES);
     GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f}, program_id);
     cubo1.set_model(&cuboRender);
     GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f}, program_id);
@@ -356,9 +356,7 @@ void Loader::start() {
         glUniformMatrix4fv(view_uniform, 1, GL_FALSE,
                            glm::value_ptr(camera.get_viewMatrix()));
 
-        cubo1.render();
         cubo1.translate({0.01f, 0.0f, 0.0f, 0.0f});
-        cubo2.render();
         cubo2.rotate({0.01f, 0.01f, 0.01f});
 
         glm::vec4 p_model(0.5f, 0.5f, 0.5f, 1.0f);

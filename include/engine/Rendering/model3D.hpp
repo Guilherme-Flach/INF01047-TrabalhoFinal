@@ -9,7 +9,7 @@
 
 #include <vector>
 
-class RenderObject {
+class Model3D {
   protected:
     std::vector<GLfloat> vertices;
     std::vector<GLfloat> colors;
@@ -23,9 +23,9 @@ class RenderObject {
     int renderType;
 
   public:
-    GLuint get_vertexArrayId();
-    RenderObject(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
+    Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
                  std::vector<GLfloat> colors_, int renderType_);
+    GLuint get_vertexArrayId();
     void render();
 };
 

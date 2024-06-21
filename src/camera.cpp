@@ -1,30 +1,25 @@
-#include "engine/camera/camera.hpp"
+#include "engine/EngineObject/engineObject.hpp"
+#include "engine/EngineObject/camera/camera.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
 
-Camera::Camera(glm::vec4 position) : position(position) {}
+Camera::Camera(glm::vec4 position) : EngineObject(position) {}
 
 glm::vec4 Camera::DEFAULT_UP_VECTOR = {0.0, 1.0, 0.0, 0.0};
-
-glm::vec4 Camera::get_position() { return position; }
 
 glm::mat4 Camera::get_viewMatrix() {
     return Matrix_Camera_View(position, get_view(), DEFAULT_UP_VECTOR);
 }
-
-void Camera::set_position(glm::vec4 position) { this->position = position; }
-
-void Camera::translate(glm::vec4 offset) { position += offset; }
 
 LookAtCamera::LookAtCamera(glm::vec4 position, glm::vec4 target)
     : Camera(position), target(target) {}
 
 glm::vec4 LookAtCamera::get_target() { return target; }
 
-void LookAtCamera::set_target(glm::vec4 target) { this->target = target; }
-
 glm::vec4 LookAtCamera::get_view() { return target - position; }
+
+void LookAtCamera::set_target(glm::vec4 target) { this->target = target; }
 
 FreeCamera::FreeCamera(glm::vec4 position, float phi, float theta)
     : Camera(position), phi(phi), theta(theta) {}

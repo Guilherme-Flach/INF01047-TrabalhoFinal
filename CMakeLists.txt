@@ -6,14 +6,15 @@
 # Arquivos fonte C/C++. Inclua nesta lista todos os arquivos que devem
 # ser compilados.
 set(SOURCES
-  src/main.cpp
-  src/textrendering.cpp
+  src/camera.cpp
+  src/engineObject.cpp
+  src/gameObject.cpp
   src/glad.c
   src/loader.cpp
+  src/main.cpp
   src/matrices.cpp
-  src/camera.cpp
-  src/gameObject.cpp
-  src/renderObject.cpp
+  src/model3D.cpp
+  src/textrendering.cpp
 )
 
 cmake_minimum_required(VERSION 3.5.0)
