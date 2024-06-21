@@ -1,4 +1,5 @@
 #include "engine/EngineObject/engineObject.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
 #include <glm/vec4.hpp>
@@ -11,11 +12,20 @@ EngineObject::EngineObject(glm::vec4 position)
     : EngineObject(position, nullptr) {}
 EngineObject::EngineObject(glm::vec4 position, EngineObject *parent)
     : parent(parent) {
-    Basis default_basis;
-    default_basis.x = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
-    default_basis.y = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-    default_basis.z = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
-    this->basis = default_basis;
+    if (parent == nullptr) {
+        this->basis = Matrix_ToBasis(Matrix_Identity());
+        return;
+    }
+    auto model = Matrix_ChangeBasis(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+                                    parent->position, parent->basis);
+    auto last_parent = parent;
+    auto current_parent = parent->parent;
+    while (current_parent != nullptr)
+        model *=
+            Matrix_ChangeBasis(last_parent->position, current_parent->position,
+                               current_parent->basis);
+    model *= Matrix_Identity();
+    this->basis = Matrix_ToBasis(model);
 }
 
 std::vector<EngineObject> EngineObject::get_children() { return children; }
@@ -48,9 +58,10 @@ glm::vec4 EngineObject::get_global_position() {
     EngineObject *current_node = this;
     EngineObject *parent = nullptr;
     while ((parent = current_node->parent) != nullptr) {
-        new_position = Matrix_ChangeBasis(current_node->position,
-                                          parent->position, parent->basis) *
+        new_position = Matrix_ToParentBasis(current_node->position,
+                                            parent->position, parent->basis) *
                        new_position;
+        current_node = parent;
     }
     return new_position;
 }

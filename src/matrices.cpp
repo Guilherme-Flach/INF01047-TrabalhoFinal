@@ -1,5 +1,6 @@
 #include "matrices.hpp"
 #include "engine/EngineObject/engineObject.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
 
 glm::mat4 Matrix(float m00, float m01, float m02, float m03, float m10,
                  float m11, float m12, float m13, float m20, float m21,
@@ -163,6 +164,31 @@ glm::mat4 Matrix_ChangeBasis(glm::vec4 origin_from, glm::vec4 origin_to,
                   basis.z.y, dotproduct(-basis.y, displacement), basis.x.z,
                   basis.y.z, basis.z.z, dotproduct(-basis.z, displacement),
                   0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+glm::mat4 Matrix_ToParentBasis(glm::vec4 origin_from, glm::vec4 origin_to,
+                               Basis basis) {
+    glm::vec4 displacement = origin_to - origin_from;
+    return Matrix(basis.x.x, basis.y.x, basis.z.x, displacement.x, basis.x.y,
+                  basis.y.y, basis.z.y, displacement.y, basis.x.z, basis.y.z,
+                  basis.z.z, displacement.z, 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+Basis Matrix_ToBasis(glm::mat4 matrix) {
+    Basis basis;
+    basis.x.x = matrix[0][0];
+    basis.x.y = matrix[1][0];
+    basis.x.z = matrix[2][0];
+
+    basis.y.x = matrix[0][1];
+    basis.y.y = matrix[1][1];
+    basis.y.z = matrix[2][1];
+
+    basis.z.x = matrix[0][2];
+    basis.z.y = matrix[1][2];
+    basis.z.z = matrix[2][2];
+
+    return basis;
 }
 
 void PrintMatrix(glm::mat4 M) {
