@@ -15,35 +15,27 @@ glm::mat4 Matrix_Identity() {
 }
 
 glm::mat4 Matrix_Translate(float tx, float ty, float tz) {
-    return Matrix(
-
-        1.0f, 0.0f, 0.0f, tx, 0.0f, 1.0f, 0.0f, ty, 0.0f, 0.0f, 1.0f, tz, 0.0f,
-        0.0f, 0.0f, 1.0f);
+    return Matrix(1.0f, 0.0f, 0.0f, tx, 0.0f, 1.0f, 0.0f, ty, 0.0f, 0.0f, 1.0f,
+                  tz, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 glm::mat4 Matrix_Scale(float sx, float sy, float sz) {
-    return Matrix(
-
-        sx, 0.0f, 0.0f, 0.0f, 0.0f, sy, 0.0f, 0.0f, 0.0f, 0.0f, sz, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f);
+    return Matrix(sx, 0.0f, 0.0f, 0.0f, 0.0f, sy, 0.0f, 0.0f, 0.0f, 0.0f, sz,
+                  0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 glm::mat4 Matrix_Rotate_X(float angle) {
     float c = cos(angle);
     float s = sin(angle);
-    return Matrix(
-
-        1.0f, 0.0f, 0.0f, 0.0f, 0.0f, c, -s, 0.0f, 0.0f, s, c, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f);
+    return Matrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, c, -s, 0.0f, 0.0f, s, c, 0.0f,
+                  0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 glm::mat4 Matrix_Rotate_Y(float angle) {
     float c = cos(angle);
     float s = sin(angle);
-    return Matrix(
-
-        c, 0.0f, s, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -s, 0.0f, c, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f);
+    return Matrix(c, 0.0f, s, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -s, 0.0f, c, 0.0f,
+                  0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 glm::mat4 Matrix_Rotate_Z(float angle) {
@@ -132,20 +124,18 @@ glm::mat4 Matrix_Camera_View(glm::vec4 position_c, glm::vec4 view_vector,
 
     glm::vec4 displacement_camera = position_c - origin_o;
 
-    return Matrix(
-
-        ux, uy, uz, dotproduct(-1.0f * u, displacement_camera), vx, vy, vz,
-        dotproduct(-1.0f * v, displacement_camera), wx, wy, wz,
-        dotproduct(-1.0f * w, displacement_camera), 0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix(ux, uy, uz, dotproduct(-1.0f * u, displacement_camera), vx,
+                  vy, vz, dotproduct(-1.0f * v, displacement_camera), wx, wy,
+                  wz, dotproduct(-1.0f * w, displacement_camera), 0.0f, 0.0f,
+                  0.0f, 1.0f);
 }
 
 glm::mat4 Matrix_Orthographic(float l, float r, float b, float t, float n,
                               float f) {
-    glm::mat4 M = Matrix(
-
-        2.0f / (r - l), 0.0f, 0.0f, -(r + l) / (r - l), 0.0f, 2.0f / (t - b),
-        0.0f, -(t + b) / (t - b), 0.0f, 0.0f, 2.0f / (f - n),
-        -(f + n) / (f - n), 0.0f, 0.0f, 0.0f, 1.0f);
+    glm::mat4 M =
+        Matrix(2.0f / (r - l), 0.0f, 0.0f, -(r + l) / (r - l), 0.0f,
+               2.0f / (t - b), 0.0f, -(t + b) / (t - b), 0.0f, 0.0f,
+               2.0f / (f - n), -(f + n) / (f - n), 0.0f, 0.0f, 0.0f, 1.0f);
 
     return M;
 }
@@ -157,10 +147,8 @@ glm::mat4 Matrix_Perspective(float field_of_view, float aspect, float n,
     float r = t * aspect;
     float l = -r;
 
-    glm::mat4 P = Matrix(
-
-        n, 0.0f, 0.0f, 0.0f, 0.0f, n, 0.0f, 0.0f, 0.0f, 0.0f, n + f, -f * n,
-        0.0f, 0.0f, 1.0f, 0.0f);
+    glm::mat4 P = Matrix(n, 0.0f, 0.0f, 0.0f, 0.0f, n, 0.0f, 0.0f, 0.0f, 0.0f,
+                         n + f, -f * n, 0.0f, 0.0f, 1.0f, 0.0f);
 
     glm::mat4 M = Matrix_Orthographic(l, r, b, t, n, f);
 
