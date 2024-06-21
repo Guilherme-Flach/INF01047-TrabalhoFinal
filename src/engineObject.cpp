@@ -6,14 +6,17 @@
 #include <vector>
 
 EngineObject::EngineObject(glm::vec4 position) : position(position) {}
+EngineObject::EngineObject(glm::vec4 position, EngineObject *parent)
+    : position(position), parent(parent) {}
 
 std::vector<EngineObject> EngineObject::get_children() { return children; }
 EngineObject *EngineObject::get_parent() { return parent; }
 glm::vec4 EngineObject::get_position() { return position; }
 
-
 void EngineObject::set_parent(EngineObject *parent) { this->parent = parent; }
-void EngineObject::set_position(glm::vec4 position) { this->position = position; }
+void EngineObject::set_position(glm::vec4 position) {
+    this->position = position;
+}
 
 void EngineObject::addChild(EngineObject *child) {
     child->set_parent(this);

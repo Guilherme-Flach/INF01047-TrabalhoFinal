@@ -6,9 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-Model3D::Model3D(std::vector<GLfloat> vertices_,
-                           std::vector<GLuint> indices_,
-                           std::vector<GLfloat> colors_, int renderType_)
+Model3D::Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
+                 std::vector<GLfloat> colors_, int renderType_)
     : vertices(vertices_), colors(colors_), indices(indices_), vertexArrayId(0),
       renderType(renderType_) {
 

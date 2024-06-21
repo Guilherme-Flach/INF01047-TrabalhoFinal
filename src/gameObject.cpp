@@ -4,13 +4,10 @@
 #include <glm/vec4.hpp>
 #include "engine/EngineObject/engineObject.hpp"
 #include "engine/loader.hpp"
-#include "engine/Rendering/model3d.hpp"
-
-#include <vector>
+#include "engine/Rendering/model3D.hpp"
 
 GameObject::GameObject(glm::vec4 position, GLuint program_id)
     : EngineObject(position) {}
-
 
 Model3D *GameObject::get_model() { return model; }
 glm::vec3 GameObject::get_modelScaling() { return modelScaling; }
@@ -25,4 +22,3 @@ void GameObject::set_position(glm::vec4 position) { this->position = position; }
 void GameObject::set_rotation(glm::vec3 rotation) { this->rotation = rotation; }
 
 void GameObject::rotate(glm::vec3 rotation) { this->rotation += rotation; }
-

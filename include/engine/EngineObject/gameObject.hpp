@@ -8,8 +8,6 @@
 #include "glm/ext/vector_float3.hpp"
 #include "../Rendering/model3D.hpp"
 
-#include <vector>
-
 class GameObject : public EngineObject {
 
   protected:

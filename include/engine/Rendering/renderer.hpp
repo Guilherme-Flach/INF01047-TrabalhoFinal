@@ -1,7 +1,6 @@
 #ifndef RENDERER_HEADER
 #define RENDERER_HEADER
 #include "engine/EngineObject/gameObject.hpp"
-#include "engine/gameObject.hpp"
 #include "model3D.hpp"
 #include "engine/loader.hpp"
 #include <glm/vec4.hpp>
@@ -13,18 +12,21 @@
 #include <vector>
 
 class Renderer {
-  protected:
+  private:
     std::vector<Model3D> renderModels;
-    std::vector<GameObject> render;
+    std::vector<GameObject *> render;
     std::vector<GLuint> indices;
     GLuint programId;
 
     int renderType;
 
+    void renderObject(GameObject &object);
+
   public:
-    GLuint get_vertexArrayId();
     Renderer(GLuint programId);
     void renderObjects();
+    void addObject(Model3D object);
+    void destroy(GameObject &object);
 };
 
 #endif // RENDERER
