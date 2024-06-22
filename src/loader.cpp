@@ -324,8 +324,7 @@ void Loader::start() {
         1, 6, 2, // triângulo 12
     });
 
-    Model3D cuboRender =
-        Model3D(vertices, indices, colors, GL_TRIANGLES);
+    Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
     GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f}, program_id);
     cubo1.set_model(&cuboRender);
     GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f}, program_id);
@@ -333,7 +332,7 @@ void Loader::start() {
     GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f}, program_id);
     cubo3.set_model(&cuboRender);
     cubo3.set_modelScaling(glm::vec3{0.5f, 0.5f, 0.5f});
-    cubo1.addChild(&cubo3);
+    cubo1.addChild(cubo3);
     // DEBUG END
 
     while (!glfwWindowShouldClose(window)) {

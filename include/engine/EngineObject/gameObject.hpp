@@ -19,16 +19,10 @@ class GameObject : public EngineObject {
     GameObject(glm::vec4 position, GLuint program_id);
     Model3D *get_model();
     glm::vec3 get_modelScaling();
-    glm::vec3 get_rotation();
-    glm::vec4 get_position();
     glm::mat4 get_model_matrix();
 
     void set_model(Model3D *model);
     void set_modelScaling(glm::vec3 scaling);
-    void set_position(glm::vec4 position);
-    void set_rotation(glm::vec3 rotation);
-
-    void rotate(glm::vec<3, float, (glm::qualifier)0> rotation);
 };
 
 #endif // GAMEOBJECT_HEADER

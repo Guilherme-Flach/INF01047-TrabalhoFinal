@@ -1,7 +1,15 @@
 #include "matrices.hpp"
 #include "engine/EngineObject/engineObject.hpp"
+#include "glm/ext/matrix_float3x3.hpp"
+#include "glm/ext/matrix_float3x4.hpp"
+#include "glm/ext/matrix_float4x3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/quaternion_geometric.hpp"
+#include "glm/ext/vector_float3.hpp"
 #include "glm/ext/vector_float4.hpp"
+#include "glm/geometric.hpp"
+#include "glm/matrix.hpp"
+#include <complex>
 
 glm::mat4 Matrix(float m00, float m01, float m02, float m03, float m10,
                  float m11, float m12, float m13, float m20, float m21,
@@ -158,19 +166,61 @@ glm::mat4 Matrix_Perspective(float field_of_view, float aspect, float n,
 }
 
 glm::mat4 Matrix_ChangeCoordinates(glm::vec4 origin_from, glm::vec4 origin_to,
-                                   Basis basis) {
+                                   glm::mat3x4 basis) {
     glm::vec4 displacement = origin_to - origin_from;
-    return Matrix(basis.x.x, basis.x.y, basis.x.z,
-                  dotproduct(-basis.x, displacement), basis.y.x, basis.y.y,
-                  basis.y.z, dotproduct(-basis.y, displacement), basis.z.x,
-                  basis.z.y, basis.z.z, dotproduct(-basis.z, displacement),
+    return Matrix(basis[0].x, basis[0].y, basis[0].z,
+                  dotproduct(-basis[0], displacement), basis[1].x, basis[1].y,
+                  basis[1].z, dotproduct(-basis[1], displacement), basis[2].x,
+                  basis[2].y, basis[2].z, dotproduct(-basis[2], displacement),
                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, Basis basis) {
-    return Matrix(basis.x.x, basis.y.x, basis.z.x, center.x, basis.x.y,
-                  basis.y.y, basis.z.y, center.y, basis.x.z, basis.y.z,
-                  basis.z.z, center.z, 0.0f, 0.0f, 0.0f, 1.0f);
+glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, glm::mat3x4 basis) {
+    return Matrix(basis[0].x, basis[1].x, basis[2].x, center.x, basis[0].y,
+                  basis[1].y, basis[2].y, center.y, basis[0].z, basis[1].z,
+                  basis[2].z, center.z, 0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+glm::mat3x4 Matrix_ChangeBasis(glm::mat3x4 origin, glm::mat3x4 target) {
+    glm::mat3 transform_matrix = glm::mat3(
+        target[0].x, target[1].x, target[2].x, target[0].y, target[1].y,
+        target[2].y, target[0].z, target[1].z, target[2].z);
+    auto new_x = transform_matrix * origin[0];
+    auto new_y = transform_matrix * origin[1];
+    auto new_z = transform_matrix * origin[2];
+    return {new_x.x, new_x.y, new_x.z, 0.0f,    new_y.x, new_y.y,
+            new_y.z, 0.0f,    new_z.x, new_z.y, new_z.z, 0.0f};
+}
+
+glm::mat3x4 Matrix_PopBasis(glm::mat3x4 child, glm::mat3x4 parent) {
+    glm::mat3 transform_matrix = glm::mat3(
+        parent[0].x, parent[0].y, parent[0].z, parent[1].x, parent[1].y,
+        parent[1].z, parent[2].x, parent[2].y, parent[2].z);
+    auto new_x = transform_matrix * child[0];
+    auto new_y = transform_matrix * child[1];
+    auto new_z = transform_matrix * child[2];
+    return {new_x.x, new_x.y, new_x.z, 0.0f,    new_y.x, new_y.y,
+            new_y.z, 0.0f,    new_z.x, new_z.y, new_z.z, 0.0f};
+}
+
+glm::mat4 Matrix_FromBasis(Basis basis) {
+    return Matrix(basis.x.x, basis.y.x, basis.z.x, 0.0f, basis.x.y, basis.y.y,
+                  basis.z.y, 0.0f, basis.x.z, basis.y.z, basis.z.z, 0.0f, 0.0f,
+                  0.0f, 0.0f, 1.0f);
+}
+
+glm::vec4 Matrix_Project(glm::vec4 source, glm::vec4 target) {
+    return (dotproduct(source, target) / dotproduct(target, target)) * target;
+}
+
+glm::mat3x4 Matrix_Orthogonalize(glm::mat3x4 basis) {
+    basis[1] -= Matrix_Project(basis[1], basis[0]);
+    basis[2] = basis[2] - Matrix_Project(basis[2], basis[0]) -
+               Matrix_Project(basis[2], basis[1]);
+    basis[0] /= norm(basis[0]);
+    basis[1] /= norm(basis[1]);
+    basis[2] /= norm(basis[2]);
+    return basis;
 }
 
 Basis Matrix_ToBasis(glm::mat4 matrix) {

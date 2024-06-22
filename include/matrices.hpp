@@ -48,12 +48,19 @@ glm::mat4 Matrix_Perspective(float field_of_view, float aspect, float n,
  * Be mindful that this requires both systems to be orthonormal.
  */
 glm::mat4 Matrix_ChangeCoordinates(glm::vec4 origin_from, glm::vec4 origin_to,
-                                   Basis basis);
+                                   glm::mat3x4 basis);
+
+glm::mat3x4 Matrix_ChangeBasis(glm::mat3x4 origin, glm::mat3x4 target);
+
+glm::mat3x4 Matrix_PopBasis(glm::mat3x4 child, glm::mat3x4 parent);
 
 /* Calculates restores from a local coordinates system to its parent system.
  * Be mindful that this requires both systems to be orthonormal.
  */
-glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, Basis basis);
+glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, glm::mat3x4 basis);
+glm::mat4 Matrix_FromBasis(Basis basis);
+glm::vec4 Matrix_Project(glm::vec4 source, glm::vec4 target);
+glm::mat3x4 Matrix_Orthogonalize(glm::mat3x4 basis);
 
 Basis Matrix_ToBasis(glm::mat4 matrix);
 

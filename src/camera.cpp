@@ -9,7 +9,7 @@ Camera::Camera(glm::vec4 position) : EngineObject(position) {}
 glm::vec4 Camera::DEFAULT_UP_VECTOR = {0.0, 1.0, 0.0, 0.0};
 
 glm::mat4 Camera::get_viewMatrix() {
-    return Matrix_Camera_View(position, get_view(), DEFAULT_UP_VECTOR);
+    return Matrix_Camera_View(get_position(), get_view(), DEFAULT_UP_VECTOR);
 }
 
 LookAtCamera::LookAtCamera(glm::vec4 position, glm::vec4 target)
@@ -17,7 +17,7 @@ LookAtCamera::LookAtCamera(glm::vec4 position, glm::vec4 target)
 
 glm::vec4 LookAtCamera::get_target() { return target; }
 
-glm::vec4 LookAtCamera::get_view() { return target - position; }
+glm::vec4 LookAtCamera::get_view() { return target - get_position(); }
 
 void LookAtCamera::set_target(glm::vec4 target) { this->target = target; }
 

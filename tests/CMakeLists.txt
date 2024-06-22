@@ -18,6 +18,7 @@ enable_testing()
 add_executable(
   tests
   test_matrices.cpp
+  test_engine_object.cpp
   ../src/camera.cpp
   ../src/engineObject.cpp
   ../src/matrices.cpp
