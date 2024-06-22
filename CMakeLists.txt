@@ -149,7 +149,7 @@ enable_testing()
 
 add_executable(
   tests
-  tests/test.cpp
+  tests/tests.cpp
   src/camera.cpp
   src/engineObject.cpp
   src/matrices.cpp
