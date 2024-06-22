@@ -1,6 +1,7 @@
 #include "matrices.hpp"
 #include "engine/EngineObject/engineObject.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/vector_float4.hpp"
 
 glm::mat4 Matrix(float m00, float m01, float m02, float m03, float m10,
                  float m11, float m12, float m13, float m20, float m21,
@@ -156,22 +157,20 @@ glm::mat4 Matrix_Perspective(float field_of_view, float aspect, float n,
     return -M * P;
 }
 
-glm::mat4 Matrix_ChangeBasis(glm::vec4 origin_from, glm::vec4 origin_to,
-                             Basis basis) {
+glm::mat4 Matrix_ChangeCoordinates(glm::vec4 origin_from, glm::vec4 origin_to,
+                                   Basis basis) {
     glm::vec4 displacement = origin_to - origin_from;
-    return Matrix(basis.x.x, basis.y.x, basis.z.x,
-                  dotproduct(-basis.x, displacement), basis.x.y, basis.y.y,
-                  basis.z.y, dotproduct(-basis.y, displacement), basis.x.z,
-                  basis.y.z, basis.z.z, dotproduct(-basis.z, displacement),
+    return Matrix(basis.x.x, basis.x.y, basis.x.z,
+                  dotproduct(-basis.x, displacement), basis.y.x, basis.y.y,
+                  basis.y.z, dotproduct(-basis.y, displacement), basis.z.x,
+                  basis.z.y, basis.z.z, dotproduct(-basis.z, displacement),
                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-glm::mat4 Matrix_ToParentBasis(glm::vec4 origin_from, glm::vec4 origin_to,
-                               Basis basis) {
-    glm::vec4 displacement = origin_to - origin_from;
-    return Matrix(basis.x.x, basis.y.x, basis.z.x, displacement.x, basis.x.y,
-                  basis.y.y, basis.z.y, displacement.y, basis.x.z, basis.y.z,
-                  basis.z.z, displacement.z, 0.0f, 0.0f, 0.0f, 1.0f);
+glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, Basis basis) {
+    return Matrix(basis.x.x, basis.y.x, basis.z.x, center.x, basis.x.y,
+                  basis.y.y, basis.z.y, center.y, basis.x.z, basis.y.z,
+                  basis.z.z, center.z, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Basis Matrix_ToBasis(glm::mat4 matrix) {

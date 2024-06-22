@@ -2,6 +2,7 @@
 #define _MATRICES_H
 
 #include "engine/EngineObject/engineObject.hpp"
+#include "glm/ext/vector_float4.hpp"
 #include <cstdio>
 #include <cstdlib>
 
@@ -46,14 +47,13 @@ glm::mat4 Matrix_Perspective(float field_of_view, float aspect, float n,
 /* Calculates the change of basis matrix between two systems of coordinates.
  * Be mindful that this requires both systems to be orthonormal.
  */
-glm::mat4 Matrix_ChangeBasis(glm::vec4 origin_from, glm::vec4 origin_to,
-                             Basis basis);
+glm::mat4 Matrix_ChangeCoordinates(glm::vec4 origin_from, glm::vec4 origin_to,
+                                   Basis basis);
 
 /* Calculates restores from a local coordinates system to its parent system.
  * Be mindful that this requires both systems to be orthonormal.
  */
-glm::mat4 Matrix_ToParentBasis(glm::vec4 origin_from, glm::vec4 origin_to,
-                               Basis basis);
+glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, Basis basis);
 
 Basis Matrix_ToBasis(glm::mat4 matrix);
 
