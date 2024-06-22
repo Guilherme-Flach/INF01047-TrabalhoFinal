@@ -3,7 +3,7 @@
 #include "matrices.hpp"
 #include <gtest/gtest.h>
 
-TEST(Matrices, LocalToGlobalBasis) {
+TEST(Matrices, LocalToGlobalCoordinates) {
     Basis localBasis = {glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
                         glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
                         glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)};
@@ -15,7 +15,7 @@ TEST(Matrices, LocalToGlobalBasis) {
     ASSERT_FLOAT_EQ(localOrigin.z, result.z);
 }
 
-TEST(Matrices, GlobalToLocalBasis) {
+TEST(Matrices, GlobalToLocalCoordinates) {
     Basis localBasis = {glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
                         glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
                         glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)};
@@ -28,7 +28,7 @@ TEST(Matrices, GlobalToLocalBasis) {
     ASSERT_FLOAT_EQ(zero.z, result.z);
 }
 
-TEST(Matrices, LocalToLocalBasis) {
+TEST(Matrices, LocalToLocalCoordinates) {
     Basis defaultBasis = {glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
                           glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
                           glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)};
