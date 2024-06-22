@@ -16,16 +16,7 @@ EngineObject::EngineObject(glm::vec4 position, EngineObject *parent)
         this->basis = Matrix_ToBasis(Matrix_Identity());
         return;
     }
-    auto model = Matrix_ChangeBasis(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-                                    parent->position, parent->basis);
-    auto last_parent = parent;
-    auto current_parent = parent->parent;
-    while (current_parent != nullptr)
-        model *=
-            Matrix_ChangeBasis(last_parent->position, current_parent->position,
-                               current_parent->basis);
-    model *= Matrix_Identity();
-    this->basis = Matrix_ToBasis(model);
+    this->basis = parent->basis;
 }
 
 std::vector<EngineObject> EngineObject::get_children() { return children; }
@@ -56,12 +47,11 @@ void EngineObject::rotate(float angle_x, float angle_y, float angle_z) {
 glm::vec4 EngineObject::get_global_position() {
     glm::vec4 new_position = this->position;
     EngineObject *current_node = this;
-    EngineObject *parent = nullptr;
-    while ((parent = current_node->parent) != nullptr) {
-        new_position = Matrix_ToParentBasis(current_node->position,
-                                            parent->position, parent->basis) *
+    while (current_node != nullptr) {
+        new_position = Matrix_ToParentCoordinates(current_node->position,
+                                                  current_node->basis) *
                        new_position;
-        current_node = parent;
+        current_node = current_node->parent;
     }
     return new_position;
 }
