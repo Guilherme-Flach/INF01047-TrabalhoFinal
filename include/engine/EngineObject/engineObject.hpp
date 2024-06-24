@@ -3,7 +3,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
-#include <gtest/gtest_prod.h>
+//#include <gtest/gtest_prod.h>
 #include <vector>
 #include "basis.hpp"
 #include "glm/ext/matrix_float3x4.hpp"
@@ -12,9 +12,9 @@
 class EngineObject {
 
   protected:
-    FRIEND_TEST(EngineObject, TestGlobalPosition);
-    FRIEND_TEST(EngineObject, TestBasis);
-    FRIEND_TEST(EngineObject, TestModelMatrix);
+    //FRIEND_TEST(EngineObject, TestGlobalPosition);
+    //FRIEND_TEST(EngineObject, TestBasis);
+    //FRIEND_TEST(EngineObject, TestModelMatrix);
 
     glm::mat4 model;
     std::vector<EngineObject> children;
