@@ -1,5 +1,6 @@
 #ifndef RENDERER_HEADER
 #define RENDERER_HEADER
+#include "engine/EngineObject/engineObject.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "model3D.hpp"
 #include "engine/loader.hpp"
@@ -14,19 +15,25 @@
 class Renderer {
   private:
     std::vector<Model3D> renderModels;
-    std::vector<GameObject *> render;
-    std::vector<GLuint> indices;
+    std::vector<GameObject *> renderObjects;
     GLuint programId;
+
+    GLint model_uniform;
+    GLint view_uniform;
+    GLint projection_uniform;
 
     int renderType;
 
-    void renderObject(GameObject &object);
+    Renderer(GLuint programId);
+
+    void renderGameObject(EngineObject *object);
 
   public:
-    Renderer(GLuint programId);
-    void renderObjects();
-    void addObject(Model3D object);
-    void destroy(GameObject &object);
+    static Renderer &instance(GLuint programId);
+    void addModel(Model3D *object);
+    void addGameObject(GameObject *object);
+    void destroy(GameObject *object);
+    void renderGameObjects();
 };
 
 #endif // RENDERER

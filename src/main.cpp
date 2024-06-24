@@ -1,3 +1,4 @@
+#include "engine/Rendering/renderer.hpp"
 #include "engine/loader.hpp"
 #include "GLFW/glfw3.h"
 #include <functional>
@@ -11,6 +12,7 @@ int main(int argc, char *argv[]) {
 
     addKeymap({GLFW_KEY_W, GLFW_PRESS},
               []() { std::cout << "GAMING" << std::endl; });
+
     loader.start();
     return 0;
 }

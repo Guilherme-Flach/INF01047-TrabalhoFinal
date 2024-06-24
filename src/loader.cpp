@@ -11,6 +11,7 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Rendering/model3D.hpp"
+#include "engine/Rendering/renderer.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <sstream>
 #include <fstream>
@@ -327,13 +328,18 @@ void Loader::start() {
     Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
     GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f}, program_id);
     cubo1.set_model(&cuboRender);
-    GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f}, program_id);
+    GameObject cubo2 = GameObject({1.5f, 0.0f, 0.0f, 1.0f}, program_id);
     cubo2.set_model(&cuboRender);
     GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f}, program_id);
     cubo3.set_model(&cuboRender);
     cubo3.set_modelScaling(glm::vec3{0.5f, 0.5f, 0.5f});
-    cubo1.addChild(cubo3);
+
+    Renderer renderer = Renderer::instance(program_id);
+    cubo1.addChild(&cubo3);
+    renderer.addGameObject(&cubo1);
+    renderer.addGameObject(&cubo2);
     // DEBUG END
+
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -355,10 +361,12 @@ void Loader::start() {
         glUniformMatrix4fv(view_uniform, 1, GL_FALSE,
                            glm::value_ptr(camera.get_viewMatrix()));
 
-        cubo1.translate({0.01f, 0.0f, 0.0f, 0.0f});
-        cubo2.rotate({0.01f, 0.01f, 0.01f});
+        cubo1.translate({0.005f, 0.0f, 0.0f, 0.0f});
+        cubo3.rotate({0.00f, 0.00f, 0.02f});
+        cubo2.rotate({0.00f, 0.01f, 0.00f});
 
-        glm::vec4 p_model(0.5f, 0.5f, 0.5f, 1.0f);
+        
+        renderer.renderGameObjects();
 
         // TextRendering_ShowModelViewProjection(window, projection,
         // camera.get_viewMatrix(), cubo.get_model_matrix(), p_model);

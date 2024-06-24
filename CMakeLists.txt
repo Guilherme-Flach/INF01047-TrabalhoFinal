@@ -14,6 +14,7 @@ set(SOURCES
   src/main.cpp
   src/matrices.cpp
   src/model3D.cpp
+  src/renderer.cpp
   src/textrendering.cpp
 )
 

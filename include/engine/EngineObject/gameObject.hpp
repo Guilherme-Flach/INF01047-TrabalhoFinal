@@ -19,7 +19,6 @@ class GameObject : public EngineObject {
     GameObject(glm::vec4 position, GLuint program_id);
     Model3D *get_model();
     glm::vec3 get_modelScaling();
-    glm::mat4 get_model_matrix();
 
     void set_model(Model3D *model);
     void set_modelScaling(glm::vec3 scaling);
