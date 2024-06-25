@@ -16,7 +16,7 @@ class GameObject {
     glm::vec3 modelScaling = {1.0f, 1.0f, 1.0f};
     Model3D *model;
     GameObject *parent;
-    void set_parent(GameObject *parent);
+    void set_parent(GameObject &parent);
 
   public:
     GameObject(glm::vec4 position);
@@ -30,12 +30,12 @@ class GameObject {
     Model3D *get_model();
     glm::vec3 get_modelScaling();
 
-    void set_model(Model3D *model);
+    void set_model(Model3D &model);
     void set_modelScaling(glm::vec3 scaling);
 
     void set_position(glm::vec4 position);
 
-    void addChild(GameObject *child);
+    void addChild(GameObject &child);
     void translate(glm::vec4 offset);
     void rotate(glm::vec3 rotation);
 };

@@ -1,14 +1,10 @@
 #include "engine/Rendering/renderer.hpp"
-#include "engine/EngineObject/gameObject.hpp"
-#include "engine/Rendering/model3D.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
 #include <vector>
 
-// Singleton patter renderer
 Renderer::Renderer(GLuint programId) : programId(programId) {
     this->renderModels = std::vector<Model3D>();
-    this->renderObjects = std::vector<GameObject *>();
 
     this->model_uniform = glGetUniformLocation(programId, "model");
     this->view_uniform = glGetUniformLocation(programId, "view");
@@ -34,12 +30,8 @@ void Renderer::renderGameObject(GameObject *engineObject) {
     }
 }
 
-void Renderer::renderGameObjects() {
-    for (GameObject *object : this->renderObjects) {
+void Renderer::renderGameObjects(std::vector<GameObject *> &store) {
+    for (GameObject *object : store) {
         renderGameObject(object);
     }
-}
-
-void Renderer::addGameObject(GameObject *gameObject) {
-    this->renderObjects.push_back(gameObject);
 }

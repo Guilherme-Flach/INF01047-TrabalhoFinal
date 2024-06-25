@@ -16,6 +16,8 @@
 #include <sstream>
 #include <fstream>
 
+float screen_ratio;
+
 void TextRendering_ShowModelViewProjection(GLFWwindow *window,
                                            glm::mat4 projection, glm::mat4 view,
                                            glm::mat4 model, glm::vec4 p_model) {
@@ -272,74 +274,25 @@ void Loader::LoadShadersFromFiles() {
     program_id = CreateGpuProgram(vertex_shader_id, fragment_shader_id);
 }
 
-void Loader::start() {
+void Loader::add_game_object(GameObject &object) {
+    this->game_object_store.push_back(&object);
+}
 
+void Loader::add_camera(Camera &camera) {
+    this->camera_store.push_back(&camera);
+}
+
+void Loader::set_active_camera(Camera *camera) { this->active_camera = camera; }
+
+void Loader::start(std::function<void(void)> act) {
     LoadShadersFromFiles();
     TextRendering_Init();
     GLint view_uniform = glGetUniformLocation(program_id, "view");
     GLint projection_uniform = glGetUniformLocation(program_id, "projection");
 
-    glm::vec4 position = {2.0, 2.0, 2.0, 1.0};
-    glm::vec4 target = {0.0, 0.0, 0.0, 1.0};
-    LookAtCamera camera = LookAtCamera(position, target);
     glfwSetKeyCallback(window, handleKeymaps);
 
-    // DEBUG
-    std::vector<GLfloat> vertices = std::vector<GLfloat>({
-        -0.5f, 0.5f,  0.5f,  1.0f, // posição do vértice 0
-        -0.5f, -0.5f, 0.5f,  1.0f, // posição do vértice 1
-        0.5f,  -0.5f, 0.5f,  1.0f, // posição do vértice 2
-        0.5f,  0.5f,  0.5f,  1.0f, // posição do vértice 3
-        -0.5f, 0.5f,  -0.5f, 1.0f, // posição do vértice 4
-        -0.5f, -0.5f, -0.5f, 1.0f, // posição do vértice 5
-        0.5f,  -0.5f, -0.5f, 1.0f, // posição do vértice 6
-        0.5f,  0.5f,  -0.5f, 1.0f, // posição do vértice 7
-    });
-
-    std::vector<GLfloat> colors = std::vector<GLfloat>({
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 0
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 1
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 2
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 3
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 4
-        1.0f, 0.5f, 0.0f, 1.0f, // cor do vértice 5
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 6
-        0.0f, 0.5f, 1.0f, 1.0f, // cor do vértice 7
-    });
-
-    std::vector<GLuint> indices = std::vector<GLuint>({
-        0, 1, 2, // triângulo 1
-        7, 6, 5, // triângulo 2
-        3, 2, 6, // triângulo 3
-        4, 0, 3, // triângulo 4
-        4, 5, 1, // triângulo 5
-        1, 5, 6, // triângulo 6
-        0, 2, 3, // triângulo 7
-        7, 5, 4, // triângulo 8
-        3, 6, 7, // triângulo 9
-        4, 3, 7, // triângulo 10
-        4, 1, 0, // triângulo 11
-        1, 6, 2, // triângulo 12
-    });
-
-    Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
-    GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
-    cubo1.set_model(&cuboRender);
-    GameObject cubo2 = GameObject({1.5f, 0.0f, 0.0f, 1.0f});
-    cubo2.set_model(&cuboRender);
-    GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f});
-    cubo3.set_model(&cuboRender);
-    cubo3.set_modelScaling(glm::vec3{0.5f, 0.5f, 0.5f});
-
-    GameObject romano = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
-
     Renderer renderer = Renderer::instance(program_id);
-    cubo1.addChild(&cubo3);
-    renderer.addGameObject(&cubo1);
-    renderer.addGameObject(&cubo2);
-    renderer.addGameObject(&romano);
-
-    // DEBUG END
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -350,25 +303,26 @@ void Loader::start() {
         float nearplane = -0.1f;
         float farplane = -10.0f;
 
-        // DEBUG:
-
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        glfwSetFramebufferSizeCallback(
+            window, [](GLFWwindow *window, int width, int height) {
+                glViewport(0, 0, width, height);
+                screen_ratio = (float)width / height;
+            });
+        glfwSetWindowSize(window, 800, 800);
         float field_of_view = M_PI / 3.0f;
-        projection =
-            Matrix_Perspective(field_of_view, 1.0f, nearplane, farplane);
+        projection = Matrix_Perspective(field_of_view, screen_ratio, nearplane,
+                                        farplane);
         glUniformMatrix4fv(projection_uniform, 1, GL_FALSE,
                            glm::value_ptr(projection));
 
-        glUniformMatrix4fv(view_uniform, 1, GL_FALSE,
-                           glm::value_ptr(camera.get_viewMatrix()));
+        glUniformMatrix4fv(
+            view_uniform, 1, GL_FALSE,
+            glm::value_ptr(this->active_camera->get_viewMatrix()));
 
-        cubo1.translate({0.005f, 0.0f, 0.0f, 0.0f});
-        cubo3.rotate({0.00f, 0.00f, 0.02f});
-        cubo2.rotate({0.00f, 0.01f, 0.00f});
-
-        renderer.renderGameObjects();
-
-        // TextRendering_ShowModelViewProjection(window, projection,
-        // camera.get_viewMatrix(), cubo.get_model_matrix(), p_model);
+        act();
+        renderer.renderGameObjects(this->game_object_store);
 
         glfwSwapBuffers(window);
 

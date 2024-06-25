@@ -20,14 +20,14 @@ std::vector<GameObject *> *GameObject::get_children() { return &children; }
 GameObject *GameObject::get_parent() { return parent; }
 glm::vec4 GameObject::get_position() { return model_matrix[3]; }
 
-void GameObject::set_parent(GameObject *parent) { this->parent = parent; }
+void GameObject::set_parent(GameObject &parent) { this->parent = &parent; }
 void GameObject::set_position(glm::vec4 position) {
     this->model_matrix[3] = position;
 }
 
-void GameObject::addChild(GameObject *child) {
-    child->set_parent(this);
-    children.push_back(child);
+void GameObject::addChild(GameObject &child) {
+    child.set_parent(*this);
+    children.push_back(&child);
 }
 
 void GameObject::translate(glm::vec4 offset) {
@@ -84,7 +84,7 @@ glm::mat3x4 GameObject::get_basis() {
 Model3D *GameObject::get_model() { return model; }
 glm::vec3 GameObject::get_modelScaling() { return modelScaling; }
 
-void GameObject::set_model(Model3D *model) { this->model = model; }
+void GameObject::set_model(Model3D &model) { this->model = &model; }
 void GameObject::set_modelScaling(glm::vec3 modelScaling) {
     this->modelScaling = modelScaling;
 }

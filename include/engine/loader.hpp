@@ -4,12 +4,15 @@
 #include <functional>
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
+#include "engine/EngineObject/camera/camera.hpp"
+#include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <utils.h>
 #include <matrices.hpp>
+#include <vector>
 #include "glm/ext/vector_float4.hpp"
 
 struct KeyAction {
@@ -59,8 +62,15 @@ class Loader {
 
     Loader(int width, int height, char title[]);
 
+    void add_game_object(GameObject &object);
+    void add_camera(Camera &camera);
+    void set_active_camera(Camera *camera);
+
   private:
     GLFWwindow *window;
+    std::vector<GameObject *> game_object_store;
+    std::vector<Camera *> camera_store;
+    Camera *active_camera;
 
     void LoadShader(const char *filename, GLuint shader_id);
     GLuint LoadShader_Vertex(const char *filename);
@@ -70,6 +80,6 @@ class Loader {
   public:
     GLFWwindow *get_window() { return window; }
 
-    void start();
+    void start(std::function<void(void)> act);
 };
 #endif // LOADER_HEADER

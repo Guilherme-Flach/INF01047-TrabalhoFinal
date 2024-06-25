@@ -1,6 +1,5 @@
 #ifndef RENDEROBJECT_HEADER
 #define RENDEROBJECT_HEADER
-#include "engine/loader.hpp"
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glad/glad.h>
@@ -21,6 +20,8 @@ class Model3D {
     GLuint verticesId;
 
     int renderType;
+
+    GLfloat line_width;
 
   public:
     Model3D();

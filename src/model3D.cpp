@@ -1,5 +1,5 @@
 #include "engine/Rendering/model3D.hpp"
-#include "engine/loader.hpp"
+#include <GL/gl.h>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
@@ -10,8 +10,8 @@ Model3D::Model3D()
     : Model3D::Model3D(std::vector<GLfloat>(
                            {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
                             0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f}),
-                       std::vector<GLuint>({8, 9, 10, 11, 12, 13}),
+                            0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f}),
+                       std::vector<GLuint>({0, 1, 2, 3, 4, 5}),
                        std::vector<GLfloat>(
                            {1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
                             0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
@@ -21,7 +21,7 @@ Model3D::Model3D()
 Model3D::Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
                  std::vector<GLfloat> colors_, int renderType_)
     : vertices(vertices_), colors(colors_), indices(indices_), vertexArrayId(0),
-      renderType(renderType_) {
+      renderType(renderType_), line_width(4.0f) {
 
     // Generating VertexArray
     glGenVertexArrays(1, &vertexArrayId);
@@ -73,20 +73,8 @@ Model3D::Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
 GLuint Model3D::get_vertexArrayId() { return this->vertexArrayId; }
 
 void Model3D::render() {
-    // for (auto ball : indices) {
-    //   std::cout << (int) ball << " ";
-    // }
-    // std::cout << "VA ID: " << vertexArrayId << std::endl;
-    // std::cout << "VBO Vertices: " << verticesId << std::endl;
-    // std::cout << "VBO Indices:" << indicesId << std::endl;
-    // std::cout << "VBO Colors:" << colorsId << std::endl;
-    // std::cout << "----------------------" << std::endl;
-
     glBindVertexArray(vertexArrayId);
+    glLineWidth(line_width);
     glDrawElements(renderType, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
-
-// void set_vertices(std::vector<GLfloat> vertices);
-// void set_indices(std::vector<GLfloat> indices);
-// void set_colors(std::vector<glm::vec4> colors);

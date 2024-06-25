@@ -8,8 +8,8 @@ TEST(GameObject, TestGlobalPosition) {
     auto first_child = GameObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
     auto second_child = GameObject(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
-    parent.addChild(&first_child);
-    first_child.addChild(&second_child);
+    parent.addChild(first_child);
+    first_child.addChild(second_child);
 
     auto global_position_parent = parent.get_global_position();
     auto global_position_first_child = first_child.get_global_position();
@@ -41,7 +41,7 @@ TEST(GameObject, TestBasis) {
     auto parent = GameObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
     auto first_child = GameObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
 
-    parent.addChild(&first_child);
+    parent.addChild(first_child);
 
     parent.rotate({M_PI / 2, 0.0f, 0.0f});
 
@@ -52,7 +52,6 @@ TEST(GameObject, TestBasis) {
     ASSERT_FLOAT_EQ(parent.get_basis()[0].z,
                     first_child.get_global_basis()[0].z);
 
-    auto a = first_child.get_global_basis();
     ASSERT_FLOAT_EQ(parent.get_basis()[1].x,
                     first_child.get_global_basis()[1].x);
     ASSERT_FLOAT_EQ(parent.get_basis()[1].y,
@@ -72,7 +71,7 @@ TEST(GameObject, TestModelMatrix) {
     auto parent = GameObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
     auto first_child = GameObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
 
-    parent.addChild(&first_child);
+    parent.addChild(first_child);
 
     ASSERT_FLOAT_EQ(parent.get_model_matrix()[3].x, parent.get_position().x);
     ASSERT_FLOAT_EQ(parent.get_model_matrix()[3].y, parent.get_position().y);
