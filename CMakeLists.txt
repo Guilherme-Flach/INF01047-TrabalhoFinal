@@ -7,7 +7,6 @@
 # ser compilados.
 set(SOURCES
   src/camera.cpp
-  src/engineObject.cpp
   src/gameObject.cpp
   src/glad.c
   src/loader.cpp
@@ -135,4 +134,4 @@ elseif(UNIX)
   )
 
 endif()
-#add_subdirectory(tests)
+# add_subdirectory(tests)

@@ -1,7 +1,6 @@
 #ifndef _MATRICES_H
 #define _MATRICES_H
 
-#include "engine/EngineObject/engineObject.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include <cstdio>
 #include <cstdlib>
@@ -58,11 +57,8 @@ glm::mat3x4 Matrix_PopBasis(glm::mat3x4 child, glm::mat3x4 parent);
  * Be mindful that this requires both systems to be orthonormal.
  */
 glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, glm::mat3x4 basis);
-glm::mat4 Matrix_FromBasis(Basis basis);
 glm::vec4 Matrix_Project(glm::vec4 source, glm::vec4 target);
 glm::mat3x4 Matrix_Orthogonalize(glm::mat3x4 basis);
-
-Basis Matrix_ToBasis(glm::mat4 matrix);
 
 void PrintMatrix(glm::mat4 M);
 

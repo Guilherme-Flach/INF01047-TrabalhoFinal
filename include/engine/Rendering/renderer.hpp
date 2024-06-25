@@ -1,6 +1,5 @@
 #ifndef RENDERER_HEADER
 #define RENDERER_HEADER
-#include "engine/EngineObject/engineObject.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "model3D.hpp"
 #include "engine/loader.hpp"
@@ -26,7 +25,7 @@ class Renderer {
 
     Renderer(GLuint programId);
 
-    void renderGameObject(EngineObject *object);
+    void renderGameObject(GameObject *object);
 
   public:
     static Renderer &instance(GLuint programId);

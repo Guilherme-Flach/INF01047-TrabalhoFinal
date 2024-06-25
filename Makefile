@@ -276,30 +276,6 @@ src/camera.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/camera.cpp.s
 .PHONY : src/camera.cpp.s
 
-src/engineObject.o: src/engineObject.cpp.o
-.PHONY : src/engineObject.o
-
-# target to build an object file
-src/engineObject.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/engineObject.cpp.o
-.PHONY : src/engineObject.cpp.o
-
-src/engineObject.i: src/engineObject.cpp.i
-.PHONY : src/engineObject.i
-
-# target to preprocess a source file
-src/engineObject.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/engineObject.cpp.i
-.PHONY : src/engineObject.cpp.i
-
-src/engineObject.s: src/engineObject.cpp.s
-.PHONY : src/engineObject.s
-
-# target to generate assembly for a file
-src/engineObject.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/engineObject.cpp.s
-.PHONY : src/engineObject.cpp.s
-
 src/gameObject.o: src/gameObject.cpp.o
 .PHONY : src/gameObject.o
 
@@ -444,6 +420,30 @@ src/model3D.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/model3D.cpp.s
 .PHONY : src/model3D.cpp.s
 
+src/renderer.o: src/renderer.cpp.o
+.PHONY : src/renderer.o
+
+# target to build an object file
+src/renderer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/renderer.cpp.o
+.PHONY : src/renderer.cpp.o
+
+src/renderer.i: src/renderer.cpp.i
+.PHONY : src/renderer.i
+
+# target to preprocess a source file
+src/renderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/renderer.cpp.i
+.PHONY : src/renderer.cpp.i
+
+src/renderer.s: src/renderer.cpp.s
+.PHONY : src/renderer.s
+
+# target to generate assembly for a file
+src/renderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/renderer.cpp.s
+.PHONY : src/renderer.cpp.s
+
 src/textrendering.o: src/textrendering.cpp.o
 .PHONY : src/textrendering.o
 
@@ -490,9 +490,6 @@ help:
 	@echo "... src/camera.o"
 	@echo "... src/camera.i"
 	@echo "... src/camera.s"
-	@echo "... src/engineObject.o"
-	@echo "... src/engineObject.i"
-	@echo "... src/engineObject.s"
 	@echo "... src/gameObject.o"
 	@echo "... src/gameObject.i"
 	@echo "... src/gameObject.s"
@@ -511,6 +508,9 @@ help:
 	@echo "... src/model3D.o"
 	@echo "... src/model3D.i"
 	@echo "... src/model3D.s"
+	@echo "... src/renderer.o"
+	@echo "... src/renderer.i"
+	@echo "... src/renderer.s"
 	@echo "... src/textrendering.o"
 	@echo "... src/textrendering.i"
 	@echo "... src/textrendering.s"

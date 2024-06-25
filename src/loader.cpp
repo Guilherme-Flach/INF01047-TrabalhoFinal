@@ -276,11 +276,8 @@ void Loader::start() {
 
     LoadShadersFromFiles();
     TextRendering_Init();
-    GLint model_uniform = glGetUniformLocation(program_id, "model");
     GLint view_uniform = glGetUniformLocation(program_id, "view");
     GLint projection_uniform = glGetUniformLocation(program_id, "projection");
-    GLint render_as_black_uniform =
-        glGetUniformLocation(program_id, "render_as_black");
 
     glm::vec4 position = {2.0, 2.0, 2.0, 1.0};
     glm::vec4 target = {0.0, 0.0, 0.0, 1.0};
@@ -326,20 +323,23 @@ void Loader::start() {
     });
 
     Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
-    GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f}, program_id);
+    GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
     cubo1.set_model(&cuboRender);
-    GameObject cubo2 = GameObject({1.5f, 0.0f, 0.0f, 1.0f}, program_id);
+    GameObject cubo2 = GameObject({1.5f, 0.0f, 0.0f, 1.0f});
     cubo2.set_model(&cuboRender);
-    GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f}, program_id);
+    GameObject cubo3 = GameObject({0.0f, 1.0f, 0.0f, 1.0f});
     cubo3.set_model(&cuboRender);
     cubo3.set_modelScaling(glm::vec3{0.5f, 0.5f, 0.5f});
+
+    GameObject romano = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
 
     Renderer renderer = Renderer::instance(program_id);
     cubo1.addChild(&cubo3);
     renderer.addGameObject(&cubo1);
     renderer.addGameObject(&cubo2);
-    // DEBUG END
+    renderer.addGameObject(&romano);
 
+    // DEBUG END
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -365,7 +365,6 @@ void Loader::start() {
         cubo3.rotate({0.00f, 0.00f, 0.02f});
         cubo2.rotate({0.00f, 0.01f, 0.00f});
 
-        
         renderer.renderGameObjects();
 
         // TextRendering_ShowModelViewProjection(window, projection,

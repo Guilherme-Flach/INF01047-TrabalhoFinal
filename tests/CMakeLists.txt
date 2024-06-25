@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(my_project)
+project(LAB_FCG VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,10 +18,12 @@ enable_testing()
 add_executable(
   tests
   test_matrices.cpp
-  test_engine_object.cpp
+  test_game_object.cpp
   ../src/camera.cpp
-  ../src/engineObject.cpp
+  ../src/gameObject.cpp
   ../src/matrices.cpp
+  ../src/glad.c
+  ../src/model3D.cpp
 )
 target_link_libraries(
   tests

@@ -1,11 +1,11 @@
 #ifndef CAMERA_HEADER
 #define CAMERA_HEADER
+#include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
-#include "../engineObject.hpp"
 #include <cmath>
 
-class Camera : public EngineObject {
+class Camera : public GameObject {
 
   protected:
     Camera(glm::vec4 position);

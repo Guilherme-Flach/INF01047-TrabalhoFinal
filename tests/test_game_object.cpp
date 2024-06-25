@@ -1,15 +1,15 @@
-#include "engine/EngineObject/engineObject.hpp"
+#include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 
-TEST(EngineObject, TestGlobalPosition) {
-    auto parent = EngineObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
-    auto first_child = EngineObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
-    auto second_child = EngineObject(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+TEST(GameObject, TestGlobalPosition) {
+    auto parent = GameObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
+    auto first_child = GameObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
+    auto second_child = GameObject(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
-    parent.addChild(first_child);
-    first_child.addChild(second_child);
+    parent.addChild(&first_child);
+    first_child.addChild(&second_child);
 
     auto global_position_parent = parent.get_global_position();
     auto global_position_first_child = first_child.get_global_position();
@@ -37,11 +37,11 @@ TEST(EngineObject, TestGlobalPosition) {
                     global_position_second_child.z);
 }
 
-TEST(EngineObject, TestBasis) {
-    auto parent = EngineObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
-    auto first_child = EngineObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
+TEST(GameObject, TestBasis) {
+    auto parent = GameObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
+    auto first_child = GameObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
 
-    parent.addChild(first_child);
+    parent.addChild(&first_child);
 
     parent.rotate({M_PI / 2, 0.0f, 0.0f});
 
@@ -68,11 +68,11 @@ TEST(EngineObject, TestBasis) {
                     first_child.get_global_basis()[2].z);
 }
 
-TEST(EngineObject, TestModelMatrix) {
-    auto parent = EngineObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
-    auto first_child = EngineObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
+TEST(GameObject, TestModelMatrix) {
+    auto parent = GameObject(glm::vec4(15.0f, 9.0f, 5.0f, 1.0f));
+    auto first_child = GameObject(glm::vec4(3.0f, 5.0f, 21.0f, 1.0f));
 
-    parent.addChild(first_child);
+    parent.addChild(&first_child);
 
     ASSERT_FLOAT_EQ(parent.get_model_matrix()[3].x, parent.get_position().x);
     ASSERT_FLOAT_EQ(parent.get_model_matrix()[3].y, parent.get_position().y);

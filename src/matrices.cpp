@@ -1,15 +1,8 @@
 #include "matrices.hpp"
-#include "engine/EngineObject/engineObject.hpp"
 #include "glm/ext/matrix_float3x3.hpp"
 #include "glm/ext/matrix_float3x4.hpp"
-#include "glm/ext/matrix_float4x3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
-#include "glm/ext/quaternion_geometric.hpp"
-#include "glm/ext/vector_float3.hpp"
 #include "glm/ext/vector_float4.hpp"
-#include "glm/geometric.hpp"
-#include "glm/matrix.hpp"
-#include <complex>
 
 glm::mat4 Matrix(float m00, float m01, float m02, float m03, float m10,
                  float m11, float m12, float m13, float m20, float m21,
@@ -203,12 +196,6 @@ glm::mat3x4 Matrix_PopBasis(glm::mat3x4 child, glm::mat3x4 parent) {
             new_y.z, 0.0f,    new_z.x, new_z.y, new_z.z, 0.0f};
 }
 
-glm::mat4 Matrix_FromBasis(Basis basis) {
-    return Matrix(basis.x.x, basis.y.x, basis.z.x, 0.0f, basis.x.y, basis.y.y,
-                  basis.z.y, 0.0f, basis.x.z, basis.y.z, basis.z.z, 0.0f, 0.0f,
-                  0.0f, 0.0f, 1.0f);
-}
-
 glm::vec4 Matrix_Project(glm::vec4 source, glm::vec4 target) {
     return (dotproduct(source, target) / dotproduct(target, target)) * target;
 }
@@ -220,23 +207,6 @@ glm::mat3x4 Matrix_Orthogonalize(glm::mat3x4 basis) {
     basis[0] /= norm(basis[0]);
     basis[1] /= norm(basis[1]);
     basis[2] /= norm(basis[2]);
-    return basis;
-}
-
-Basis Matrix_ToBasis(glm::mat4 matrix) {
-    Basis basis;
-    basis.x.x = matrix[0][0];
-    basis.x.y = matrix[1][0];
-    basis.x.z = matrix[2][0];
-
-    basis.y.x = matrix[0][1];
-    basis.y.y = matrix[1][1];
-    basis.y.z = matrix[2][1];
-
-    basis.z.x = matrix[0][2];
-    basis.z.y = matrix[1][2];
-    basis.z.z = matrix[2][2];
-
     return basis;
 }
 

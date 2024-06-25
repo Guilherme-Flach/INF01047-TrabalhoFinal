@@ -1,10 +1,9 @@
-#include "engine/EngineObject/engineObject.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
 
-Camera::Camera(glm::vec4 position) : EngineObject(position) {}
+Camera::Camera(glm::vec4 position) : GameObject(position) {}
 
 glm::vec4 Camera::DEFAULT_UP_VECTOR = {0.0, 1.0, 0.0, 0.0};
 

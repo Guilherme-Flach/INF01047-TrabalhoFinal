@@ -23,8 +23,9 @@ class Model3D {
     int renderType;
 
   public:
+    Model3D();
     Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
-                 std::vector<GLfloat> colors_, int renderType_);
+            std::vector<GLfloat> colors_, int renderType_);
     GLuint get_vertexArrayId();
     void render();
 };

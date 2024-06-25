@@ -6,6 +6,18 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
+Model3D::Model3D()
+    : Model3D::Model3D(std::vector<GLfloat>(
+                           {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                            0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                            0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f}),
+                       std::vector<GLuint>({8, 9, 10, 11, 12, 13}),
+                       std::vector<GLfloat>(
+                           {1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                            0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                            0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f}),
+                       GL_LINES) {}
+
 Model3D::Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
                  std::vector<GLfloat> colors_, int renderType_)
     : vertices(vertices_), colors(colors_), indices(indices_), vertexArrayId(0),
