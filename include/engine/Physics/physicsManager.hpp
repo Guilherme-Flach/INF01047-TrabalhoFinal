@@ -1,5 +1,6 @@
-#ifndef MODEL3D_HEADER
-#define MODEL3D_HEADER
+#ifndef RENDEROBJECT_HEADER
+#define RENDEROBJECT_HEADER
+#include "engine/EngineObject/gameObject.hpp"
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glad/glad.h>
@@ -8,9 +9,9 @@
 
 #include <vector>
 
-class Model3D {
+class PhysicsManager {
   protected:
-    std::vector<GLfloat> vertices;
+    std::vector<GameObject *> vertices;
     std::vector<GLfloat> colors;
     std::vector<GLuint> indices;
 
@@ -24,10 +25,11 @@ class Model3D {
     GLfloat line_width;
 
   public:
+
     Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
             std::vector<GLfloat> colors_, int renderType_);
     GLuint get_vertexArrayId();
     void render();
 };
 
-#endif // MODEL3D
+#endif // RENDEROBJECT

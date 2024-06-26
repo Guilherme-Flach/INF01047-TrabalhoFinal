@@ -14,6 +14,7 @@ class Renderer {
   private:
     std::vector<Model3D> renderModels;
     GLuint programId;
+    bool debugMode;
 
     GLint model_uniform;
     GLint view_uniform;
@@ -27,6 +28,7 @@ class Renderer {
 
   public:
     static Renderer &instance(GLuint programId);
+    void setDebugMode(bool debugMode);
     void addModel(Model3D *object);
     void destroy(GameObject *object);
     void renderGameObjects(std::vector<GameObject *> &store);

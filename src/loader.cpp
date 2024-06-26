@@ -293,6 +293,7 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetKeyCallback(window, handleKeymaps);
 
     Renderer renderer = Renderer::instance(program_id);
+    renderer.setDebugMode(true);
 
     glfwSetFramebufferSizeCallback(
         window, [](GLFWwindow *window, int width, int height) {

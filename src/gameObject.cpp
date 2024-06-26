@@ -1,4 +1,5 @@
 #include "engine/EngineObject/gameObject.hpp"
+#include "engine/Rendering/defaultModels.hpp"
 #include "glm/ext/matrix_float3x4.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
@@ -10,7 +11,7 @@
 #include <vector>
 
 GameObject::GameObject(glm::vec4 position) : model(nullptr), parent(nullptr) {
-    static Model3D default_model = Model3D();
+    static Model3D default_model = BaseAxesModel();
     this->model_matrix = Matrix_Identity();
     this->model_matrix[3] = position;
     this->model = &default_model;
@@ -84,7 +85,12 @@ glm::mat3x4 GameObject::get_basis() {
 Model3D *GameObject::get_model() { return model; }
 glm::vec3 GameObject::get_modelScaling() { return modelScaling; }
 
-void GameObject::set_model(Model3D &model) { this->model = &model; }
+bool GameObject::get_isRenderable() { return isRenderable; }
+
+void GameObject::set_model(Model3D &model) {
+    this->model = &model;
+    isRenderable = true;
+}
 void GameObject::set_modelScaling(glm::vec3 modelScaling) {
     this->modelScaling = modelScaling;
 }

@@ -16,6 +16,7 @@ class GameObject {
     glm::vec3 modelScaling = {1.0f, 1.0f, 1.0f};
     Model3D *model;
     GameObject *parent;
+    bool isRenderable = false;
     void set_parent(GameObject &parent);
 
   public:
@@ -29,6 +30,7 @@ class GameObject {
     glm::mat3x4 get_basis();
     Model3D *get_model();
     glm::vec3 get_modelScaling();
+    bool get_isRenderable();
 
     void set_model(Model3D &model);
     void set_modelScaling(glm::vec3 scaling);
