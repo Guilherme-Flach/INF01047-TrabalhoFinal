@@ -294,6 +294,14 @@ void Loader::start(std::function<void(void)> act) {
 
     Renderer renderer = Renderer::instance(program_id);
 
+    glfwSetFramebufferSizeCallback(
+        window, [](GLFWwindow *window, int width, int height) {
+            glViewport(0, 0, width, height);
+            screen_ratio = (float)width / height;
+        });
+    glfwSetWindowSize(window, 800, 800);
+    screen_ratio = 1;
+
     while (!glfwWindowShouldClose(window)) {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -305,12 +313,7 @@ void Loader::start(std::function<void(void)> act) {
 
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
-        glfwSetFramebufferSizeCallback(
-            window, [](GLFWwindow *window, int width, int height) {
-                glViewport(0, 0, width, height);
-                screen_ratio = (float)width / height;
-            });
-        glfwSetWindowSize(window, 800, 800);
+
         float field_of_view = M_PI / 3.0f;
         projection = Matrix_Perspective(field_of_view, screen_ratio, nearplane,
                                         farplane);
