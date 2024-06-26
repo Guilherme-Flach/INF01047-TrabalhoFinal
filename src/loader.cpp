@@ -18,6 +18,9 @@
 
 float screen_ratio;
 
+float Loader::delta_t = 0;
+
+
 void TextRendering_ShowModelViewProjection(GLFWwindow *window,
                                            glm::mat4 projection, glm::mat4 view,
                                            glm::mat4 model, glm::vec4 p_model) {
@@ -303,7 +306,14 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetWindowSize(window, 800, 800);
     screen_ratio = 1;
 
+    float prev_time = 0;
     while (!glfwWindowShouldClose(window)) {
+
+        // Atualiza delta de tempo
+        float current_time = (float)glfwGetTime();
+        Loader::delta_t = current_time - prev_time;
+        prev_time = current_time;
+
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(program_id);

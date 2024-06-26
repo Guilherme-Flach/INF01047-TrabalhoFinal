@@ -67,6 +67,7 @@ class Loader {
     void set_active_camera(Camera *camera);
 
   private:
+    static float delta_t;
     GLFWwindow *window;
     std::vector<GameObject *> game_object_store;
     std::vector<Camera *> camera_store;
@@ -79,6 +80,8 @@ class Loader {
 
   public:
     GLFWwindow *get_window() { return window; }
+
+    static float get_delta_t() { return Loader::delta_t; }
 
     void start(std::function<void(void)> act);
 };

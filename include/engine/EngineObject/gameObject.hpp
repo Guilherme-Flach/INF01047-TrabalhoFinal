@@ -1,5 +1,5 @@
-#ifndef ENGINEOBJECT_HEADER
-#define ENGINEOBJECT_HEADER
+#ifndef GAMEOBJECT_HEADER
+#define GAMEOBJECT_HEADER
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>

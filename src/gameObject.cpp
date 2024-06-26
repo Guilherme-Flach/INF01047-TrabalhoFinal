@@ -61,7 +61,7 @@ glm::mat4 GameObject::get_model_matrix() {
     GameObject *node = this;
     while ((node = node->parent) != nullptr)
         model = node->model_matrix * model;
-    return model;
+    return model * Matrix_Scale(modelScaling.x, modelScaling.y, modelScaling.z);
 }
 
 glm::mat3x4 GameObject::get_global_basis() {

@@ -1,4 +1,7 @@
 #include "engine/EngineObject/camera/camera.hpp"
+#include "engine/Physics/physicsObject.hpp"
+#include "engine/Rendering/defaultModels.hpp"
+#include "engine/Rendering/model3D.hpp"
 #include "engine/loader.hpp"
 #include "GLFW/glfw3.h"
 #include <functional>
@@ -54,15 +57,32 @@ int main(int argc, char *argv[]) {
     loader.add_camera(camera);
     loader.set_active_camera(&camera);
 
+    GameObject romano = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
+    romano.set_modelScaling({10,10,10});
+
+    PhysicsObject gamer = PhysicsObject({1.0f, 1.0f, 1.0f, 1.0f}, 1.0f);
+
     Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
+
     GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
     cubo1.set_model(cuboRender);
+    cubo1.set_modelScaling({0.5f,1.0f,0.5f});
 
-    GameObject romano = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
+    GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f});
+    cubo2.set_model(cuboRender);
+    cubo2.set_modelScaling({0.2f,0.2f,0.2f});
+    cubo1.addChild(cubo2);
 
-    romano.addChild(cubo1);
+    GameObject cubo3 = GameObject({0.0f, 0.5f, 0.0f, 1.0f});
+    cubo3.set_model(cuboRender);
+    cubo3.set_modelScaling({0.2f,0.2f,0.2f});
+    cubo2.addChild(cubo3);
 
+    gamer.addChild(cubo1);
+    gamer.addChild(camera);
+    
     loader.add_game_object(romano);
+    loader.add_game_object(gamer);
 
     addKeymap({GLFW_KEY_W, GLFW_PRESS}, [&cubo1, &camera]() {
         auto distance = cubo1.get_position() - camera.get_position();
@@ -76,6 +96,13 @@ int main(int argc, char *argv[]) {
         camera.translate(-distance);
     });
 
-    loader.start([&cubo1]() { cubo1.rotate({0.0f, 1.0f, 0.0f}); });
+    gamer.applyForce({0.5f, 0.00f, 0.5f, 0.0f});
+
+    loader.start([&gamer, &romano, &camera, &cubo1, &cubo3]() {
+        gamer.update(Loader::get_delta_t());
+        cubo1.rotate({0.0f, 0.002f, 0.00f});
+        cubo3.rotate({0.01f, 0.000f, 0.00f});
+        camera.set_target(cubo1.get_global_position());
+    });
     return 0;
 }
