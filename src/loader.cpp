@@ -100,28 +100,6 @@ void TextRendering_ShowModelViewProjection(GLFWwindow *window,
         window, viewport_mapping, p_ndc, -1.0f, 1.0f - 26 * pad, 1.0f);
 }
 
-std::map<KeyAction, std::function<void(void)>> keymaps;
-
-bool operator<(const KeyAction &first, const KeyAction &second) {
-    return first.key > second.key ||
-           (first.key <= second.key && first.action > second.action);
-}
-
-void addKeymap(KeyAction data, std::function<void(void)> action) {
-    keymaps[data] = action;
-}
-
-void handleKeymaps(GLFWwindow *window, int key, int scan_code, int action,
-                   int mod) {
-    KeyAction key_action;
-    key_action.key = key;
-    key_action.action = action;
-    auto iterator = keymaps.find(key_action);
-    if (iterator == keymaps.end())
-        return;
-    keymaps[key_action]();
-}
-
 GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id) {
 
     GLuint program_id = glCreateProgram();
@@ -293,7 +271,7 @@ void Loader::start(std::function<void(void)> act) {
     GLint view_uniform = glGetUniformLocation(program_id, "view");
     GLint projection_uniform = glGetUniformLocation(program_id, "projection");
 
-    glfwSetKeyCallback(window, handleKeymaps);
+    glfwSetKeyCallback(window, KeyMap::handleKeymaps);
 
     Renderer renderer = Renderer::instance(program_id);
     renderer.setDebugMode(true);

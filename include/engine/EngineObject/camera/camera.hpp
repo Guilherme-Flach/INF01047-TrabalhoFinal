@@ -12,9 +12,17 @@ class Camera : public GameObject {
 
     static glm::vec4 DEFAULT_UP_VECTOR;
 
+    glm::vec4 up_vector;
+
   public:
     virtual glm::vec4 get_view() = 0;
+    glm::vec4 get_up_vector();
+    glm::vec4 get_u_vector();
+    glm::vec4 get_v_vector();
+    glm::vec4 get_w_vector();
     glm::mat4 get_viewMatrix();
+
+    void set_up_vector(glm::vec4 up_vector);
 };
 
 class LookAtCamera : public Camera {

@@ -3,7 +3,10 @@
 #include "engine/Rendering/defaultModels.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "engine/loader.hpp"
+#include "engine/Input/keyMap.hpp"
 #include "GLFW/glfw3.h"
+#include "glm/ext/vector_float4.hpp"
+#include "matrices.hpp"
 #include <functional>
 #include <iostream>
 
@@ -52,17 +55,20 @@ int main(int argc, char *argv[]) {
 
     glm::vec4 position = {2.0, 2.0, 2.0, 1.0};
     glm::vec4 target = {0.0, 0.0, 0.0, 1.0};
-    LookAtCamera camera = LookAtCamera(position, target);
-
-    loader.add_camera(camera);
-    loader.set_active_camera(&camera);
+    LookAtCamera cameraLookAt = LookAtCamera(position, target);
+    FreeCamera cameraFree = FreeCamera({0.0f, 0.0f, 0.0f, 1.0f}, 0, 0);
 
     GameObject romano = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
     romano.set_modelScaling({10,10,10});
 
-    PhysicsObject gamer = PhysicsObject({1.0f, 1.0f, 1.0f, 1.0f}, 1.0f);
+    PhysicsObject physObj = PhysicsObject({1.0f, 1.0f, 1.0f, 1.0f}, 1.0f);
 
     Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
+    Model3D wireCube = WireCube();
+
+    PhysicsObject gamer = PhysicsObject({0.0f, 0.0f, 0.0f, 1.0f}, 1);
+    gamer.set_model(wireCube);
+    gamer.addChild(cameraFree);
 
     GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
     cubo1.set_model(cuboRender);
@@ -78,31 +84,130 @@ int main(int argc, char *argv[]) {
     cubo3.set_modelScaling({0.2f,0.2f,0.2f});
     cubo2.addChild(cubo3);
 
-    gamer.addChild(cubo1);
-    gamer.addChild(camera);
+    physObj.addChild(cubo1);
+    physObj.addChild(cameraLookAt);
+
+    GameObject cubo4 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
+    cubo4.set_model(cuboRender);
+    cubo4.set_modelScaling({0.3f,0.3f,0.3f});
     
     loader.add_game_object(romano);
-    loader.add_game_object(gamer);
+    loader.add_game_object(physObj);
+    loader.add_game_object(cubo4);
 
-    addKeymap({GLFW_KEY_W, GLFW_PRESS}, [&cubo1, &camera]() {
-        auto distance = cubo1.get_position() - camera.get_position();
-        distance *= 0.1f;
-        camera.translate(distance);
+    loader.add_camera(cameraLookAt);
+    loader.add_camera(cameraFree);
+    loader.set_active_camera(&cameraFree);
+
+    // OH LAWD HE COMING
+    // FIXME: Tem que extrair essas putaria pra dentro do player
+    // tem um bug se fizer rotation e movement ao msm tempo
+    // quando ele larga, ele n desfaz o bgl pq os vector mudaram
+    // gaming
+    static const GLfloat speed = 0.01f;
+    KeyMap::addKeyMapping(GLFW_KEY_W, [&gamer, &cameraFree](Action action) {
+        glm::vec4 direction = -cameraFree.get_w_vector();
+        if (action == GLFW_PRESS) {
+            gamer.increase_acceleration( direction * speed);
+        } else if (action == GLFW_RELEASE) {
+            gamer.increase_acceleration( -direction * speed);
+        }
     });
 
-    addKeymap({GLFW_KEY_S, GLFW_PRESS}, [&cubo1, &camera]() {
-        auto distance = cubo1.get_position() - camera.get_position();
-        distance *= 0.1f;
-        camera.translate(-distance);
+    KeyMap::addKeyMapping(GLFW_KEY_S, [&gamer, &cameraFree](Action action) {
+        glm::vec4 direction = cameraFree.get_w_vector();
+        if (action == GLFW_PRESS) {
+            gamer.increase_acceleration( direction * speed);
+        } else if (action == GLFW_RELEASE) {
+            gamer.increase_acceleration( -direction * speed);
+        }
     });
 
-    gamer.applyForce({0.5f, 0.00f, 0.5f, 0.0f});
+    KeyMap::addKeyMapping(GLFW_KEY_A, [&gamer, &cameraFree](Action action) {
+        glm::vec4 direction = -cameraFree.get_u_vector();
+        if (action == GLFW_PRESS) {
+            gamer.increase_acceleration( direction * speed);
+        } else if (action == GLFW_RELEASE) {
+            gamer.increase_acceleration( -direction * speed);
+        }
+    });
 
-    loader.start([&gamer, &romano, &camera, &cubo1, &cubo3]() {
+    KeyMap::addKeyMapping(GLFW_KEY_D, [&gamer, &cameraFree](Action action) {
+        glm::vec4 direction = cameraFree.get_u_vector();
+        if (action == GLFW_PRESS) {
+            gamer.increase_acceleration( direction * speed);
+        } else if (action == GLFW_RELEASE) {
+            gamer.increase_acceleration( -direction * speed);
+        }
+    });
+
+    KeyMap::addKeyMapping(GLFW_KEY_SPACE, [&gamer, &cameraFree](Action action) {
+        glm::vec4 direction = cameraFree.get_v_vector();
+        if (action == GLFW_PRESS) {
+            gamer.increase_acceleration( direction * speed);
+        } else if (action == GLFW_RELEASE) {
+            gamer.increase_acceleration( -direction * speed);
+        }
+    });
+
+    KeyMap::addKeyMapping(GLFW_KEY_LEFT_CONTROL, [&gamer, &cameraFree](Action action) {
+        glm::vec4 direction = -cameraFree.get_v_vector();
+        if (action == GLFW_PRESS) {
+            gamer.increase_acceleration( direction * speed);
+        } else if (action == GLFW_RELEASE) {
+            gamer.increase_acceleration( -direction * speed);
+        }
+    });
+
+
+    // Rotation
+    KeyMap::addKeyMapping(GLFW_KEY_UP, [&gamer, &cameraFree](Action action) {
+        if (action == GLFW_PRESS) {
+            cameraFree.set_phi(cameraFree.get_phi() - 0.05f);
+        }
+    });
+
+    KeyMap::addKeyMapping(GLFW_KEY_DOWN, [&gamer, &cameraFree](Action action) {
+        if (action == GLFW_PRESS) {
+            cameraFree.set_phi(cameraFree.get_phi() + 0.05f);
+        }
+    });
+
+    KeyMap::addKeyMapping(GLFW_KEY_LEFT, [&gamer, &cameraFree](Action action) {
+        if (action == GLFW_PRESS) {
+            cameraFree.set_theta(cameraFree.get_theta() + 0.05f);
+        }
+    });
+
+    KeyMap::addKeyMapping(GLFW_KEY_RIGHT, [&gamer, &cameraFree](Action action) {
+        if (action == GLFW_PRESS) {
+            cameraFree.set_theta(cameraFree.get_theta() - 0.05f);
+        }
+    });
+
+    KeyMap::addKeyMapping(GLFW_KEY_Q, [&gamer, &cameraFree](Action action) {
+        glm::vec4 axis = cameraFree.get_w_vector();
+        if (action == GLFW_PRESS) {
+            cameraFree.set_up_vector(Matrix_Rotate(0.05f,axis) * cameraFree.get_up_vector());
+        }
+    });
+
+    KeyMap::addKeyMapping(GLFW_KEY_E, [&gamer, &cameraFree](Action action) {
+        glm::vec4 axis = -cameraFree.get_w_vector();
+        if (action == GLFW_PRESS) {
+            cameraFree.set_up_vector(Matrix_Rotate(0.05f,axis) * cameraFree.get_up_vector());
+        }
+    });
+
+    physObj.applyForce({0.5f, 0.00f, 0.5f, 0.0f});
+    gamer.set_drag(0.6);
+
+    loader.start([&physObj, &romano, &cameraLookAt, &cubo1, &cubo3, &gamer, &cameraFree]() {
+        physObj.update(Loader::get_delta_t());
         gamer.update(Loader::get_delta_t());
         cubo1.rotate({0.0f, 0.002f, 0.00f});
         cubo3.rotate({0.01f, 0.000f, 0.00f});
-        camera.set_target(cubo1.get_global_position());
+        cameraLookAt.set_target(cubo1.get_global_position());
     });
     return 0;
 }

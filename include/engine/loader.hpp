@@ -4,28 +4,15 @@
 #include <functional>
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
+#include "Input/keyMap.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
-#include <cstdio>
-#include <cstdlib>
 #include <string>
 #include <utils.h>
 #include <matrices.hpp>
 #include <vector>
 #include "glm/ext/vector_float4.hpp"
-
-struct KeyAction {
-    int key;
-    int action;
-};
-
-void addKeymap(KeyAction data, std::function<void(void)> action);
-
-void handleKeymaps(GLFWwindow *window, int key, int scan_code, int action,
-                   int mod);
-
-bool operator<(const KeyAction &first, const KeyAction &second);
 
 void TextRendering_Init();
 float TextRendering_LineHeight(GLFWwindow *window);
@@ -59,6 +46,7 @@ class Loader {
 
   public:
     int program_id = 0;
+    KeyMap* keyMap;
 
     Loader(int width, int height, char title[]);
 
