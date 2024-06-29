@@ -271,7 +271,7 @@ void Loader::start(std::function<void(void)> act) {
     GLint view_uniform = glGetUniformLocation(program_id, "view");
     GLint projection_uniform = glGetUniformLocation(program_id, "projection");
 
-    glfwSetKeyCallback(window, KeyMap::handleKeymaps);
+    glfwSetKeyCallback(window, InputHandler::handleKeyInput);
 
     Renderer renderer = Renderer::instance(program_id);
     renderer.setDebugMode(true);

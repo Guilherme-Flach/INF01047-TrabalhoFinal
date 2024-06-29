@@ -4,7 +4,7 @@
 #include <functional>
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
-#include "Input/keyMap.hpp"
+#include "Input/inputHandler.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -46,7 +46,7 @@ class Loader {
 
   public:
     int program_id = 0;
-    KeyMap* keyMap;
+    InputHandler* inputHandler;
 
     Loader(int width, int height, char title[]);
 

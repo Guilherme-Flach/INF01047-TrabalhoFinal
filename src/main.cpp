@@ -4,7 +4,7 @@
 #include "engine/Rendering/defaultModels.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "engine/loader.hpp"
-#include "engine/Input/keyMap.hpp"
+#include "engine/Input/inputHandler.hpp"
 #include "GLFW/glfw3.h"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
     loader.add_camera(cameraFree);
     loader.set_active_camera(&cameraFree);
 
-    KeyMap::addKeyMapping(GLFW_KEY_W, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_W, [&gamer](Action action) {
         const glm::vec4 direction = Player::FRONT;
         if (action == GLFW_PRESS) {
             gamer.increaseMovement(direction);
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_S, [&gamer, &cameraFree](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_S, [&gamer, &cameraFree](Action action) {
         const glm::vec4 direction = Player::BACK;
         if (action == GLFW_PRESS) {
             gamer.increaseMovement(direction);
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_A, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_A, [&gamer](Action action) {
         const glm::vec4 direction = Player::LEFT;
         if (action == GLFW_PRESS) {
             gamer.increaseMovement(direction);
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_D, [&gamer, &cameraFree](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_D, [&gamer, &cameraFree](Action action) {
         const glm::vec4 direction = Player::RIGHT;
         if (action == GLFW_PRESS) {
             gamer.increaseMovement( direction);
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_SPACE, [&gamer, &cameraFree](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_SPACE, [&gamer, &cameraFree](Action action) {
         const glm::vec4 direction = Player::UP;
         if (action == GLFW_PRESS) {
             gamer.increaseMovement(direction);
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_LEFT_CONTROL, [&gamer, &cameraFree](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_LEFT_CONTROL, [&gamer, &cameraFree](Action action) {
         const glm::vec4 direction = Player::DOWN;
         if (action == GLFW_PRESS) {
             gamer.increaseMovement(direction );
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
 
 
     // Rotation
-    KeyMap::addKeyMapping(GLFW_KEY_UP, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_UP, [&gamer](Action action) {
         const glm::vec4 rotation = Player::ROTATE_BACK;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_DOWN, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_DOWN, [&gamer](Action action) {
         const glm::vec4 rotation = Player::ROTATE_FRONT;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_LEFT, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_LEFT, [&gamer](Action action) {
         const glm::vec4 rotation = Player::ROTATE_LEFT;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_RIGHT, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_RIGHT, [&gamer](Action action) {
         const glm::vec4 rotation = Player::ROTATE_RIGHT;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_Q, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_Q, [&gamer](Action action) {
         const glm::vec4 rotation = Player::ROTATE_CCLKWISE;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_E, [&gamer](Action action) {
+    InputHandler::addKeyMapping(GLFW_KEY_E, [&gamer](Action action) {
         const glm::vec4 rotation = Player::ROTATE_CLKWISE;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);

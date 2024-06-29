@@ -11,7 +11,7 @@ set(SOURCES
   src/gameObject.cpp
   src/glad.c
   src/loader.cpp
-  src/keyMap.cpp
+  src/inputHandler.cpp
   src/main.cpp
   src/matrices.cpp
   src/model3D.cpp
