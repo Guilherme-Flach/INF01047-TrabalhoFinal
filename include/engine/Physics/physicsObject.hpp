@@ -1,18 +1,15 @@
 #ifndef PHYSICSOJBECT_HEADER
-#define PHYSICSOBJECT_HEADER
+#define PHYSICSOJBECT_HEADER
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
-#include <vector>
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Rendering/model3D.hpp"
-#include "glm/ext/matrix_float3x4.hpp"
-#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 
 class PhysicsObject : public GameObject {
   private:
-    constexpr static const GLfloat speedLimit = 3.0f;
+    constexpr static const GLfloat speedLimit = 10.0f;
 
   protected:
     GLfloat drag;
@@ -45,4 +42,4 @@ class PhysicsObject : public GameObject {
 
 };
 
-#endif // PHYSICSOBJECT_HEADER
+#endif // PHYSICSOJBECT_HEADER

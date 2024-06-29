@@ -51,6 +51,10 @@ float FreeCamera::get_phi() { return phi; }
 
 float FreeCamera::get_theta() { return theta; }
 
+void FreeCamera::increase_theta(float amount) { this->theta += amount; }
+
+void FreeCamera::increase_phi(float amount) { this->phi += amount; }
+
 void FreeCamera::set_phi(float phi) { this->phi = phi; }
 
 void FreeCamera::set_theta(float theta) { this->theta = theta; }

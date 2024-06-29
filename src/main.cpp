@@ -1,5 +1,6 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/Physics/physicsObject.hpp"
+#include "engine/Physics/player.hpp"
 #include "engine/Rendering/defaultModels.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "engine/loader.hpp"
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]) {
     Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
     Model3D wireCube = WireCube();
 
-    PhysicsObject gamer = PhysicsObject({0.0f, 0.0f, 0.0f, 1.0f}, 1);
+    Player gamer = Player({0.0f, 0.0f, 0.0f, 1.0f}, &cameraFree);
     gamer.set_model(wireCube);
     gamer.addChild(cameraFree);
 
@@ -99,103 +100,113 @@ int main(int argc, char *argv[]) {
     loader.add_camera(cameraFree);
     loader.set_active_camera(&cameraFree);
 
-    // OH LAWD HE COMING
-    // FIXME: Tem que extrair essas putaria pra dentro do player
-    // tem um bug se fizer rotation e movement ao msm tempo
-    // quando ele larga, ele n desfaz o bgl pq os vector mudaram
-    // gaming
-    static const GLfloat speed = 0.01f;
-    KeyMap::addKeyMapping(GLFW_KEY_W, [&gamer, &cameraFree](Action action) {
-        glm::vec4 direction = -cameraFree.get_w_vector();
+    KeyMap::addKeyMapping(GLFW_KEY_W, [&gamer](Action action) {
+        const glm::vec4 direction = Player::FRONT;
         if (action == GLFW_PRESS) {
-            gamer.increase_acceleration( direction * speed);
+            gamer.increaseMovement(direction);
         } else if (action == GLFW_RELEASE) {
-            gamer.increase_acceleration( -direction * speed);
+            gamer.increaseMovement(-direction );
         }
     });
 
     KeyMap::addKeyMapping(GLFW_KEY_S, [&gamer, &cameraFree](Action action) {
-        glm::vec4 direction = cameraFree.get_w_vector();
+        const glm::vec4 direction = Player::BACK;
         if (action == GLFW_PRESS) {
-            gamer.increase_acceleration( direction * speed);
+            gamer.increaseMovement(direction);
         } else if (action == GLFW_RELEASE) {
-            gamer.increase_acceleration( -direction * speed);
+            gamer.increaseMovement(-direction);
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_A, [&gamer, &cameraFree](Action action) {
-        glm::vec4 direction = -cameraFree.get_u_vector();
+    KeyMap::addKeyMapping(GLFW_KEY_A, [&gamer](Action action) {
+        const glm::vec4 direction = Player::LEFT;
         if (action == GLFW_PRESS) {
-            gamer.increase_acceleration( direction * speed);
+            gamer.increaseMovement(direction);
         } else if (action == GLFW_RELEASE) {
-            gamer.increase_acceleration( -direction * speed);
+            gamer.increaseMovement(-direction);
         }
     });
 
     KeyMap::addKeyMapping(GLFW_KEY_D, [&gamer, &cameraFree](Action action) {
-        glm::vec4 direction = cameraFree.get_u_vector();
+        const glm::vec4 direction = Player::RIGHT;
         if (action == GLFW_PRESS) {
-            gamer.increase_acceleration( direction * speed);
+            gamer.increaseMovement( direction);
         } else if (action == GLFW_RELEASE) {
-            gamer.increase_acceleration( -direction * speed);
+            gamer.increaseMovement( -direction);
         }
     });
 
     KeyMap::addKeyMapping(GLFW_KEY_SPACE, [&gamer, &cameraFree](Action action) {
-        glm::vec4 direction = cameraFree.get_v_vector();
+        const glm::vec4 direction = Player::UP;
         if (action == GLFW_PRESS) {
-            gamer.increase_acceleration( direction * speed);
-        } else if (action == GLFW_RELEASE) {
-            gamer.increase_acceleration( -direction * speed);
+            gamer.increaseMovement(direction);
+        } else if (action == GLFW_RELEASE)  {
+            gamer.increaseMovement(-direction);
         }
     });
 
     KeyMap::addKeyMapping(GLFW_KEY_LEFT_CONTROL, [&gamer, &cameraFree](Action action) {
-        glm::vec4 direction = -cameraFree.get_v_vector();
+        const glm::vec4 direction = Player::DOWN;
         if (action == GLFW_PRESS) {
-            gamer.increase_acceleration( direction * speed);
+            gamer.increaseMovement(direction );
         } else if (action == GLFW_RELEASE) {
-            gamer.increase_acceleration( -direction * speed);
+            gamer.increaseMovement(-direction);
         }
     });
 
 
     // Rotation
-    KeyMap::addKeyMapping(GLFW_KEY_UP, [&gamer, &cameraFree](Action action) {
+    KeyMap::addKeyMapping(GLFW_KEY_UP, [&gamer](Action action) {
+        const glm::vec4 rotation = Player::ROTATE_BACK;
         if (action == GLFW_PRESS) {
-            cameraFree.set_phi(cameraFree.get_phi() - 0.05f);
+            gamer.increaseRotationRate(rotation);
+        } else if (action == GLFW_RELEASE) {
+            gamer.increaseRotationRate(-rotation);
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_DOWN, [&gamer, &cameraFree](Action action) {
+    KeyMap::addKeyMapping(GLFW_KEY_DOWN, [&gamer](Action action) {
+        const glm::vec4 rotation = Player::ROTATE_FRONT;
         if (action == GLFW_PRESS) {
-            cameraFree.set_phi(cameraFree.get_phi() + 0.05f);
+            gamer.increaseRotationRate(rotation);
+        } else if (action == GLFW_RELEASE){
+            gamer.increaseRotationRate(-rotation);
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_LEFT, [&gamer, &cameraFree](Action action) {
+    KeyMap::addKeyMapping(GLFW_KEY_LEFT, [&gamer](Action action) {
+        const glm::vec4 rotation = Player::ROTATE_LEFT;
         if (action == GLFW_PRESS) {
-            cameraFree.set_theta(cameraFree.get_theta() + 0.05f);
+            gamer.increaseRotationRate(rotation);
+        } else if (action == GLFW_RELEASE){
+            gamer.increaseRotationRate(-rotation);
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_RIGHT, [&gamer, &cameraFree](Action action) {
+    KeyMap::addKeyMapping(GLFW_KEY_RIGHT, [&gamer](Action action) {
+        const glm::vec4 rotation = Player::ROTATE_RIGHT;
         if (action == GLFW_PRESS) {
-            cameraFree.set_theta(cameraFree.get_theta() - 0.05f);
+            gamer.increaseRotationRate(rotation);
+        } else if (action == GLFW_RELEASE){
+            gamer.increaseRotationRate(-rotation);
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_Q, [&gamer, &cameraFree](Action action) {
-        glm::vec4 axis = cameraFree.get_w_vector();
+    KeyMap::addKeyMapping(GLFW_KEY_Q, [&gamer](Action action) {
+        const glm::vec4 rotation = Player::ROTATE_CCLKWISE;
         if (action == GLFW_PRESS) {
-            cameraFree.set_up_vector(Matrix_Rotate(0.05f,axis) * cameraFree.get_up_vector());
+            gamer.increaseRotationRate(rotation);
+        } else if (action == GLFW_RELEASE){
+            gamer.increaseRotationRate(-rotation);
         }
     });
 
-    KeyMap::addKeyMapping(GLFW_KEY_E, [&gamer, &cameraFree](Action action) {
-        glm::vec4 axis = -cameraFree.get_w_vector();
+    KeyMap::addKeyMapping(GLFW_KEY_E, [&gamer](Action action) {
+        const glm::vec4 rotation = Player::ROTATE_CLKWISE;
         if (action == GLFW_PRESS) {
-            cameraFree.set_up_vector(Matrix_Rotate(0.05f,axis) * cameraFree.get_up_vector());
+            gamer.increaseRotationRate(rotation);
+        } else if (action == GLFW_RELEASE){
+            gamer.increaseRotationRate(-rotation);
         }
     });
 
@@ -203,6 +214,7 @@ int main(int argc, char *argv[]) {
     gamer.set_drag(0.6);
 
     loader.start([&physObj, &romano, &cameraLookAt, &cubo1, &cubo3, &gamer, &cameraFree]() {
+        //PrintVector(cameraFree.getPhi);
         physObj.update(Loader::get_delta_t());
         gamer.update(Loader::get_delta_t());
         cubo1.rotate({0.0f, 0.002f, 0.00f});

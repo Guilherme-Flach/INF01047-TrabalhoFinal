@@ -45,6 +45,9 @@ class FreeCamera : public Camera {
   public:
     FreeCamera(glm::vec4 position, float phi, float theta);
 
+    void increase_theta(float amount);
+    void increase_phi(float amount);
+
     float get_phi();
     float get_theta();
 
