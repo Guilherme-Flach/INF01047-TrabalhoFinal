@@ -19,7 +19,7 @@ class Player : public PhysicsObject {
     static const GLfloat cameraRotationSpeed;
 
   protected:
-    FreeCamera* camera;
+    Camera* camera;
     glm::vec4 movement;
     glm::vec4 rotationRate;
 
@@ -40,16 +40,16 @@ class Player : public PhysicsObject {
     constexpr static const glm::vec4 ROTATE_CLKWISE   = { 0.0f,  0.0f, -1.0f, 0.0f};
     constexpr static const glm::vec4 ROTATE_CCLKWISE  = { 0.0f,  0.0f,  1.0f, 0.0f};
     
-    Player(glm::vec4 position, FreeCamera *camera) : PhysicsObject(position, playerMass), camera(camera), movement({0.0f, 0.0f, 0.0f, 0.0f}),rotationRate({0.0f, 0.0f, 0.0f, 0.0f}) { drag = playerDrag; };
+    Player(glm::vec4 position, Camera *camera) : PhysicsObject(position, playerMass), camera(camera), movement({0.0f, 0.0f, 0.0f, 0.0f}),rotationRate({0.0f, 0.0f, 0.0f, 0.0f}) { drag = playerDrag; };
     void update(GLfloat deltaTime);
     void increaseMovement(glm::vec4 movement) { this->movement += movement; };
     void increaseRotationRate(glm::vec4 rate) { this->rotationRate += rate; };
 
-    FreeCamera* get_camera() { return camera; }
+    Camera* get_camera() { return camera; }
     glm::vec4 get_movement() { return movement; }
     glm::vec4 get_rotatioRate() { return rotationRate; }
 
-    void set_camera(FreeCamera* camera) { this->camera = camera; }
+    void set_camera(Camera* camera) { this->camera = camera; }
     void set_movement(glm::vec4 movement) { this->movement = movement; }
     void set_rotatioRate(glm::vec4 rotationRate) { this->rotationRate = rotationRate; }
 

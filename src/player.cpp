@@ -13,8 +13,6 @@ void Player::update(GLfloat deltaTime) {
         const glm::vec4 movementTotal    = movementFrontal + movementVertical + movementLateral;
 
         speed += movementTotal * deltaTime * playerSpeed;
-        camera->increase_phi(rotationRate.x * deltaTime * cameraRotationSpeed);
-        camera->increase_theta( rotationRate.y * deltaTime * cameraRotationSpeed);
         const glm::vec4 axis = camera->get_w_vector();
         camera->set_up_vector(Matrix_Rotate(rotationRate.z * deltaTime * cameraRotationSpeed, axis) * camera->get_up_vector());
         PhysicsObject::update(deltaTime);

@@ -56,8 +56,8 @@ int main(int argc, char *argv[]) {
 
     glm::vec4 position = {2.0, 2.0, 2.0, 1.0};
     glm::vec4 target = {0.0, 0.0, 0.0, 1.0};
-    LookAtCamera cameraLookAt = LookAtCamera(position, target);
-    FreeCamera cameraFree = FreeCamera({0.0f, 0.0f, 0.0f, 1.0f}, 0, 0);
+    Camera cameraLookAt = Camera(position, target);
+    Camera cameraFree = Camera({0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f});
 
     GameObject romano = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
     romano.set_modelScaling({10,10,10});
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
     Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
     Model3D wireCube = WireCube();
 
-    Player gamer = Player({0.0f, 0.0f, 0.0f, 1.0f}, &cameraFree);
+    Player gamer = Player({1.0f, 1.0f, 1.0f, 1.0f}, &cameraFree);
     gamer.set_model(wireCube);
     gamer.addChild(cameraFree);
 
