@@ -4,6 +4,7 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include <cmath>
+#include <functional>
 
 class Camera : public GameObject {
 
@@ -24,6 +25,8 @@ class Camera : public GameObject {
     glm::mat4 get_viewMatrix();
 
     glm::vec4 get_target();
+
+    void update(GLfloat deltaTime);
 
     void set_up_vector(glm::vec4 up_vector);
     void set_target(glm::vec4 target);

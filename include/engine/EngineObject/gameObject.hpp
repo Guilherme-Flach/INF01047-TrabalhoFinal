@@ -1,5 +1,6 @@
 #ifndef GAMEOBJECT_HEADER
 #define GAMEOBJECT_HEADER
+#include <functional>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
@@ -18,6 +19,7 @@ class GameObject {
     GameObject *parent;
     bool isRenderable = false;
     void set_parent(GameObject &parent);
+    std::function<void(GLfloat deltaTime)> onUpdate;
 
   public:
     GameObject(glm::vec4 position);
@@ -34,12 +36,16 @@ class GameObject {
 
     void set_model(Model3D &model);
     void set_modelScaling(glm::vec3 scaling);
+    void set_onUpdate(std::function<void(GLfloat deltaTime)> updateFunction);
 
     void set_position(glm::vec4 position);
+
+    void update(GLfloat deltaTime);
 
     void addChild(GameObject &child);
     void translate(glm::vec4 offset);
     void rotate(glm::vec3 rotation);
+    void rotate(float angle, glm::vec4 axis);
 };
 
 #endif // GAMEOBJECT_HEADER

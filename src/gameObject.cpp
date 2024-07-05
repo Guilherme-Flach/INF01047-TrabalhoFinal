@@ -1,17 +1,21 @@
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Rendering/defaultModels.hpp"
+#include "engine/loader.hpp"
 #include "glm/ext/matrix_float3x4.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
+#include <functional>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 
+#include <iostream>
 #include <vector>
 
 GameObject::GameObject(glm::vec4 position) : model(nullptr), parent(nullptr) {
     static Model3D default_model = BaseAxesModel();
+    this->onUpdate = [](GLfloat _) -> void {};
     this->model_matrix = Matrix_Identity();
     this->model_matrix[3] = position;
     this->model = &default_model;
@@ -39,6 +43,10 @@ void GameObject::rotate(glm::vec3 rotation) {
     this->model_matrix = Matrix_Rotate_Z(rotation.z) *
                          Matrix_Rotate_Y(rotation.y) *
                          Matrix_Rotate_X(rotation.x) * model_matrix;
+}
+
+void GameObject::rotate(float angle, glm::vec4 axis) {
+    this->model_matrix = Matrix_Rotate(angle, axis) * model_matrix;
 }
 
 glm::vec4 GameObject::get_global_position() {
@@ -93,4 +101,12 @@ void GameObject::set_model(Model3D &model) {
 }
 void GameObject::set_modelScaling(glm::vec3 modelScaling) {
     this->modelScaling = modelScaling;
+}
+
+void GameObject::set_onUpdate(std::function<void(GLfloat deltaTime)> updateFunction) {
+    this->onUpdate = updateFunction;
+}
+
+void GameObject::update(GLfloat deltaTime) {
+    this->onUpdate(deltaTime);
 }

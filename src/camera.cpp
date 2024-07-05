@@ -1,5 +1,6 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
+#include "engine/loader.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
@@ -39,4 +40,8 @@ glm::vec4 Camera::get_target() { return target; }
 void Camera::set_target(glm::vec4 target) { this->target = target; }
 
 glm::vec4 Camera::get_view() { return target - get_global_position(); }
+
+void Camera::update(GLfloat deltaTime) {
+    GameObject::update(deltaTime);
+}
 

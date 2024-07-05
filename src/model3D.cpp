@@ -61,8 +61,12 @@ Model3D::Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
 GLuint Model3D::get_vertexArrayId() { return this->vertexArrayId; }
 
 void Model3D::render() {
+    if(indices.size() == 0) {
+      return;
+    }
     glBindVertexArray(vertexArrayId);
     glLineWidth(line_width);
+    glPointSize(line_width);
     glDrawElements(renderType, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }

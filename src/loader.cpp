@@ -314,6 +314,7 @@ void Loader::start(std::function<void(void)> act) {
             glm::value_ptr(this->active_camera->get_viewMatrix()));
 
         act();
+
         renderer.renderGameObjects(this->game_object_store);
 
         glfwSwapBuffers(window);

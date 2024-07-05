@@ -22,6 +22,7 @@ void PhysicsObject::applyForce(glm::vec4 force) {
 }
 
 void PhysicsObject::update(GLfloat deltaTime) {
+    GameObject::update(deltaTime);
     speed += acceleration;
     float speedNorm = norm(speed);
     // Keep speed bound inside of the limits

@@ -1,4 +1,5 @@
 #include "engine/EngineObject/camera/camera.hpp"
+#include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/player.hpp"
 #include "engine/Rendering/defaultModels.hpp"
@@ -55,46 +56,59 @@ int main(int argc, char *argv[]) {
     });
 
     glm::vec4 position = {2.0, 2.0, 2.0, 1.0};
-    glm::vec4 target = {0.0, 0.0, 0.0, 1.0};
-    Camera cameraLookAt = Camera(position, target);
-    Camera cameraFree = Camera({0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f});
+    glm::vec4 origin = {0.0, 0.0, 0.0, 1.0};
+    Camera cameraLookAt = Camera(position, origin);
+
+    Camera cameraFree =
+        Camera({0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f});
+    GameObject target = GameObject({{1.0f, 0.0f, 0.0f, 1.0f}});
+    cameraFree.addChild(target);
+    cameraFree.set_onUpdate([&target, &cameraFree](GLfloat deltaTime) -> void {
+        cameraFree.set_target(target.get_global_position());
+    });
 
     GameObject romano = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
-    romano.set_modelScaling({10,10,10});
+    romano.set_modelScaling({10, 10, 10});
 
     PhysicsObject physObj = PhysicsObject({1.0f, 1.0f, 1.0f, 1.0f}, 1.0f);
 
-    Model3D cuboRender = Model3D(vertices, indices, colors, GL_TRIANGLES);
-    Model3D wireCube = WireCube();
+    Model3D cuboModel = Model3D(vertices, indices, colors, GL_TRIANGLES);
+    Model3D wireCubeModel = WireCube();
+    Model3D dotModel = DotModel();
+    Model3D noModel = NoModel();
 
-    Player gamer = Player({1.0f, 1.0f, 1.0f, 1.0f}, &cameraFree);
-    gamer.set_model(wireCube);
+    target.set_model(dotModel);
+    cameraFree.set_model(noModel);
+
+    Player gamer = Player({3.0f, 3.0f, 3.0f, 1.0f}, &cameraFree);
+    gamer.set_model(wireCubeModel);
     gamer.addChild(cameraFree);
 
     GameObject cubo1 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
-    cubo1.set_model(cuboRender);
-    cubo1.set_modelScaling({0.5f,1.0f,0.5f});
+    cubo1.set_model(cuboModel);
+    cubo1.set_modelScaling({0.5f, 1.0f, 0.5f});
 
     GameObject cubo2 = GameObject({1.0f, 0.0f, 0.0f, 1.0f});
-    cubo2.set_model(cuboRender);
-    cubo2.set_modelScaling({0.2f,0.2f,0.2f});
+    cubo2.set_model(cuboModel);
+    cubo2.set_modelScaling({0.2f, 0.2f, 0.2f});
     cubo1.addChild(cubo2);
 
     GameObject cubo3 = GameObject({0.0f, 0.5f, 0.0f, 1.0f});
-    cubo3.set_model(cuboRender);
-    cubo3.set_modelScaling({0.2f,0.2f,0.2f});
+    cubo3.set_model(cuboModel);
+    cubo3.set_modelScaling({0.2f, 0.2f, 0.2f});
     cubo2.addChild(cubo3);
 
     physObj.addChild(cubo1);
     physObj.addChild(cameraLookAt);
 
     GameObject cubo4 = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
-    cubo4.set_model(cuboRender);
-    cubo4.set_modelScaling({0.3f,0.3f,0.3f});
-    
+    cubo4.set_model(cuboModel);
+    cubo4.set_modelScaling({0.3f, 0.3f, 0.3f});
+
     loader.add_game_object(romano);
     loader.add_game_object(physObj);
     loader.add_game_object(cubo4);
+    loader.add_game_object(gamer);
 
     loader.add_camera(cameraLookAt);
     loader.add_camera(cameraFree);
@@ -105,18 +119,19 @@ int main(int argc, char *argv[]) {
         if (action == GLFW_PRESS) {
             gamer.increaseMovement(direction);
         } else if (action == GLFW_RELEASE) {
-            gamer.increaseMovement(-direction );
-        }
-    });
-
-    InputHandler::addKeyMapping(GLFW_KEY_S, [&gamer, &cameraFree](Action action) {
-        const glm::vec4 direction = Player::BACK;
-        if (action == GLFW_PRESS) {
-            gamer.increaseMovement(direction);
-        } else if (action == GLFW_RELEASE) {
             gamer.increaseMovement(-direction);
         }
     });
+
+    InputHandler::addKeyMapping(GLFW_KEY_S,
+                                [&gamer, &cameraFree](Action action) {
+                                    const glm::vec4 direction = Player::BACK;
+                                    if (action == GLFW_PRESS) {
+                                        gamer.increaseMovement(direction);
+                                    } else if (action == GLFW_RELEASE) {
+                                        gamer.increaseMovement(-direction);
+                                    }
+                                });
 
     InputHandler::addKeyMapping(GLFW_KEY_A, [&gamer](Action action) {
         const glm::vec4 direction = Player::LEFT;
@@ -127,33 +142,35 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    InputHandler::addKeyMapping(GLFW_KEY_D, [&gamer, &cameraFree](Action action) {
-        const glm::vec4 direction = Player::RIGHT;
-        if (action == GLFW_PRESS) {
-            gamer.increaseMovement( direction);
-        } else if (action == GLFW_RELEASE) {
-            gamer.increaseMovement( -direction);
-        }
-    });
+    InputHandler::addKeyMapping(GLFW_KEY_D,
+                                [&gamer, &cameraFree](Action action) {
+                                    const glm::vec4 direction = Player::RIGHT;
+                                    if (action == GLFW_PRESS) {
+                                        gamer.increaseMovement(direction);
+                                    } else if (action == GLFW_RELEASE) {
+                                        gamer.increaseMovement(-direction);
+                                    }
+                                });
 
-    InputHandler::addKeyMapping(GLFW_KEY_SPACE, [&gamer, &cameraFree](Action action) {
-        const glm::vec4 direction = Player::UP;
-        if (action == GLFW_PRESS) {
-            gamer.increaseMovement(direction);
-        } else if (action == GLFW_RELEASE)  {
-            gamer.increaseMovement(-direction);
-        }
-    });
+    InputHandler::addKeyMapping(GLFW_KEY_SPACE,
+                                [&gamer, &cameraFree](Action action) {
+                                    const glm::vec4 direction = Player::UP;
+                                    if (action == GLFW_PRESS) {
+                                        gamer.increaseMovement(direction);
+                                    } else if (action == GLFW_RELEASE) {
+                                        gamer.increaseMovement(-direction);
+                                    }
+                                });
 
-    InputHandler::addKeyMapping(GLFW_KEY_LEFT_CONTROL, [&gamer, &cameraFree](Action action) {
-        const glm::vec4 direction = Player::DOWN;
-        if (action == GLFW_PRESS) {
-            gamer.increaseMovement(direction );
-        } else if (action == GLFW_RELEASE) {
-            gamer.increaseMovement(-direction);
-        }
-    });
-
+    InputHandler::addKeyMapping(GLFW_KEY_LEFT_CONTROL,
+                                [&gamer, &cameraFree](Action action) {
+                                    const glm::vec4 direction = Player::DOWN;
+                                    if (action == GLFW_PRESS) {
+                                        gamer.increaseMovement(direction);
+                                    } else if (action == GLFW_RELEASE) {
+                                        gamer.increaseMovement(-direction);
+                                    }
+                                });
 
     // Rotation
     InputHandler::addKeyMapping(GLFW_KEY_UP, [&gamer](Action action) {
@@ -169,7 +186,7 @@ int main(int argc, char *argv[]) {
         const glm::vec4 rotation = Player::ROTATE_FRONT;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
-        } else if (action == GLFW_RELEASE){
+        } else if (action == GLFW_RELEASE) {
             gamer.increaseRotationRate(-rotation);
         }
     });
@@ -178,7 +195,7 @@ int main(int argc, char *argv[]) {
         const glm::vec4 rotation = Player::ROTATE_LEFT;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
-        } else if (action == GLFW_RELEASE){
+        } else if (action == GLFW_RELEASE) {
             gamer.increaseRotationRate(-rotation);
         }
     });
@@ -187,7 +204,7 @@ int main(int argc, char *argv[]) {
         const glm::vec4 rotation = Player::ROTATE_RIGHT;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
-        } else if (action == GLFW_RELEASE){
+        } else if (action == GLFW_RELEASE) {
             gamer.increaseRotationRate(-rotation);
         }
     });
@@ -196,7 +213,7 @@ int main(int argc, char *argv[]) {
         const glm::vec4 rotation = Player::ROTATE_CCLKWISE;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
-        } else if (action == GLFW_RELEASE){
+        } else if (action == GLFW_RELEASE) {
             gamer.increaseRotationRate(-rotation);
         }
     });
@@ -205,7 +222,7 @@ int main(int argc, char *argv[]) {
         const glm::vec4 rotation = Player::ROTATE_CLKWISE;
         if (action == GLFW_PRESS) {
             gamer.increaseRotationRate(rotation);
-        } else if (action == GLFW_RELEASE){
+        } else if (action == GLFW_RELEASE) {
             gamer.increaseRotationRate(-rotation);
         }
     });
@@ -213,13 +230,9 @@ int main(int argc, char *argv[]) {
     physObj.applyForce({0.5f, 0.00f, 0.5f, 0.0f});
     gamer.set_drag(0.6);
 
-    loader.start([&physObj, &romano, &cameraLookAt, &cubo1, &cubo3, &gamer, &cameraFree]() {
-        //PrintVector(cameraFree.getPhi);
-        physObj.update(Loader::get_delta_t());
+    loader.start([&cameraLookAt, &cubo1, &cubo3, &gamer, &cameraFree]() {
         gamer.update(Loader::get_delta_t());
-        cubo1.rotate({0.0f, 0.002f, 0.00f});
-        cubo3.rotate({0.01f, 0.000f, 0.00f});
-        cameraLookAt.set_target(cubo1.get_global_position());
+        cameraFree.update(Loader::get_delta_t());
     });
     return 0;
 }

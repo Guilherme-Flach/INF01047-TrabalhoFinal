@@ -39,7 +39,29 @@ class WireCube : public Model3D {
                                     0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
                                     1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
                                     0.0f, 1.0f, 0.0f, 1.0f}),
-              GL_LINES) {}
+              GL_LINES) { this->line_width = 1.5f; }
+};
+
+class DotModel : public Model3D {
+  public:
+    DotModel()
+        : Model3D::Model3D(
+              std::vector<GLfloat>(
+                  {0.0f, 0.0f,  0.0f,  1.0f}),
+              std::vector<GLuint>({0}),
+              std::vector<GLfloat>({0.0f, 0.0f, 0.0f, 0.5f}),
+              GL_POINTS) { this->line_width = 5.0f; }
+};
+
+class NoModel : public Model3D {
+  public:
+    NoModel()
+        : Model3D::Model3D(
+              std::vector<GLfloat>(
+                  {}),
+              std::vector<GLuint>({}),
+              std::vector<GLfloat>({}),
+              GL_POINTS) {}
 };
 
 #endif // DEFAULTMODELS
