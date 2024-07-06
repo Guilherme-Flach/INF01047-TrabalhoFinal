@@ -6,17 +6,18 @@
 # Arquivos fonte C/C++. Inclua nesta lista todos os arquivos que devem
 # ser compilados.
 set(SOURCES
-  src/player.cpp
   src/camera.cpp
   src/gameObject.cpp
   src/glad.c
   src/loader.cpp
   src/inputHandler.cpp
+  src/interpolator.cpp
   src/main.cpp
   src/matrices.cpp
   src/model3D.cpp
   src/renderer.cpp
-  src/physicsObject.cpp
+  src/player.cpp
+  src/physicsObjec t.cpp
   src/textrendering.cpp
 )
 
