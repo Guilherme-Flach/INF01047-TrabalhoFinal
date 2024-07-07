@@ -8,6 +8,7 @@
 set(SOURCES
   src/camera.cpp
   src/dollyCamera.cpp
+  src/freeCamera.cpp
   src/gameObject.cpp
   src/glad.c
   src/loader.cpp
