@@ -46,14 +46,18 @@ void Interpolator::set_progress(float amount) {
 
 LinearInterpolator::LinearInterpolator(glm::vec4 start, glm::vec4 end, float duration) : Interpolator(start, end, duration) {}
 
+LinearInterpolator::LinearInterpolator(BezierPath_Linear path, float duration) : Interpolator(path.start, path.end, duration) {}
+
 void LinearInterpolator::updateCurrentPosition() {
     this->currentPosition = start + ((end - start) * progressAmount);
 }
 
-QuadradicInterpolator::QuadradicInterpolator(glm::vec4 start, glm::vec4 control, glm::vec4 end, float duration) : Interpolator(start, end, duration), control(control) {}
+QuadraticInterpolator::QuadraticInterpolator(glm::vec4 start, glm::vec4 control, glm::vec4 end, float duration) : Interpolator(start, end, duration), control(control) {}
+
+QuadraticInterpolator::QuadraticInterpolator(BezierPath_Quadratic path, float duration) : Interpolator(path.start, path.end, duration), control(path.control) {}
 
 // Uses a bezier curve to interpolate between start and end with a control point
-void QuadradicInterpolator::updateCurrentPosition() {
+void QuadraticInterpolator::updateCurrentPosition() {
     const glm::vec4 position_start_control = start + ((control - start) * progressAmount);
     const glm::vec4 position_control_end = control + ((end - control) * progressAmount);
 

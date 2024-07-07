@@ -1,4 +1,5 @@
 #include "engine/EngineObject/camera/camera.hpp"
+#include "engine/EngineObject/camera/dollyCamera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/player.hpp"
@@ -35,36 +36,62 @@ int main(int argc, char *argv[]) {
     gamer.set_model(wireCubeModel);
     gamer.addChild(cameraFree);
 
-    GameObject startingPoint = GameObject({0.0f, 0.0f, 1.0f, 1.0f});
-    startingPoint.set_model(wireCubeModel);
+    const BezierPath_Quadratic cameraPath = {cameraFree.get_global_position(),
+                                             {2.0f, 3.0f, 2.0f, 1.0f},
+                                             {6.0f, 8.0f, 6.0f, 1.0f}};
 
-    GameObject endingPoint = GameObject({1.0f, 2.0f, 0.0f, 1.0f});
-    endingPoint.set_model(wireCubeModel);
+    GameObject targetStartingPoint = GameObject({2.0f, -1.0f, -1.0f, 1.0f});
+    targetStartingPoint.set_model(wireCubeModel);
 
-    QuadradicInterpolator interpolator = QuadradicInterpolator(
-        startingPoint.get_global_position(),
-        {5.0f, 5.0f, 5.0f, 1.0f},
-        endingPoint.get_global_position(),
-        1.2f);
+    GameObject targetEndingPoint = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
+    targetEndingPoint.set_model(wireCubeModel);
+
+    const BezierPath_Quadratic targetPath = {
+        targetStartingPoint.get_global_position(),
+        targetEndingPoint.get_global_position(),
+        {-2.0f, -2.0f, -2.0f, 1.0f}};
 
     PhysicsObject physObj = PhysicsObject({0.0f, 0.0f, 0.0f, 1.0f}, 1.0f);
-
     physObj.set_model(cuboModel);
-    physObj.set_onUpdate([&physObj, &interpolator](GLfloat deltaTime) -> void {
-        if (interpolator.isFinished()) {
-            interpolator.resetProgress();
-        }
-        interpolator.progress(deltaTime);
-        physObj.set_position(interpolator.get_currentPosition());
-    });
+
+    const BezierPath_Quadratic lensPath = {
+        {cameraFree.get_fov(), cameraFree.get_nearPlane(),
+         cameraFree.get_farPlane(), 1.0f},
+        {0.6*M_PI, cameraFree.get_nearPlane(), -50.0f, 1.0f},
+        {0.8*M_PI, cameraFree.get_nearPlane(), -50.0f, 1.0f}};
+
+    DollyCamera dollyCamera =
+        DollyCamera(cameraPath, 1.2f, &physObj, targetPath, 1.0f, lensPath);
+    
+    dollyCamera.set_model(noModel);
 
     loader.add_game_object(gamer);
+    loader.add_game_object(dollyCamera);
     loader.add_game_object(physObj);
-    loader.add_game_object(startingPoint);
-    loader.add_game_object(endingPoint);
+    loader.add_game_object(targetStartingPoint);
+    loader.add_game_object(targetEndingPoint);
 
     loader.add_camera(cameraFree);
+    loader.add_camera(dollyCamera);
     loader.set_active_camera(&cameraFree);
+
+    InputHandler::addKeyMapping(GLFW_KEY_TAB,
+                                [&dollyCamera, &loader](Action action) {
+                                    const glm::vec4 direction = Player::FRONT;
+                                    if (action == GLFW_PRESS) {
+                                        loader.set_active_camera(&dollyCamera);
+                                        dollyCamera.set_progress(0.0f);
+                                        dollyCamera.startMoving();
+                                    }
+                                });
+    
+    InputHandler::addKeyMapping(GLFW_KEY_CAPS_LOCK,
+                            [&cameraFree, &loader](Action action) {
+                                const glm::vec4 direction = Player::FRONT;
+                                if (action == GLFW_PRESS) {
+                                    loader.set_active_camera(&cameraFree);
+                                }
+                            });
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [&gamer](Action action) {
         const glm::vec4 direction = Player::FRONT;
@@ -99,7 +126,7 @@ int main(int argc, char *argv[]) {
                                     const glm::vec4 direction = Player::RIGHT;
                                     if (action == GLFW_PRESS) {
                                         gamer.increaseMovement(direction);
-                                    } else if (action == GLFW_RELEASE) {
+                                     } else if (action == GLFW_RELEASE) {
                                         gamer.increaseMovement(-direction);
                                     }
                                 });
@@ -182,11 +209,11 @@ int main(int argc, char *argv[]) {
     gamer.set_drag(0.6);
     auto window = loader.get_window();
 
-    loader.start([&gamer, &cameraFree, &physObj, &loader]() {
+    loader.start([&gamer, &dollyCamera, &physObj, &loader]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         gamer.update(deltaTime);
         physObj.update(deltaTime);
-        // cameraFree.update(deltaTime);       
+        dollyCamera.update(deltaTime);
     });
     return 0;
 }

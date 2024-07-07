@@ -39,6 +39,20 @@ GameObject *Camera::get_target() { return target; }
 
 void Camera::set_target(GameObject *target) { this->target = target; }
 
-glm::vec4 Camera::get_view() { return target->get_global_position() - get_global_position(); }
+glm::vec4 Camera::get_view() {
+    return target->get_global_position() - get_global_position();
+}
 
 void Camera::update(GLfloat deltaTime) { GameObject::update(deltaTime); }
+
+float Camera::get_fov() { return fov; }
+
+float Camera::get_nearPlane() { return nearPlane; }
+
+float Camera::get_farPlane() { return farPlane; }
+
+void Camera::set_fov(float fov) { this->fov = fov; }
+
+void Camera::set_nearPlane(float nearPlane) { this->nearPlane = nearPlane; }
+
+void Camera::set_farPlane(float farPlane) { this->farPlane = farPlane; }

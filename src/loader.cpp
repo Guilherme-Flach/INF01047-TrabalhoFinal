@@ -1,6 +1,4 @@
 #include <iostream>
-#define _USE_MATH_DEFINES
-#include <cmath>
 #include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -18,13 +16,11 @@ float screen_ratio;
 
 float Loader::delta_t = 0;
 
-
-void printText(GLFWwindow *window, std::string text, float x, float y, float scale) {
+void printText(GLFWwindow *window, std::string text, float x, float y,
+               float scale) {
     float pad = TextRendering_LineHeight(window);
 
-    TextRendering_PrintString(
-        window, text, x,
-        y-pad, scale);
+    TextRendering_PrintString(window, text, x, y - pad, scale);
 }
 
 GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id) {
@@ -224,15 +220,15 @@ void Loader::start(std::function<void(void)> act) {
         glUseProgram(program_id);
         glm::mat4 projection;
 
-        float nearplane = -0.1f;
-        float farplane = -10.0f;
+
 
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
-        float field_of_view = M_PI / 3.0f;
-        projection = Matrix_Perspective(field_of_view, screen_ratio, nearplane,
-                                        farplane);
+        projection =
+            Matrix_Perspective(this->active_camera->get_fov(), screen_ratio,
+                               this->active_camera->get_nearPlane(),
+                               this->active_camera->get_farPlane());
         glUniformMatrix4fv(projection_uniform, 1, GL_FALSE,
                            glm::value_ptr(projection));
 

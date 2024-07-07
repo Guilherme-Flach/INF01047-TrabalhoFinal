@@ -3,6 +3,17 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 
+struct BezierPath_Quadratic {
+  glm::vec4 start;
+  glm::vec4 end;
+  glm::vec4 control;
+};
+
+struct BezierPath_Linear {
+  glm::vec4 start;
+  glm::vec4 end;
+};
+
 class Interpolator {
   protected:
     glm::vec4 start;
@@ -20,7 +31,6 @@ class Interpolator {
     void fillProgress();
 
     glm::vec4 get_currentPosition();
-    float get_position();
     float get_progress();
     bool isFinished();
     
@@ -32,15 +42,19 @@ class LinearInterpolator : public Interpolator {
     void updateCurrentPosition() override;
   public:
     LinearInterpolator(glm::vec4 start, glm::vec4 end, float duration);
+    LinearInterpolator(BezierPath_Linear path, float duration);
 };
 
-class QuadradicInterpolator : public Interpolator {
+class QuadraticInterpolator : public Interpolator {
   protected:
     glm::vec4 control;
     void updateCurrentPosition() override;
 
   public:
-    QuadradicInterpolator(glm::vec4 start, glm::vec4 control, glm::vec4 end, float duration);
+    QuadraticInterpolator(glm::vec4 start, glm::vec4 control, glm::vec4 end, float duration);
+    QuadraticInterpolator(BezierPath_Quadratic path, float duration);
+    
+    void set_control(glm::vec4 control) { this->control = control; updateCurrentPosition(); };
 };
 
 #endif //INTERPOLATOR
