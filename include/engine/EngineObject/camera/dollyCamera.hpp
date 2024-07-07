@@ -3,7 +3,7 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/vector_float4.hpp"
-#include "interpolator.hpp"
+#include "engine/interpolator.hpp"
 
 class DollyCamera : public Camera {
 

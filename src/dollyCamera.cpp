@@ -3,9 +3,8 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/vector_float4.hpp"
-#include "interpolator.hpp"
-#include "matrices.hpp"
-#include <iostream>
+#include "engine/interpolator.hpp"
+
 
 DollyCamera::DollyCamera(BezierPath_Quadratic cameraPath, float cameraDuration,
                          GameObject *target, BezierPath_Quadratic targetPath,

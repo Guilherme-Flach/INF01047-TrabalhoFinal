@@ -1,4 +1,4 @@
-#include "interpolator.hpp"
+#include "engine/interpolator.hpp"
 
 Interpolator::Interpolator(glm::vec4 start, glm::vec4 end, float duration)
     : start(start), end(end), duration(duration), currentPosition(start),

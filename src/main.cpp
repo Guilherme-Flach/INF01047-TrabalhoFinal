@@ -1,5 +1,6 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/camera/dollyCamera.hpp"
+#include "engine/EngineObject/camera/freeCamera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/player.hpp"
@@ -9,10 +10,12 @@
 #include "engine/Input/inputHandler.hpp"
 #include "GLFW/glfw3.h"
 #include "glm/ext/vector_float4.hpp"
-#include "interpolator.hpp"
-#include "matrices.hpp"
+#include "engine/interpolator.hpp"
 #include <functional>
 #include <iostream>
+
+static glm::vec4 ORIGIN = {0.0f, 0.0f, 0.0f, 1.0f};
+static glm::vec4 FRONT = {0.0f, 0.0f, 1.0f, 1.0f};
 
 int main(int argc, char *argv[]) {
     int width = 800, height = 800;
@@ -25,12 +28,14 @@ int main(int argc, char *argv[]) {
     Model3D dotModel = DotModel();
     Model3D noModel = NoModel();
 
-    GameObject target = GameObject({{0.0f, 0.0f, 1.0f, 1.0f}});
-    target.set_model(dotModel);
 
-    Camera cameraFree = Camera({0.0f, 0.0f, 0.0f, 1.0f}, &target);
+    FreeCamera cameraFree = FreeCamera(ORIGIN, FRONT);
     cameraFree.set_model(noModel);
-    cameraFree.addChild(target);
+    cameraFree.get_target()->set_model(dotModel);
+
+    // Camera cameraLookAt = Camera({5.0f, 5.0f, 5.0f, 1.0f}, new GameObject(ORIGIN));
+    // cameraFree.set_model(noModel);
+    // cameraFree.addChild(target);
 
     Player gamer = Player({0.0f, 0.0f, -2.0f, 1.0f}, &cameraFree);
     gamer.set_model(wireCubeModel);
@@ -38,7 +43,7 @@ int main(int argc, char *argv[]) {
 
     const BezierPath_Quadratic cameraPath = {cameraFree.get_global_position(),
                                              {2.0f, 3.0f, 2.0f, 1.0f},
-                                             {6.0f, 8.0f, 6.0f, 1.0f}};
+                                             {2.5f, 4.0f, 2.5f, 1.0f}};
 
     GameObject targetStartingPoint = GameObject({2.0f, -1.0f, -1.0f, 1.0f});
     targetStartingPoint.set_model(wireCubeModel);
@@ -58,7 +63,7 @@ int main(int argc, char *argv[]) {
         {cameraFree.get_fov(), cameraFree.get_nearPlane(),
          cameraFree.get_farPlane(), 1.0f},
         {0.6*M_PI, cameraFree.get_nearPlane(), -50.0f, 1.0f},
-        {0.8*M_PI, cameraFree.get_nearPlane(), -50.0f, 1.0f}};
+        {0.*M_PI, cameraFree.get_nearPlane(), -50.0f, 1.0f}};
 
     DollyCamera dollyCamera =
         DollyCamera(cameraPath, 1.2f, &physObj, targetPath, 1.0f, lensPath);
