@@ -43,6 +43,8 @@ class LinearInterpolator : public Interpolator {
   public:
     LinearInterpolator(glm::vec4 start, glm::vec4 end, float duration);
     LinearInterpolator(BezierPath_Linear path, float duration);
+
+    void set_path(BezierPath_Linear path);
 };
 
 class QuadraticInterpolator : public Interpolator {
@@ -54,7 +56,7 @@ class QuadraticInterpolator : public Interpolator {
     QuadraticInterpolator(glm::vec4 start, glm::vec4 control, glm::vec4 end, float duration);
     QuadraticInterpolator(BezierPath_Quadratic path, float duration);
     
-    void set_control(glm::vec4 control) { this->control = control; updateCurrentPosition(); };
+    void set_path(BezierPath_Quadratic path);
 };
 
 #endif //INTERPOLATOR

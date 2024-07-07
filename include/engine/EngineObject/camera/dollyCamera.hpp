@@ -8,7 +8,7 @@
 class DollyCamera : public Camera {
 
   protected:
-    QuadraticInterpolator positionInterpolator;
+    QuadraticInterpolator cameraInterpolator;
     QuadraticInterpolator targetInterpolator;
     QuadraticInterpolator lensInterpolator;
 
@@ -20,8 +20,14 @@ class DollyCamera : public Camera {
                 float targetDuration, BezierPath_Quadratic lensPath);
 
     void set_progress(float progress);
+    void set_cameraPath(BezierPath_Quadratic path);
+    void set_targetPath(BezierPath_Quadratic path);
+    void set_lensPath(BezierPath_Quadratic path);
+
+
     void startMoving();
     void stopMoving();
+
 
     void update(GLfloat deltaTime);
 };

@@ -11,7 +11,7 @@ DollyCamera::DollyCamera(BezierPath_Quadratic cameraPath, float cameraDuration,
                          GameObject *target, BezierPath_Quadratic targetPath,
                          float targetDuration, BezierPath_Quadratic lensPath)
     : Camera(cameraPath.start, target),
-      positionInterpolator(cameraPath, cameraDuration),
+      cameraInterpolator(cameraPath, cameraDuration),
       targetInterpolator(targetPath, targetDuration),
       lensInterpolator(lensPath, cameraDuration),
       isMoving(false) {
@@ -19,7 +19,7 @@ DollyCamera::DollyCamera(BezierPath_Quadratic cameraPath, float cameraDuration,
 }
 
 void DollyCamera::set_progress(float progress) {
-    positionInterpolator.set_progress(progress);
+    cameraInterpolator.set_progress(progress);
     targetInterpolator.set_progress(progress);
     lensInterpolator.set_progress(progress);
 }
@@ -30,11 +30,11 @@ void DollyCamera::stopMoving() { isMoving = false; }
 
 void DollyCamera::update(GLfloat deltaTime) {
     if (isMoving) {
-        positionInterpolator.progress(deltaTime);
+        cameraInterpolator.progress(deltaTime);
         targetInterpolator.progress(deltaTime);
         lensInterpolator.progress(deltaTime);
 
-        this->set_position(positionInterpolator.get_currentPosition());
+        this->set_position(cameraInterpolator.get_currentPosition());
         target->set_position(targetInterpolator.get_currentPosition());
         
         const glm::vec4 lensStatus = lensInterpolator.get_currentPosition();
@@ -44,6 +44,19 @@ void DollyCamera::update(GLfloat deltaTime) {
 
 
         // Stop updating when not necessary
-        isMoving = !(positionInterpolator.isFinished() && targetInterpolator.isFinished());
+        isMoving = !(cameraInterpolator.isFinished() && targetInterpolator.isFinished());
     }
 }
+
+void DollyCamera::set_cameraPath(BezierPath_Quadratic path) {
+    this->cameraInterpolator.set_path(path);
+};
+
+
+void DollyCamera::set_targetPath(BezierPath_Quadratic path) {
+    this->targetInterpolator.set_path(path);
+};
+
+void DollyCamera::set_lensPath(BezierPath_Quadratic path) {
+    this->lensInterpolator.set_path(path);
+};
