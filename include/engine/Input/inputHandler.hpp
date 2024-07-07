@@ -16,8 +16,6 @@ class InputHandler : public std::map<Key, std::function<void(Action)>> {
         static InputHandler keyMaps;
         static InputHandler mouseClickMaps;
         static glm::vec2 mousePos;
-        static glm::vec2 prevMousePos;
-
 
   public:
     static void addKeyMapping(Key data, std::function<void(Action)> action);
@@ -31,6 +29,8 @@ class InputHandler : public std::map<Key, std::function<void(Action)>> {
     static void handleMouseClick(GLFWwindow* window, int button, int action, int mods);
 
     static void handleCursorPosChange(GLFWwindow* window, double xpos, double ypos);
+
+    static glm::vec2 getMousePos() { return mousePos; }
 };
 
 

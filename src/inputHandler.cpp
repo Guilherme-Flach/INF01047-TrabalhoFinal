@@ -1,9 +1,9 @@
 #include "engine/Input/inputHandler.hpp"
+#include <iostream>
 
 InputHandler InputHandler::keyMaps = InputHandler();
 InputHandler InputHandler::mouseClickMaps = InputHandler();
 glm::vec2 InputHandler::mousePos = {0.0f,0.0f};
-glm::vec2 InputHandler::prevMousePos = {0.0f,0.0f};
 
 void InputHandler::handleKeyInput(GLFWwindow *window, int key, int scan_code, int action, int mod) {
     auto iterator = keyMaps.find(key);
@@ -29,6 +29,5 @@ void InputHandler::addClickMapping(Key data, std::function<void(Action)> action)
 }
 
 void InputHandler::handleCursorPosChange(GLFWwindow* window, double xpos, double ypos) {
-    prevMousePos = mousePos;
     mousePos = {xpos, ypos};
 }

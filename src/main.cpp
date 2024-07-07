@@ -11,6 +11,7 @@
 #include "GLFW/glfw3.h"
 #include "glm/ext/vector_float4.hpp"
 #include "engine/interpolator.hpp"
+#include "matrices.hpp"
 #include <functional>
 #include <iostream>
 
@@ -30,15 +31,41 @@ int main(int argc, char *argv[]) {
 
 
     FreeCamera cameraFree = FreeCamera(ORIGIN, FRONT);
-    cameraFree.set_model(noModel);
+    cameraFree.set_model(wireCubeModel);
     cameraFree.get_target()->set_model(dotModel);
+
+    static glm::vec2 prevPos = InputHandler::getMousePos();
+    cameraFree.set_onUpdate([&cameraFree](GLfloat deltaTime) -> void {
+        glm::vec2 mousePos = InputHandler::getMousePos();
+        // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
+        float dx = mousePos.x - prevPos.x;
+        float dy = mousePos.y - prevPos.y;
+
+        // Atualizamos parâmetros da câmera com os deslocamentos
+
+        cameraFree.rotate( -0.01f*dx, cameraFree.get_v_vector());
+        cameraFree.rotate(-0.01f*dy, cameraFree.get_u_vector());
+
+        // UGLY desfaz rotação se for zoado
+        const float w_up_dotProduct = dotproduct(cameraFree.get_w_vector(), cameraFree.get_up_vector());
+        if (w_up_dotProduct >= FreeCamera::heightLimit || w_up_dotProduct <= -FreeCamera::heightLimit) {
+            cameraFree.rotate(0.01f*dy, cameraFree.get_u_vector());
+        }
+
+
+        // Atualizamos as variáveis globais para armazenar a posição atual do
+        // cursor como sendo a última posição conhecida do cursor.
+        prevPos.x = mousePos.x;
+        prevPos.y = mousePos.y;
+
+    });
 
     // Camera cameraLookAt = Camera({5.0f, 5.0f, 5.0f, 1.0f}, new GameObject(ORIGIN));
     // cameraFree.set_model(noModel);
     // cameraFree.addChild(target);
 
     Player gamer = Player({0.0f, 0.0f, -2.0f, 1.0f}, &cameraFree);
-    gamer.set_model(wireCubeModel);
+    gamer.set_model(noModel);
     gamer.addChild(cameraFree);
 
     const BezierPath_Quadratic cameraPath = {cameraFree.get_global_position(),
@@ -214,11 +241,13 @@ int main(int argc, char *argv[]) {
     gamer.set_drag(0.6);
     auto window = loader.get_window();
 
-    loader.start([&gamer, &dollyCamera, &physObj, &loader]() {
+    loader.start([&gamer, &dollyCamera, &physObj, &loader, &cameraFree]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         gamer.update(deltaTime);
         physObj.update(deltaTime);
         dollyCamera.update(deltaTime);
+        cameraFree.update(deltaTime);
+
     });
     return 0;
 }

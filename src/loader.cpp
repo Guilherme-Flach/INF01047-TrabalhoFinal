@@ -7,6 +7,7 @@
 #include "engine/loader.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
+#include "engine/Input/inputHandler.hpp"
 #include "engine/Rendering/renderer.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <sstream>
@@ -195,6 +196,11 @@ void Loader::start(std::function<void(void)> act) {
     GLint projection_uniform = glGetUniformLocation(program_id, "projection");
 
     glfwSetKeyCallback(window, InputHandler::handleKeyInput);
+    glfwSetMouseButtonCallback(window, InputHandler::handleMouseClick);
+    glfwSetCursorPosCallback(window, InputHandler::handleCursorPosChange);
+    glfwSetCursorPos(window, 0, 0);
+    glfwFocusWindow(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Renderer renderer = Renderer::instance(program_id);
     renderer.setDebugMode(true);

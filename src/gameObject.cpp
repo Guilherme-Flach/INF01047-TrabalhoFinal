@@ -13,6 +13,7 @@
 #include <iostream>
 #include <vector>
 
+
 GameObject::GameObject(glm::vec4 position) : model(nullptr), parent(nullptr) {
     static Model3D default_model = BaseAxesModel();
     this->onUpdate = [](GLfloat _) -> void {};
