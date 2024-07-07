@@ -22,7 +22,7 @@ class Interpolator {
     glm::vec4 get_currentPosition();
     float get_position();
     float get_progress();
-    bool get_isFinished();
+    bool isFinished();
     
     void set_progress(float amount);
 };

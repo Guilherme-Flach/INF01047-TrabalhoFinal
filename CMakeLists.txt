@@ -17,7 +17,7 @@ set(SOURCES
   src/model3D.cpp
   src/renderer.cpp
   src/player.cpp
-  src/physicsObjec t.cpp
+  src/physicsObject.cpp
   src/textrendering.cpp
 )
 

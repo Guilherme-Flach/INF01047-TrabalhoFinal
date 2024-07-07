@@ -43,7 +43,7 @@ class Player : public PhysicsObject {
     Player(glm::vec4 position, Camera *camera) : PhysicsObject(position, playerMass), camera(camera), movement({0.0f, 0.0f, 0.0f, 0.0f}),rotationRate({0.0f, 0.0f, 0.0f, 0.0f}) { drag = playerDrag; };
     void update(GLfloat deltaTime);
     void increaseMovement(glm::vec4 movement) { set_movement(this->movement + movement); };
-    void increaseRotationRate(glm::vec4 rate) { set_movement(this->rotationRate + rate); };
+    void increaseRotationRate(glm::vec4 rate) { set_rotatioRate(this->rotationRate + rate); };
 
     Camera* get_camera() { return camera; }
     glm::vec4 get_movement() { return movement; }

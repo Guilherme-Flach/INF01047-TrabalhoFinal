@@ -28,13 +28,13 @@ float Interpolator::get_progress() {
     return progressAmount;
 }
 
-bool Interpolator::get_isFinished() {
+bool Interpolator::isFinished() {
     return this->progressAmount >= 1.0f;
 }
 
 
 void Interpolator::set_progress(float amount) {
-    this->progressAmount += amount;
+    this->progressAmount = amount;
     
     // Keep progress bound
     if (this->progressAmount > 1.0f) {
@@ -47,7 +47,7 @@ void Interpolator::set_progress(float amount) {
 LinearInterpolator::LinearInterpolator(glm::vec4 start, glm::vec4 end, float duration) : Interpolator(start, end, duration) {}
 
 void LinearInterpolator::updateCurrentPosition() {
-    this->currentPosition = start + ((start - end) * progressAmount);
+    this->currentPosition = start + ((end - start) * progressAmount);
 }
 
 QuadradicInterpolator::QuadradicInterpolator(glm::vec4 start, glm::vec4 control, glm::vec4 end, float duration) : Interpolator(start, end, duration), control(control) {}
@@ -57,5 +57,5 @@ void QuadradicInterpolator::updateCurrentPosition() {
     const glm::vec4 position_start_control = start + ((control - start) * progressAmount);
     const glm::vec4 position_control_end = control + ((end - control) * progressAmount);
 
-    this->currentPosition = start + (position_control_end - position_start_control) * progressAmount;
+    this->currentPosition = position_start_control + ((position_control_end - position_start_control) * progressAmount);
 }

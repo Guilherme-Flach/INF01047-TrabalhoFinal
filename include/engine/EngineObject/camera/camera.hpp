@@ -12,10 +12,10 @@ class Camera : public GameObject {
     static glm::vec4 DEFAULT_UP_VECTOR;
 
     glm::vec4 up_vector;
-    glm::vec4 target;
+    GameObject *target;
 
   public:
-    Camera(glm::vec4 position, glm::vec4 target);
+    Camera(glm::vec4 position, GameObject *target);
 
     glm::vec4 get_view();
     glm::vec4 get_up_vector();
@@ -24,12 +24,11 @@ class Camera : public GameObject {
     glm::vec4 get_w_vector();
     glm::mat4 get_viewMatrix();
 
-    glm::vec4 get_target();
+    GameObject *get_target();
 
     void update(GLfloat deltaTime);
 
     void set_up_vector(glm::vec4 up_vector);
-    void set_target(glm::vec4 target);
-
+    void set_target(GameObject *target);
 };
 #endif // CAMERA_HEADER

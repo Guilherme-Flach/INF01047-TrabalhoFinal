@@ -321,3 +321,31 @@ void TextRendering_PrintMatrixVectorProductDivW(GLFWwindow *window, glm::mat4 M,
       M[0][3], M[1][3], M[2][3], M[3][3], v[3], r[3], r[3] / w);
   TextRendering_PrintString(window, buffer, x, y - 3 * lineheight, scale);
 }
+
+
+void TextRendering_ShowFramesPerSecond(GLFWwindow *window) {
+  static float old_seconds = (float)glfwGetTime();
+  static int ellapsed_frames = 0;
+  static char buffer[20] = "?? fps";
+  static int numchars = 7;
+
+  ellapsed_frames += 1;
+
+  float seconds = (float)glfwGetTime();
+
+  float ellapsed_seconds = seconds - old_seconds;
+
+  if (ellapsed_seconds > 1.0f) {
+    numchars =
+        snprintf(buffer, 20, "%.2f fps", ellapsed_frames / ellapsed_seconds);
+
+    old_seconds = seconds;
+    ellapsed_frames = 0;
+  }
+
+  float lineheight = TextRendering_LineHeight(window);
+  float charwidth = TextRendering_CharWidth(window);
+
+  TextRendering_PrintString(window, buffer, 1.0f - (numchars + 1) * charwidth,
+                            1.0f - lineheight, 1.0f);
+}
