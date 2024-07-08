@@ -45,6 +45,8 @@ void DollyCamera::update(GLfloat deltaTime) {
         // Stop updating when not necessary
         isMoving = !(cameraInterpolator.isFinished() && targetInterpolator.isFinished());
     }
+
+    Camera::update(deltaTime);
 }
 
 void DollyCamera::set_cameraPath(BezierPath_Quadratic path) {
@@ -59,3 +61,11 @@ void DollyCamera::set_targetPath(BezierPath_Quadratic path) {
 void DollyCamera::set_lensPath(BezierPath_Quadratic path) {
     this->lensInterpolator.set_path(path);
 };
+
+bool DollyCamera::get_isFinished() {
+    return this->cameraInterpolator.isFinished() && this->targetInterpolator.isFinished();
+}
+
+bool DollyCamera::get_isMoving() {
+    return this->isMoving;
+}

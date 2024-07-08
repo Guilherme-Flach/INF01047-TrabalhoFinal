@@ -18,6 +18,9 @@ class DollyCamera : public Camera {
     DollyCamera(BezierPath_Quadratic cameraPath, float cameraDuration,
                 GameObject *target, BezierPath_Quadratic targetPath,
                 float targetDuration, BezierPath_Quadratic lensPath);
+    
+    bool get_isMoving();
+    bool get_isFinished();
 
     void set_progress(float progress);
     void set_cameraPath(BezierPath_Quadratic path);

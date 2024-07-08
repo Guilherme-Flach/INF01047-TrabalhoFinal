@@ -3,16 +3,17 @@
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 
+struct BezierPath_Linear {
+  glm::vec4 start;
+  glm::vec4 end;
+};
+
 struct BezierPath_Quadratic {
   glm::vec4 start;
   glm::vec4 end;
   glm::vec4 control;
 };
 
-struct BezierPath_Linear {
-  glm::vec4 start;
-  glm::vec4 end;
-};
 
 class Interpolator {
   protected:
@@ -55,6 +56,8 @@ class QuadraticInterpolator : public Interpolator {
   public:
     QuadraticInterpolator(glm::vec4 start, glm::vec4 control, glm::vec4 end, float duration);
     QuadraticInterpolator(BezierPath_Quadratic path, float duration);
+
+    static BezierPath_Quadratic createPath(glm::vec4 startPoint, glm::vec4 endPoint);
     
     void set_path(BezierPath_Quadratic path);
 };

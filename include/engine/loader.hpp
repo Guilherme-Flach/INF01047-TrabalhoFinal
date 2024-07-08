@@ -43,17 +43,7 @@ void TextRendering_ShowFramesPerSecond(GLFWwindow *window);
 GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id);
 
 class Loader {
-
-  public:
-    int program_id = 0;
-    InputHandler* inputHandler;
-
-    Loader(int width, int height, char title[]);
-
-    void add_game_object(GameObject &object);
-    void add_camera(Camera &camera);
-    void set_active_camera(Camera *camera);
-
+  
   private:
     static float delta_t;
     GLFWwindow *window;
@@ -67,10 +57,21 @@ class Loader {
     void LoadShadersFromFiles();
 
   public:
-    GLFWwindow *get_window() { return window; }
+    int program_id = 0;
+    InputHandler* inputHandler;
+
+    Loader(int width, int height, char title[]);
+
+    void add_game_object(GameObject &object);
+    void add_camera(Camera &camera);
 
     static float get_delta_t() { return Loader::delta_t; }
 
     void start(std::function<void(void)> act);
+
+    GLFWwindow *get_window() { return window; }
+    Camera* get_active_camera() { return active_camera; }
+    
+    void set_active_camera(Camera *camera);
 };
 #endif // LOADER_HEADER

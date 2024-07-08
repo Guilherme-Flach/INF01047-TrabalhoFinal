@@ -78,3 +78,17 @@ void QuadraticInterpolator::set_path(BezierPath_Quadratic path) {
 
     resetProgress();
 }
+
+
+BezierPath_Quadratic QuadraticInterpolator::createPath(glm::vec4 startPoint, glm::vec4 endPoint) {
+    return BezierPath_Quadratic{
+        startPoint,
+        endPoint,
+        {
+            startPoint.x,
+            endPoint.y,
+            startPoint.z,
+            1.0f
+        }
+    };
+}
