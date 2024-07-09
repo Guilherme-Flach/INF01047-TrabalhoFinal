@@ -15,11 +15,11 @@
 
 
 GameObject::GameObject(glm::vec4 position) : model(nullptr), parent(nullptr) {
-    static Model3D default_model = BaseAxesModel();
+    //static Model3D default_model = BaseAxesModel();
     this->onUpdate = [](GLfloat _) -> void {};
     this->model_matrix = Matrix_Identity();
     this->model_matrix[3] = position;
-    this->model = &default_model;
+    this->model = nullptr; //&default_model;
 }
 
 std::vector<GameObject *> *GameObject::get_children() { return &children; }

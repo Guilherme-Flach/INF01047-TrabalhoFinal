@@ -25,33 +25,34 @@ int main(int argc, char *argv[]) {
 
     auto loader = Loader(width, height, title);
 
-    Model3D cuboModel = DebugCubeModel();
-    Model3D wireCubeModel = WireCube();
-    Model3D dotModel = DotModel();
-    Model3D noModel = NoModel();
-    Model3D axesModel = BaseAxesModel();
+    Model3D bunnyModel = Model3D("../../data/bunny.obj");
+    Model3D ballModel = Model3D("../../data/sphere.obj");
+    // Model3D wireCubeModel = WireCube();
+    // Model3D dotModel = DotModel();
+    // Model3D noModel = NoModel();
+    // Model3D axesModel = BaseAxesModel();
 
     PhysicsObject sun = PhysicsObject(ORIGIN, 5000.0f);
-    sun.set_model(cuboModel);
+    sun.set_model(ballModel);
     sun.set_modelScaling({5.0f, 5.0f, 5.0f});
     
 
     PhysicsObject sunBall = PhysicsObject({8.0f, 0.0f, 0.0f, 1.0f}, 20.0f);
-    sunBall.set_model(cuboModel);
+    sunBall.set_model(ballModel);
     sunBall.set_modelScaling({3.0f, 3.0f, 3.0f});
     sun.addChild(sunBall);
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
 
     Player gamer = Player({0.0f, 0.0f, -2.0f, 1.0f});
-    gamer.set_model(noModel);
 
     FreeCamera* cameraPlayer = (FreeCamera*) gamer.get_camera();
-    cameraPlayer->set_model(noModel);
-    cameraPlayer->get_target()->set_model(dotModel);
+    //cameraPlayer->set_model(noModel);
+    //cameraPlayer->get_target()->set_model(dotModel);
 
     FreeCamera* ship = (FreeCamera*) gamer.get_ship();
-    ship->set_model(wireCubeModel);
+    ship->set_model(bunnyModel);
+    //ship->set_model(wireCubeModel);
 
 
     static glm::vec2 prevPos = InputHandler::getMousePos();
@@ -82,7 +83,7 @@ int main(int argc, char *argv[]) {
 
     Camera cameraPanoramic =
         Camera({10.0f, 10.0f, 10.0f, 1.0f}, new GameObject(ORIGIN));
-    cameraPanoramic.set_model(noModel);
+    //cameraPanoramic.set_model(noModel);
     cameraPanoramic.set_fov(0.6 * M_PI);
     cameraPanoramic.set_farPlane(-500.0f);
 
@@ -99,7 +100,7 @@ int main(int argc, char *argv[]) {
             cameraPanoramic.get_target()->get_global_position());
 
     PhysicsObject physObj = PhysicsObject({0.0f, 0.0f, 0.0f, 1.0f}, 1.0f);
-    physObj.set_model(cuboModel);
+    //physObj.set_model(cuboModel);
 
     const BezierPath_Quadratic lensPathToPanoramic = {
         {cameraPlayer->get_fov(), cameraPlayer->get_nearPlane(),
@@ -111,7 +112,7 @@ int main(int argc, char *argv[]) {
         DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
                     targetPathToPanoramic, 0.5f, lensPathToPanoramic);
 
-    dollyCameraPlayerToPanoramic.set_model(noModel);
+    //dollyCameraPlayerToPanoramic.set_model(noModel);
 
     dollyCameraPlayerToPanoramic.set_onUpdate(
         [&dollyCameraPlayerToPanoramic, &loader,
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]) {
         DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
                     targetPathToPanoramic, 0.5f, lensPathToPlayer);
 
-    dollyCameraPanoramicToPlayer.set_model(noModel);
+    //dollyCameraPanoramicToPlayer.set_model(noModel);
 
     dollyCameraPanoramicToPlayer.set_onUpdate(
         [&dollyCameraPanoramicToPlayer, &loader,
@@ -162,6 +163,14 @@ int main(int argc, char *argv[]) {
     loader.add_camera(dollyCameraPlayerToPanoramic);
     loader.add_camera(dollyCameraPanoramicToPlayer);
     loader.set_active_camera(cameraPlayer);
+
+    // Locking
+    // InputHandler::addKeyMapping(GLFW_KEY_T, [&gamer, &sun](Action action) {
+    //     if (action == GLFW_PRESS) {
+    //         sun.addChild(gamer);
+    //         std::cout << "balls"<< std::endl;
+    //     }
+    // });
 
     InputHandler::addKeyMapping(GLFW_KEY_TAB, [&dollyCameraPlayerToPanoramic,
                                                &loader, &cameraPlayer,
@@ -331,17 +340,17 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    gamer.set_drag(0.6);
+    gamer.set_drag(0.2f);
     auto window = loader.get_window();
 
     loader.start([&gamer, &dollyCameraPlayerToPanoramic, &physObj, &loader,
                   &cameraPlayer, &dollyCameraPanoramicToPlayer, &sun, &sunBall]() {
         const GLfloat deltaTime = Loader::get_delta_t();
-        gamer.update(deltaTime);
-        physObj.update(deltaTime);
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
         cameraPlayer->update(deltaTime);
+        gamer.update(deltaTime);
+        physObj.update(deltaTime);
         sun.update(deltaTime);
         sun.rotate(0.4*deltaTime, UP);
         //sunBall.update(deltaTime);

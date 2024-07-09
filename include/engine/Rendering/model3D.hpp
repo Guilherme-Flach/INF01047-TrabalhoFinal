@@ -5,27 +5,43 @@
 #include <glad/glad.h>
 #include <glm/vec4.hpp>
 #include <GLFW/glfw3.h>
+#include "tiny_obj_loader.h"
 
 #include <vector>
 
+struct ObjModel {
+    tinyobj::attrib_t                 attrib;
+    std::vector<tinyobj::shape_t>     shapes;
+    std::vector<tinyobj::material_t>  materials;
+
+    // Este construtor lê o modelo de um arquivo utilizando a biblioteca tinyobjloader.
+    // Veja: https://github.com/syoyo/tinyobjloader
+    ObjModel(const char* filename, const char* basepath = NULL, bool triangulate = true);
+};
+
 class Model3D {
   protected:
+    std::string name;
     std::vector<GLfloat> vertices;
-    std::vector<GLfloat> colors;
+    std::vector<GLfloat> normals;
+    std::vector<GLfloat> textures;
     std::vector<GLuint> indices;
 
     GLuint vertexArrayId;
-    GLuint colorsId;
-    GLuint indicesId;
     GLuint verticesId;
+    GLuint normalsId;
+    GLuint texturesId;
+    GLuint indicesId;
 
     int renderType;
 
     GLfloat line_width;
 
   public:
-    Model3D(std::vector<GLfloat> vertices_, std::vector<GLuint> indices_,
-            std::vector<GLfloat> colors_, int renderType_);
+    Model3D(const char* path);
+
+    static void ComputeNormals(ObjModel* model);
+
     GLuint get_vertexArrayId();
     void render();
 };

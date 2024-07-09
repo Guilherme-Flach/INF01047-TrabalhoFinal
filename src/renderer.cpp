@@ -9,6 +9,8 @@ Renderer::Renderer(GLuint programId) : programId(programId) {
     this->model_uniform = glGetUniformLocation(programId, "model");
     this->view_uniform = glGetUniformLocation(programId, "view");
     this->projection_uniform = glGetUniformLocation(programId, "projection");
+    this->objectid_uniform =  glGetUniformLocation(programId, "object_id");
+
 }
 
 Renderer &Renderer::instance(GLuint programId) {
@@ -20,6 +22,7 @@ void Renderer::setDebugMode(bool debugMode) { this->debugMode = debugMode; }
 
 void Renderer::renderGameObject(GameObject *gameObject) {
     if (gameObject != NULL && (gameObject->get_isRenderable() || debugMode)) {
+        glUniform1i(objectid_uniform, -1);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE,
                            glm::value_ptr(gameObject->get_model_matrix()));
         gameObject->get_model()->render();

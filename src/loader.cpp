@@ -194,6 +194,7 @@ void Loader::start(std::function<void(void)> act) {
     TextRendering_Init();
     GLint view_uniform = glGetUniformLocation(program_id, "view");
     GLint projection_uniform = glGetUniformLocation(program_id, "projection");
+    GLint objectid_uniform = glGetUniformLocation(program_id, "object_id");
 
     glfwSetKeyCallback(window, InputHandler::handleKeyInput);
     glfwSetMouseButtonCallback(window, InputHandler::handleMouseClick);
@@ -203,7 +204,7 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Renderer renderer = Renderer::instance(program_id);
-    renderer.setDebugMode(true);
+    //renderer.setDebugMode(true);
 
     glfwSetFramebufferSizeCallback(
         window, [](GLFWwindow *window, int width, int height) {
@@ -212,6 +213,8 @@ void Loader::start(std::function<void(void)> act) {
         });
     glfwSetWindowSize(window, 800, 800);
     screen_ratio = 1;
+
+    glEnable(GL_CULL_FACE);  
 
     float prev_time = 0;
     while (!glfwWindowShouldClose(window)) {

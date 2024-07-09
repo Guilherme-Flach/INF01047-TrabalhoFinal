@@ -18,17 +18,17 @@ void Player::update(GLfloat deltaTime) {
         ship->set_up_vector(ship->get_global_basis()[1]);
 
         // Update camera
-        if (isPiloting) {
-            const glm::vec4 movementLateral  = movement.x * ship->get_u_vector();
-            const glm::vec4 movementVertical = movement.y * ship->get_v_vector();
-            const glm::vec4 movementFrontal  = movement.z * ship->get_w_vector();
-            const glm::vec4 movementTotal    = movementFrontal + movementVertical + movementLateral;
-            speed += movementTotal * deltaTime * playerSpeed;
-            camera->rotate(rotationRate.x * deltaTime * cameraRotationSpeed, ship->get_u_vector());
-            camera->rotate(rotationRate.y * deltaTime * cameraRotationSpeed, ship->get_v_vector());
-            camera->rotate(rotationRate.z * deltaTime * cameraRotationSpeed, ship->get_w_vector());
-            camera->set_up_vector(ship->get_up_vector());
-        }
+        const glm::vec4 movementLateral  = movement.x * ship->get_u_vector();
+        const glm::vec4 movementVertical = movement.y * ship->get_v_vector();
+        const glm::vec4 movementFrontal  = movement.z * ship->get_w_vector();
+        const glm::vec4 movementTotal    = movementFrontal + movementVertical + movementLateral;
+        speed += movementTotal * deltaTime * playerSpeed;
+        camera->rotate(rotationRate.x * deltaTime * cameraRotationSpeed, ship->get_u_vector());
+        camera->rotate(rotationRate.y * deltaTime * cameraRotationSpeed, ship->get_v_vector());
+        camera->rotate(rotationRate.z * deltaTime * cameraRotationSpeed, ship->get_w_vector());
+        camera->set_up_vector(ship->get_up_vector());
+        
+        
         PhysicsObject::update(deltaTime);
     };
 }

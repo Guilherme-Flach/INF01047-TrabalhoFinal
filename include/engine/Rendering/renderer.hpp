@@ -19,6 +19,7 @@ class Renderer {
     GLint model_uniform;
     GLint view_uniform;
     GLint projection_uniform;
+    GLint objectid_uniform;
 
     int renderType;
 
