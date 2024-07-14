@@ -47,6 +47,7 @@ void main()
 
     // Vetor que define o sentido da reflexão especular ideal.
     vec4 r = -l + 2*n* (dot(n,l)); // PREENCHA AQUI o vetor de reflexão especular ideal
+    vec4 h = normalize(v+l);
 
     // Parâmetros que definem as propriedades espectrais da superfície
     vec3 Kd; // Refletância difusa
@@ -102,7 +103,7 @@ void main()
     vec3 ambient_term = Ka*Ia; // PREENCHA AQUI o termo ambiente
 
     // Termo especular utilizando o modelo de iluminação de Phong
-    vec3 phong_specular_term  = Ks* I *max(pow(dot(r,v), q),0); // PREENCH AQUI o termo especular de Phong
+    vec3 phong_specular_term  = Ks* I *max(pow(dot(n,h), q),0); // PREENCH AQUI o termo especular de Phong
 
     // NOTE: Se você quiser fazer o rendering de objetos transparentes, é
     // necessário:
