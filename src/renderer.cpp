@@ -27,12 +27,6 @@ void Renderer::renderGameObject(GameObject *gameObject) {
                            glm::value_ptr(gameObject->get_model_matrix()));
         gameObject->get_model()->render();
     }
-
-    std::vector<GameObject *> children = *gameObject->get_children();
-
-    for (GameObject *object : children) {
-        renderGameObject(object);
-    }
 }
 
 void Renderer::renderGameObjects(std::vector<GameObject *> &store) {
