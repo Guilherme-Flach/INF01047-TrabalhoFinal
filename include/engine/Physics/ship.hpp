@@ -24,7 +24,6 @@ class Ship : public PhysicsObject {
     GameObject shipContainer = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
 
   protected:
-    Planet *currentPlanet = nullptr;
     glm::vec4 thrusters = {0.0f, 0.0f, 0.0f, 0.0f};
     glm::vec4 rotationRate = {0.0f, 0.0f, 0.0f, 0.0f};
     bool isBoosting;
@@ -52,7 +51,7 @@ class Ship : public PhysicsObject {
         drag = playerDrag;
         this->addChild(shipContainer);
     };
-    void update(GLfloat deltaTime);
+    void physicsUpdate(GLfloat deltaTime);
     void powerThrusters(glm::vec4 thrusters) {
         set_thrusting(this->thrusters + thrusters);
     };
@@ -60,12 +59,9 @@ class Ship : public PhysicsObject {
         set_rotatioRate(this->rotationRate + rate);
     };
 
-    Planet *get_planet() { return currentPlanet; }
     glm::vec4 get_thrusting() { return thrusters; }
     glm::vec4 get_rotatioRate() { return rotationRate; }
-    GameObject get_shipContainer() { return shipContainer; }
-
-    void set_currentPlanet(Planet *planet) { this->currentPlanet = planet; }
+    GameObject &get_shipContainer() { return shipContainer; }
 
     void set_thrusting(glm::vec4 thrusting) { this->thrusters = thrusting; }
     void set_rotatioRate(glm::vec4 rotationRate) {

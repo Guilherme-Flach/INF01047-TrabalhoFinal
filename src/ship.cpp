@@ -9,7 +9,7 @@ GLfloat Ship::playerBaseSpeed = 0.5f;
 GLfloat Ship::playerBoostSpeed = 2.0f;
 GLfloat Ship::cameraRotationSpeed = 1.5f;
 
-void Ship::update(GLfloat deltaTime) {
+void Ship::physicsUpdate(GLfloat deltaTime) {
     {
         const float playerSpeed = isBoosting? playerBoostSpeed : playerBaseSpeed;
         const glm::mat3x4 basis = shipContainer.get_global_basis();
@@ -21,7 +21,7 @@ void Ship::update(GLfloat deltaTime) {
         const glm::vec4 movementVertical = thrusters.y * basis[1];
         const glm::vec4 movementFrontal  = thrusters.z * basis[2];
         const glm::vec4 movementTotal    = movementFrontal + movementVertical + movementLateral;
-        speed += movementTotal * deltaTime * playerSpeed;
+        velocity += movementTotal * deltaTime * playerSpeed;
 
 
         // if (isPiloting) {
@@ -39,6 +39,6 @@ void Ship::update(GLfloat deltaTime) {
         //     }
         // }
         
-        PhysicsObject::update(deltaTime);
+        PhysicsObject::physicsUpdate(deltaTime);
     };
 }

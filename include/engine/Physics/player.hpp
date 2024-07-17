@@ -30,6 +30,7 @@ class Player : public PhysicsObject {
 
     FreeCamera& get_playerCamera() { return playerCamera; }
     Ship& get_ship() { return ship; }
+    void physicsUpdate(GLfloat deltaTime);
 
 };
 

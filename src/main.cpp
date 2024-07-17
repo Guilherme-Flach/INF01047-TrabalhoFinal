@@ -187,23 +187,20 @@ int main(int argc, char *argv[]) {
     });
 
     auto window = loader.get_window();
-    player.get_ship().set_model(bunnyModel);
-    loader.add_game_object(player.get_ship());
+    player.get_ship().get_shipContainer().set_model(bunnyModel);
+    loader.add_game_object(player.get_ship().get_shipContainer());
 
     loader.start([&]() {
 
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
-        //cameraPlayer->update(deltaTime);
         physObj.update(deltaTime);
         sun.update(deltaTime);
         sun.rotate(0.4*deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
-        player.update(deltaTime);
-        player.get_ship().update(deltaTime);
+        player.physicsUpdate(deltaTime);
         player.set_position(player.get_ship().get_global_position());
-        //sunBall.update(deltaTime);
     });
     return 0;
 }

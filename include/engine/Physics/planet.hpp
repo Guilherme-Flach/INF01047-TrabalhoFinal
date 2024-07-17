@@ -10,18 +10,16 @@
 
 class Planet : public PhysicsObject {
   private:
-    constexpr static const GLfloat speedLimit = 10.0f;
 
   protected:
-    GLfloat gravity;
-    
+    GLfloat surfaceGravity;
 
   public:
-    Planet(glm::vec4 position, GLfloat mass, GLfloat gravity) : PhysicsObject(position, mass), gravity(gravity) {};
+    Planet(glm::vec4 position, GLfloat mass, GLfloat surfaceGravity) : PhysicsObject(position, mass), surfaceGravity(surfaceGravity) {};
 
-    GLfloat get_gravity() { return gravity; };
+    GLfloat get_surfaceGravity() { return surfaceGravity; };
 
-    void set_gravity(GLfloat gravity) { this->gravity = gravity; }
+    void set_surfaceGravity(GLfloat gravity) { this->surfaceGravity = gravity; }
 
 };
 

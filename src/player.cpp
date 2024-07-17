@@ -153,3 +153,7 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
     });
 
 }
+
+void Player::physicsUpdate(GLfloat deltaTime) {
+    ship.physicsUpdate(deltaTime);    
+}

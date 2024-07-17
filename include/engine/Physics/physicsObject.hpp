@@ -14,31 +14,31 @@ class PhysicsObject : public GameObject {
   protected:
     GLfloat drag;
     GLfloat mass;
-    glm::vec4 speed;
+    glm::vec4 velocity;
     glm::vec4 acceleration;
-    glm::vec3 angularSpeed;
+    glm::vec3 angularVelocity;
     
 
   public:
     PhysicsObject(glm::vec4 position, GLfloat mass);
-    void accelerate(glm::vec4 speed);
+    void accelerate(glm::vec4 velocity);
     void increase_acceleration(glm::vec4 acceleration);
-    void increase_angularSpeed(glm::vec3 speed);
+    void increase_angularVelocity(glm::vec3 velocity);
     void applyForce(glm::vec4 force);
-    void update(GLfloat deltaTime);
+    void physicsUpdate(GLfloat deltaTime);
 
 
     GLfloat get_drag() { return drag; };
     GLfloat get_mass() { return mass; };
-    glm::vec4 get_speed() { return speed; };
+    glm::vec4 get_velocity() { return velocity; };
     glm::vec4 get_acceleration() { return acceleration; };
-    glm::vec3 get_angular_speed(){ return angularSpeed; };
+    glm::vec3 get_angular_velocity(){ return angularVelocity; };
 
     void set_drag(GLfloat drag) { this->drag = drag; }
     void set_mass(GLfloat mass) { this->mass = mass; }
-    void set_speed(glm::vec4 speed) { this->speed = speed; }
+    void set_velocity(glm::vec4 velocity) { this->velocity = velocity; }
     void set_acceleration(glm::vec4 acceleration) { this->acceleration = acceleration; }
-    void set_angular_speed(glm::vec3 angularSpeed) { this->angularSpeed = angularSpeed; }
+    void set_angular_velocity(glm::vec3 angularVelocity) { this->angularVelocity = angularVelocity; }
 
 };
 
