@@ -3,13 +3,19 @@
 #include "glm/ext/vector_float4.hpp"
 #include <cmath>
 
-Collider::Collider(glm::vec4 center) : GameObject(center) {}
+CollisionData::CollisionData(bool isColliding)
+    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}){};
+CollisionData::CollisionData(bool isColliding, glm::vec4 collisionPoint)
+    : isColliding(isColliding), collisionPoint(collisionPoint){};
+
+Collider::Collider(glm::vec4 center, ColliderType colliderType)
+    : GameObject(center), colliderType(colliderType) {}
 
 void Collider::update_id(int new_id) { this->id = new_id; }
 int Collider::get_id() { return this->id; }
 
 BoxCollider::BoxCollider(glm::vec4 center, float x, float y, float z)
-    : Collider(center), x(x), y(y), z(z) {
+    : Collider(center, Collider::BOX_COLIDER), x(x), y(y), z(z) {
     this->vertices[0] =
         this->center + glm::vec4(this->x, this->y, this->z, 0.0f);
     this->vertices[1] =
@@ -72,10 +78,10 @@ glm::vec4 RaycastCollider::get_max() {
 }
 
 SphereCollider::SphereCollider(glm::vec4 center, float radius)
-    : Collider(center), radius(radius) {}
+    : Collider(center, ColliderType::SPHERE_COLLIDER), radius(radius) {}
 
 RaycastCollider::RaycastCollider(glm::vec4 start, glm::vec4 direction)
-    : Collider(start), displacement(direction) {}
+    : Collider(start, ColliderType::RAY_COLLIDER), displacement(direction) {}
 
 void CollisionsManager::add_collider(Collider &collider) {
     auto min_vec = collider.get_min();

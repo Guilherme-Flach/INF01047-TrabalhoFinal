@@ -6,6 +6,13 @@
 #include <map>
 #include <mutex>
 #include <vector>
+struct CollisionData {
+  bool isColliding;
+  glm::vec4 collisionPoint;
+
+  CollisionData(bool isColliding);
+  CollisionData(bool isColliding, glm::vec4 collisionPoint);
+};
 
 class Collider : protected GameObject {
 
@@ -13,14 +20,19 @@ class Collider : protected GameObject {
     int id = -1;
 
   public:
-    Collider(glm::vec4 center);
+    enum ColliderType {
+        BOX_COLIDER,
+        SPHERE_COLLIDER,
+        RAY_COLLIDER
+      };
+
+    Collider(glm::vec4 center,  ColliderType colliderType);
 
   protected:
     glm::vec4 center;
+    ColliderType colliderType;
 
-    virtual bool test_box(Collider &other);
-    virtual bool test_sphere(Collider &other);
-    virtual bool test_raycast(Collider &other);
+    virtual bool test_collision(Collider &other);
 
   public:
     void update_id(int new_id);
@@ -38,9 +50,7 @@ class BoxCollider : public Collider {
     float x, y, z;
     glm::vec4 vertices[4];
 
-    bool test_box(Collider &other) override;
-    bool test_sphere(Collider &other) override;
-    bool test_raycast(Collider &other) override;
+    bool test_collision(Collider &other) override;
 
   public:
     glm::vec4 get_min() override;
@@ -55,9 +65,7 @@ class SphereCollider : Collider {
   protected:
     float radius;
 
-    bool test_box(Collider &other) override;
-    bool test_sphere(Collider &other) override;
-    bool test_raycast(Collider &other) override;
+    bool test_collision(Collider &other) override;
 
   public:
     glm::vec4 get_min() override;
@@ -72,9 +80,7 @@ class RaycastCollider : Collider {
   protected:
     glm::vec4 displacement;
 
-    bool test_box(Collider &other) override;
-    bool test_sphere(Collider &other) override;
-    bool test_raycast(Collider &other) override;
+  bool test_collision(Collider &other) override;
 
   public:
     glm::vec4 get_min() override;
