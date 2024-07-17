@@ -10,6 +10,7 @@
 #include "engine/Input/inputHandler.hpp"
 #include "engine/Rendering/renderer.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "matrices.hpp"
 #include <sstream>
 #include <fstream>
 
@@ -229,8 +230,6 @@ void Loader::start(std::function<void(void)> act) {
         glUseProgram(program_id);
         glm::mat4 projection;
 
-
-
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
@@ -244,7 +243,6 @@ void Loader::start(std::function<void(void)> act) {
         glUniformMatrix4fv(
             view_uniform, 1, GL_FALSE,
             glm::value_ptr(this->active_camera->get_viewMatrix()));
-
         act();
 
         renderer.renderGameObjects(this->game_object_store);

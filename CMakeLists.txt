@@ -20,6 +20,7 @@ set(SOURCES
   src/renderer.cpp
   src/player.cpp
   src/physicsObject.cpp
+  src/ship.cpp
   src/textrendering.cpp
   src/tiny_obj_loader.cpp
 )
