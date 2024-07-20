@@ -6,11 +6,11 @@
 
 // NOTE These next few lines may be win32 specific, you may need to modify them
 // to compile on other platform
+#include <set>
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <vector>
 
 #define ASSERT assert // RTree uses ASSERT( condition )
 #define __min(a, b) (((a) < (b)) ? (a) : (b))
@@ -107,7 +107,7 @@ class RTree {
     /// continue searching \param a_context User context to pass as parameter to
     /// a_resultCallback \return Returns the number of entries found
     void Search(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS],
-                std::vector<DATATYPE> &nodes, void *a_context);
+                std::set<DATATYPE> &nodes);
 
     /// Remove all entries from tree
     void RemoveAll();
@@ -355,8 +355,7 @@ class RTree {
     void FreeListNode(ListNode *a_listNode);
     bool Overlap(Rect *a_rectA, Rect *a_rectB);
     void ReInsert(Node *a_node, ListNode **a_listNode);
-    void Search(Node *a_node, Rect *a_rect, std::vector<DATATYPE> &nodes,
-                void *a_context);
+    void Search(Node *a_node, Rect *a_rect, std::set<DATATYPE> &nodes);
     void RemoveAllRec(Node *a_node);
     void Reset();
     void CountRec(Node *a_node, int &a_count);
@@ -499,7 +498,7 @@ void RTREE_QUAL::Remove(const ELEMTYPE a_min[NUMDIMS],
 RTREE_TEMPLATE
 void RTREE_QUAL::Search(const ELEMTYPE a_min[NUMDIMS],
                         const ELEMTYPE a_max[NUMDIMS],
-                        std::vector<DATATYPE> &nodes, void *a_context) {
+                        std::set<DATATYPE> &nodes) {
 #ifdef _DEBUG
     for (int index = 0; index < NUMDIMS; ++index) {
         ASSERT(a_min[index] <= a_max[index]);
@@ -516,7 +515,7 @@ void RTREE_QUAL::Search(const ELEMTYPE a_min[NUMDIMS],
     // NOTE: May want to return search result another way, perhaps returning the
     // number of found elements here.
 
-    Search(m_root, &rect, nodes, a_context);
+    Search(m_root, &rect, nodes);
 }
 
 RTREE_TEMPLATE
@@ -1383,8 +1382,7 @@ void RTREE_QUAL::ReInsert(Node *a_node, ListNode **a_listNode) {
 // Search in an index tree or subtree for all data retangles that overlap the
 // argument rectangle.
 RTREE_TEMPLATE
-void RTREE_QUAL::Search(Node *a_node, Rect *a_rect,
-                        std::vector<DATATYPE> &nodes, void *a_context) {
+void RTREE_QUAL::Search(Node *a_node, Rect *a_rect, std::set<DATATYPE> &nodes) {
     ASSERT(a_node);
     ASSERT(a_node->m_level >= 0);
     ASSERT(a_rect);
@@ -1393,8 +1391,7 @@ void RTREE_QUAL::Search(Node *a_node, Rect *a_rect,
     {
         for (int index = 0; index < a_node->m_count; ++index) {
             if (Overlap(a_rect, &a_node->m_branch[index].m_rect)) {
-                Search(a_node->m_branch[index].m_child, a_rect, nodes,
-                       a_context);
+                Search(a_node->m_branch[index].m_child, a_rect, nodes);
             }
         }
     } else // This is a leaf node
@@ -1405,7 +1402,7 @@ void RTREE_QUAL::Search(Node *a_node, Rect *a_rect,
 
                 // NOTE: There are different ways to return results.  Here's
                 // where to modify
-                nodes.push_back(id);
+                nodes.insert(id);
             }
         }
     }

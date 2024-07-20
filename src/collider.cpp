@@ -2,6 +2,7 @@
 #include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include <cmath>
+#include <iostream>
 
 CollisionData::CollisionData(bool isColliding)
     : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}){};
@@ -14,8 +15,10 @@ Collider::Collider(glm::vec4 center, ColliderType colliderType)
 void Collider::update_id(int new_id) { this->id = new_id; }
 int Collider::get_id() { return this->id; }
 
+ColliderType Collider::get_collider_type() { return this->colliderType; }
+
 BoxCollider::BoxCollider(glm::vec4 center, float x, float y, float z)
-    : Collider(center, Collider::BOX_COLIDER), x(x), y(y), z(z) {
+    : Collider(center, ColliderType::BOX_COLLIDER), x(x), y(y), z(z) {
     this->vertices[0] =
         this->center + glm::vec4(this->x, this->y, this->z, 0.0f);
     this->vertices[1] =
@@ -80,6 +83,8 @@ glm::vec4 RaycastCollider::get_max() {
 SphereCollider::SphereCollider(glm::vec4 center, float radius)
     : Collider(center, ColliderType::SPHERE_COLLIDER), radius(radius) {}
 
+float SphereCollider::get_radius() { return this->radius; }
+
 RaycastCollider::RaycastCollider(glm::vec4 start, glm::vec4 direction)
     : Collider(start, ColliderType::RAY_COLLIDER), displacement(direction) {}
 
@@ -89,7 +94,7 @@ void CollisionsManager::add_collider(Collider &collider) {
     float min[3] = {min_vec.x, min_vec.y, min_vec.z};
     float max[3] = {max_vec.x, max_vec.y, max_vec.z};
     collider.update_id(this->id++);
-    this->colliders[collider.get_id()] = collider;
+    this->colliders[collider.get_id()] = &collider;
     this->collision_hierarchy.Insert(min, max, collider.get_id());
 }
 
@@ -103,10 +108,87 @@ void CollisionsManager::remove_collider(Collider &collider) {
 }
 
 void CollisionsManager::search_collider(Collider &collider,
-                                        std::vector<int> &found) {
+                                        std::set<int> &found) {
     auto min_vec = collider.get_min();
     auto max_vec = collider.get_max();
     float min[3] = {min_vec.x, min_vec.y, min_vec.z};
     float max[3] = {max_vec.x, max_vec.y, max_vec.z};
-    this->collision_hierarchy.Search(min, max, found, nullptr);
+    this->collision_hierarchy.Search(min, max, found);
+}
+
+glm::vec4 RaycastCollider::get_displacement() { return this->displacement; }
+
+CollisionData RaycastCollider::test_sphere(SphereCollider sphere) {
+    auto displacement = this->get_displacement();
+    auto global_position = this->get_global_position();
+    if (displacement.x == 0.0f && displacement.y == 0.0f &&
+        displacement.z == 0.0f) {
+        auto hasCollided = global_position.x * global_position.x +
+                               global_position.y * global_position.y +
+                               global_position.z * global_position.z ==
+                           sphere.get_radius() * sphere.get_radius();
+        return hasCollided ? CollisionData(true, global_position)
+                           : CollisionData(false);
+    }
+    auto a = displacement.x * displacement.x + displacement.y * displacement.y +
+             displacement.z * displacement.z;
+    auto b = 2 * global_position.x * displacement.x +
+             2 * global_position.y * displacement.y +
+             2 * global_position.z * displacement.z;
+    auto c = -(sphere.get_radius() * sphere.get_radius()) +
+             global_position.x * global_position.x +
+             global_position.y * global_position.y +
+             global_position.z * global_position.z;
+    auto delta = b * b - 4 * a * c;
+    auto double_a = 2 * a;
+    auto sqrt_delta = sqrt(delta);
+    if (delta < 0) {
+        return CollisionData(false);
+    }
+    auto first_offset = (-b + sqrt_delta) / double_a;
+    if (delta == 0 && first_offset >= 0.0f && first_offset <= 1.0f) {
+        return CollisionData(true, global_position + first_offset);
+    }
+    auto second_offset = (-b - sqrt_delta) / double_a;
+    auto min_offset = fmin(first_offset, second_offset);
+    if (min_offset < 0.0f || min_offset > 1.0f)
+        return CollisionData(false);
+    return CollisionData(true, global_position + min_offset);
+}
+
+CollisionData CollisionsManager::test_collision(Collider &first,
+                                                Collider &second) {
+    if (first.get_collider_type() == ColliderType::RAY_COLLIDER &&
+        second.get_collider_type() == ColliderType::SPHERE_COLLIDER) {
+        auto ray = dynamic_cast<RaycastCollider &>(first);
+        auto sphere = dynamic_cast<SphereCollider &>(second);
+        return ray.test_sphere(sphere);
+    }
+    if (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
+        second.get_collider_type() == ColliderType::RAY_COLLIDER) {
+        auto ray = dynamic_cast<RaycastCollider &>(second);
+        auto sphere = dynamic_cast<SphereCollider &>(first);
+        return ray.test_sphere(sphere);
+    }
+    if ((first.get_collider_type() == ColliderType::RAY_COLLIDER &&
+         second.get_collider_type() == ColliderType::RAY_COLLIDER) ||
+        (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
+         second.get_collider_type() == ColliderType::BOX_COLLIDER) ||
+        (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
+         second.get_collider_type() == ColliderType::RAY_COLLIDER) ||
+        (first.get_collider_type() == ColliderType::RAY_COLLIDER &&
+         second.get_collider_type() == ColliderType::BOX_COLLIDER) ||
+        (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
+         second.get_collider_type() == ColliderType::BOX_COLLIDER) ||
+        (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
+         second.get_collider_type() == ColliderType::SPHERE_COLLIDER)) {
+        std::set<int> first_found;
+        std::set<int> second_found;
+        this->search_collider(first, first_found);
+        this->search_collider(first, second_found);
+        return CollisionData(
+            first_found.find(second.get_id()) != first_found.end() ||
+            second_found.find(first.get_id()) != second_found.end());
+    }
+    return CollisionData(false);
 }
