@@ -18,9 +18,7 @@
 #include <iostream>
 #include "engine/Physics/collider.hpp"
 
-static glm::vec4 ORIGIN = {0.0f, 0.0f, 0.0f, 1.0f};
-static glm::vec4 FRONT = {0.0f, 0.0f, 1.0f, 1.0f};
-static glm::vec4 UP = {0.0f, 1.0f, 0.0f, 1.0f};
+
 
 int main(int argc, char *argv[]) {
     int width = 800, height = 800;
@@ -121,7 +119,13 @@ int main(int argc, char *argv[]) {
             }
         });
 
+    player.get_ship().get_shipContainer().set_model(bunnyModel);
+    player.set_model(ballModel);
+
     loader.add_game_object(sun);
+    loader.add_game_object(player);
+    loader.add_game_object(player.get_ship().get_shipContainer());
+
 
     // loader.add_camera(*cameraPlayer);
     loader.add_camera(dollyCameraPlayerToPanoramic);
@@ -189,8 +193,7 @@ int main(int argc, char *argv[]) {
     });
 
     auto window = loader.get_window();
-    player.get_ship().get_shipContainer().set_model(bunnyModel);
-    loader.add_game_object(player.get_ship().get_shipContainer());
+    
 
     CollisionsManager manager;
 
@@ -205,13 +208,12 @@ int main(int argc, char *argv[]) {
         auto col = manager.test_collision(raycast, sunCollider);
         if (col.isColliding) {
             std::cout << "dinheiros" << std::endl;
-            sun.set_velocity(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
+            sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
         }
         sun.update(deltaTime);
         sun.rotate(0.4 * deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
         player.physicsUpdate(deltaTime);
-        player.set_position(player.get_ship().get_global_position());
     });
     return 0;
 }

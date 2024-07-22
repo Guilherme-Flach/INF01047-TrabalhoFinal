@@ -12,7 +12,7 @@
 			<rendertexture />
 			<items>
 				<item name="ball" type="model">
-					<filepath>G:\UFRGS\FCG\INF01047-TrabalhoFinal\data\sphere.obj</filepath>
+					<filepath>G:/UFRGS/FCG/INF01047-TrabalhoFinal/data/sphere.obj</filepath>
 					<grouponly>false</grouponly>
 					<x>0.647640705</x>
 				</item>
@@ -45,8 +45,8 @@
 		<entry type="pinned" name="object_id" owner="shader" />
 		<entry type="camera" fp="false">
 			<distance>6</distance>
-			<pitch>25</pitch>
-			<yaw>55</yaw>
+			<pitch>-38</pitch>
+			<yaw>50</yaw>
 			<roll>360</roll>
 		</entry>
 		<entry type="clearcolor" r="0" g="0" b="0" a="0" />

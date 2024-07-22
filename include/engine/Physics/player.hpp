@@ -3,11 +3,13 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
+#include "collider.hpp"
 #include "engine/EngineObject/camera/freeCamera.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/ship.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "glm/ext/vector_float4.hpp"
+#include "matrices.hpp"
 #include "ship.hpp"
 
 class Player : public PhysicsObject {
@@ -19,11 +21,13 @@ class Player : public PhysicsObject {
     const static glm::vec4 startingPosition;
 
   protected:
-    FreeCamera playerCamera = FreeCamera({0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f});
+    FreeCamera playerCamera = FreeCamera(ORIGIN, FRONT);
     Ship ship = Ship(startingPosition);
+    SphereCollider shipCheck = SphereCollider(ORIGIN,  1.0f);
 
     glm::vec3 playerMovement = {0.0f, 0.0f, 0.0f};
-    
+
+    bool isPiloting;    
 
   public:
     Player();

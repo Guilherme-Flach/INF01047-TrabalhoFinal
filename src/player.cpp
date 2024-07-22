@@ -10,9 +10,10 @@ const glm::vec4 Player::startingPosition = {-5.0f, -5.0f, -5.0f, 1.0f};
 
 Player::Player() : PhysicsObject(startingPosition, playerMass) {
     addChild(playerCamera);
+    addChild(shipCheck);
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [this](Action action) {
-        const glm::vec4 direction = Ship::FRONT;
+        const glm::vec4 direction = FRONT;
         if (action == GLFW_PRESS) {
             ship.powerThrusters(direction);
         } else if (action == GLFW_RELEASE) {
@@ -21,7 +22,7 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
     });
 
     InputHandler::addKeyMapping(GLFW_KEY_S, [this](Action action) {
-        const glm::vec4 direction = Ship::BACK;
+        const glm::vec4 direction = BACK;
         if (action == GLFW_PRESS) {
             ship.powerThrusters(direction);
         } else if (action == GLFW_RELEASE) {
@@ -30,7 +31,7 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
     });
 
     InputHandler::addKeyMapping(GLFW_KEY_A, [this](Action action) {
-        const glm::vec4 direction = Ship::LEFT;
+        const glm::vec4 direction = LEFT;
         if (action == GLFW_PRESS) {
             ship.powerThrusters(direction);
         } else if (action == GLFW_RELEASE) {
@@ -39,7 +40,7 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
     });
 
     InputHandler::addKeyMapping(GLFW_KEY_D, [this](Action action) {
-        const glm::vec4 direction = Ship::RIGHT;
+        const glm::vec4 direction = RIGHT;
         if (action == GLFW_PRESS) {
             ship.powerThrusters(direction);
         } else if (action == GLFW_RELEASE) {
@@ -48,7 +49,7 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
     });
 
     InputHandler::addKeyMapping(GLFW_KEY_SPACE, [this](Action action) {
-        const glm::vec4 direction = Ship::UP;
+        const glm::vec4 direction = UP;
         if (action == GLFW_PRESS) {
             ship.powerThrusters(direction);
         } else if (action == GLFW_RELEASE) {
@@ -57,7 +58,7 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
     });
 
     InputHandler::addKeyMapping(GLFW_KEY_LEFT_CONTROL, [this](Action action) {
-        const glm::vec4 direction = Ship::DOWN;
+        const glm::vec4 direction = DOWN;
         if (action == GLFW_PRESS) {
             ship.powerThrusters(direction);
         } else if (action == GLFW_RELEASE) {
@@ -152,8 +153,42 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
         prevPos.y = mousePos.y;
     });
 
+    // Board Ship
+    InputHandler::addKeyMapping(GLFW_KEY_T, [this](Action action) {
+        if (action == GLFW_PRESS) {
+            isPiloting = !isPiloting;
+        }
+    });
+
 }
 
 void Player::physicsUpdate(GLfloat deltaTime) {
-    ship.physicsUpdate(deltaTime);    
+    ship.physicsUpdate(deltaTime);
+    if (isPiloting) {
+        // Update camera to follow ship
+        const glm::mat3x4 shipBasis = ship.get_shipContainer().get_global_basis();
+
+        playerCamera.rotate(ship.get_rotatioRate().x * deltaTime *
+                                Ship::turningSpeed,
+                            shipBasis[0]);
+
+        playerCamera.rotate(ship.get_rotatioRate().y * deltaTime *
+                                Ship::turningSpeed,
+                           shipBasis[1]);
+
+        playerCamera.rotate(ship.get_rotatioRate().z * deltaTime *
+                                Ship::turningSpeed,
+                            shipBasis[2]);
+        playerCamera.set_up_vector(shipBasis[1]);
+
+        set_position(ship.get_global_position());
+    } else {
+        // if (currentPlanet != nullptr) {
+        //     const glm::vec4 out_vector = this->get_global_position() -
+        //                                  currentPlanet->get_global_position();
+        //     const float distance = norm(out_vector);
+        //     playerCamera->set_up_vector(out_vector / distance);
+        //     set_up_vector(out_vector / distance);
+        // }
+    }
 }

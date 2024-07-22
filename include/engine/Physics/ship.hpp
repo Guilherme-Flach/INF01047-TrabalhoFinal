@@ -17,25 +17,19 @@ class Ship : public PhysicsObject {
     constexpr static const GLfloat speedLimit = 20.0f;
     constexpr static const GLfloat playerMass = 2.0f;
     constexpr static const GLfloat playerDrag = 0.9f;
-    static GLfloat playerBaseSpeed;
-    static GLfloat playerBoostSpeed;
-    static GLfloat cameraRotationSpeed;
+    static GLfloat shipBaseSpeed;
+    static GLfloat shipBoostingSpeed;
 
     GameObject shipContainer = GameObject({0.0f, 0.0f, 0.0f, 1.0f});
 
   protected:
+
     glm::vec4 thrusters = {0.0f, 0.0f, 0.0f, 0.0f};
     glm::vec4 rotationRate = {0.0f, 0.0f, 0.0f, 0.0f};
     bool isBoosting;
-    bool isPiloting;
 
   public:
-    constexpr static const glm::vec4 UP    = {0.0f, +1.0f, 0.0f, 0.0f};
-    constexpr static const glm::vec4 DOWN  = {0.0f, -1.0f, 0.0f, 0.0f};
-    constexpr static const glm::vec4 LEFT  = {+1.0f, 0.0f, 0.0f, 0.0f};
-    constexpr static const glm::vec4 RIGHT = {-1.0f, 0.0f, 0.0f, 0.0f};
-    constexpr static const glm::vec4 FRONT = {0.0f, 0.0f, +1.0f, 0.0f};
-    constexpr static const glm::vec4 BACK  = {0.0f, 0.0f, -1.0f, 0.0f};
+    static const GLfloat turningSpeed;
 
     constexpr static const glm::vec4 ROTATE_FRONT = {+1.0f, 0.0f, 0.0f, 0.0f};
     constexpr static const glm::vec4 ROTATE_BACK  = {-1.0f, 0.0f, 0.0f, 0.0f};
@@ -48,7 +42,7 @@ class Ship : public PhysicsObject {
 
     Ship(glm::vec4 position)
         : PhysicsObject(position, playerMass) {
-        drag = playerDrag;
+        //drag = playerDrag;
         this->addChild(shipContainer);
     };
     void physicsUpdate(GLfloat deltaTime);

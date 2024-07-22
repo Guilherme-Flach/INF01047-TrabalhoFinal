@@ -1,3 +1,6 @@
+#ifndef COLLIDER_HEADER
+#define COLLIDER_HEADER
+
 #include "RTree.h"
 #include "engine/EngineObject/gameObject.hpp"
 #include "glm/ext/vector_float4.hpp"
@@ -90,3 +93,5 @@ class CollisionsManager {
     void search_collider(Collider &collider, std::set<int> &found);
     CollisionData test_collision(Collider &first, Collider &second);
 };
+
+#endif // COLLIDER_HEADER
