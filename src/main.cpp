@@ -17,6 +17,7 @@
 #include <functional>
 #include <iostream>
 #include "engine/Physics/collider.hpp"
+#include "matrices.hpp"
 
 
 
@@ -28,10 +29,6 @@ int main(int argc, char *argv[]) {
 
     Model3D bunnyModel = Model3D("../../data/bunny.obj");
     Model3D ballModel = Model3D("../../data/sphere.obj");
-    // Model3D wireCubeModel = WireCube();
-    // Model3D dotModel = DotModel();
-    // Model3D noModel = NoModel();
-    // Model3D axesModel = BaseAxesModel();
 
     Planet sun = Planet(ORIGIN, 10.0f, 1.0f);
     sun.set_model(ballModel);
@@ -190,27 +187,26 @@ int main(int argc, char *argv[]) {
                 dollyCameraPanoramicToPlayer.startMoving();
             }
         }
-    });
-
-    auto window = loader.get_window();
-    
+    });    
 
     CollisionsManager manager;
+    auto playerCollider = player.get_playerCollider();
+    auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
+    manager.add_collider(sunCollider);
+    manager.add_collider(playerCollider);
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
         physObj.update(deltaTime);
-        auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
-        auto raycast = RaycastCollider(player.get_global_position(),
-                                       player.get_playerCamera().get_view());
-        auto col = manager.test_collision(raycast, sunCollider);
+        auto col = manager.test_collision(playerCollider, sunCollider);
         if (col.isColliding) {
-            std::cout << "dinheiros" << std::endl;
             sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
+            PrintVector(sun.get_velocity());
         }
         sun.update(deltaTime);
+        sun.physicsUpdate(deltaTime);
         sun.rotate(0.4 * deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
         player.physicsUpdate(deltaTime);

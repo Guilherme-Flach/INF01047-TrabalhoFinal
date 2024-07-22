@@ -100,6 +100,11 @@ void GameObject::set_model(Model3D &model) {
     this->model = &model;
     isRenderable = true;
 }
+
+void GameObject::set_modelScaling(float modelScaling) {
+    this->modelScaling = {modelScaling, modelScaling, modelScaling};
+}
+
 void GameObject::set_modelScaling(glm::vec3 modelScaling) {
     this->modelScaling = modelScaling;
 }

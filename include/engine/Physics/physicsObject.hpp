@@ -20,6 +20,8 @@ class PhysicsObject : public GameObject {
     
 
   public:
+    const static float G_CONSTANT;
+    
     PhysicsObject(glm::vec4 position, GLfloat mass);
     void accelerate(glm::vec4 velocity);
     void increase_acceleration(glm::vec4 acceleration);

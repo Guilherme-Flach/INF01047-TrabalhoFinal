@@ -24,6 +24,7 @@ class Player : public PhysicsObject {
     FreeCamera playerCamera = FreeCamera(ORIGIN, FRONT);
     Ship ship = Ship(startingPosition);
     SphereCollider shipCheck = SphereCollider(ORIGIN,  1.0f);
+    BoxCollider playerCollider = BoxCollider(ORIGIN, 0.5f, 1.0f, 0.5f);
 
     glm::vec3 playerMovement = {0.0f, 0.0f, 0.0f};
 
@@ -34,6 +35,8 @@ class Player : public PhysicsObject {
 
     FreeCamera& get_playerCamera() { return playerCamera; }
     Ship& get_ship() { return ship; }
+    BoxCollider& get_playerCollider() { return playerCollider; }
+
     void physicsUpdate(GLfloat deltaTime);
 
 };

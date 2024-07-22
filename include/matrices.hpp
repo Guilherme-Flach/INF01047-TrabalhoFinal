@@ -20,6 +20,8 @@ static glm::vec4 DOWN = {0.0f, -1.0f, 0.0f, 1.0f};
 static glm::vec4 LEFT   = {+1.0f, 0.0f,  0.0f, 1.0f};
 static glm::vec4 RIGHT  = {-1.0f, 0.0f, 0.0f, 1.0f};
 
+static glm::vec4 NONE = {0.0f, 0.0f, 0.0f, 0.0f};
+
 glm::mat4 Matrix(float m00, float m01, float m02, float m03, float m10,
                  float m11, float m12, float m13, float m20, float m21,
                  float m22, float m23, float m30, float m31, float m32,
