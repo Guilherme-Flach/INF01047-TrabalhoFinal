@@ -205,7 +205,7 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Renderer renderer = Renderer::instance(program_id);
-    //renderer.setDebugMode(true);
+    // renderer.setDebugMode(true);
 
     glfwSetFramebufferSizeCallback(
         window, [](GLFWwindow *window, int width, int height) {
@@ -215,7 +215,9 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetWindowSize(window, 800, 800);
     screen_ratio = 1;
 
-    glEnable(GL_CULL_FACE);  
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     float prev_time = 0;
     while (!glfwWindowShouldClose(window)) {
