@@ -30,13 +30,11 @@ int main(int argc, char *argv[]) {
     Model3D bunnyModel = Model3D("../../data/bunny.obj");
     Model3D ballModel = Model3D("../../data/sphere.obj");
 
-    Planet sun = Planet(ORIGIN, 10.0f, 1.0f);
+    Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
     sun.set_model(ballModel);
-    sun.set_modelScaling({5.0f, 5.0f, 5.0f});
 
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
     sunBall.set_model(ballModel);
-    sunBall.set_modelScaling({3.0f, 3.0f, 3.0f});
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
     Player player = Player();
@@ -190,20 +188,23 @@ int main(int argc, char *argv[]) {
     });    
 
     CollisionsManager manager;
-    auto playerCollider = player.get_playerCollider();
     auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
     manager.add_collider(sunCollider);
-    manager.add_collider(playerCollider);
+    manager.add_collider(player.get_playerCollider());
+
+    float balls = 0.0f;
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
         physObj.update(deltaTime);
-        auto col = manager.test_collision(playerCollider, sunCollider);
+        auto col = manager.test_collision(player.get_playerCollider(), sunCollider);
         if (col.isColliding) {
-            sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
-            PrintVector(sun.get_velocity());
+            //sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
+            balls += deltaTime;
+            PrintVector(player.get_playerCollider().get_global_position());
+            std::cout << balls << std::endl;
         }
         sun.update(deltaTime);
         sun.physicsUpdate(deltaTime);

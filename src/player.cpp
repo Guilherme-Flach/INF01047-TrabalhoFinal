@@ -6,11 +6,12 @@ const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
 const GLfloat Player::playerMass = 0.5f;
 
-const glm::vec4 Player::startingPosition = {-5.0f, -5.0f, -5.0f, 1.0f};
+const glm::vec4 Player::startingPosition = {-10.0f, +10.0f, -5.0f, 1.0f};
 
 Player::Player() : PhysicsObject(startingPosition, playerMass) {
     addChild(playerCamera);
     addChild(shipCheck);
+    addChild(playerCollider);
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [this](Action action) {
         const glm::vec4 direction = FRONT;
