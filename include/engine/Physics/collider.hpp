@@ -78,7 +78,7 @@ class RaycastCollider : public Collider {
 class CollisionsManager {
 
   private:
-    /* Adapted from https://superliminal.com/sources/#C_Code */
+    /* FONTE: Adapted from https://superliminal.com/sources/#C_Code */
     RTree<int, float, 3, float> collision_hierarchy;
 
     std::atomic<int> id{};
