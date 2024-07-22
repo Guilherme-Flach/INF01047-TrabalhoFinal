@@ -13,6 +13,9 @@
 #include <matrices.hpp>
 #include <vector>
 #include "glm/ext/vector_float4.hpp"
+#include <boost/log/attributes/named_scope.hpp>
+#include "Physics/planet.hpp"
+#include "Physics/player.hpp"
 
 void TextRendering_Init();
 float TextRendering_LineHeight(GLFWwindow *window);
@@ -55,6 +58,9 @@ class Loader {
     GLuint LoadShader_Vertex(const char *filename);
     GLuint LoadShader_Fragment(const char *filename);
     void LoadShadersFromFiles();
+    void LoadConfigFromFile(const char *filename);
+
+    Planet ParsePlanetInfo(std::string line);
 
   public:
     int program_id = 0;
