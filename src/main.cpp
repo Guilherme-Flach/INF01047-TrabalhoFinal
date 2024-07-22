@@ -18,8 +18,6 @@
 #include <iostream>
 #include "engine/Physics/collider.hpp"
 
-
-
 int main(int argc, char *argv[]) {
     int width = 800, height = 800;
     char title[] = "romano";
@@ -36,6 +34,7 @@ int main(int argc, char *argv[]) {
     Planet sun = Planet(ORIGIN, 10.0f, 1.0f);
     sun.set_model(ballModel);
     sun.set_modelScaling({5.0f, 5.0f, 5.0f});
+    auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
 
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
     sunBall.set_model(ballModel);
@@ -126,7 +125,6 @@ int main(int argc, char *argv[]) {
     loader.add_game_object(player);
     loader.add_game_object(player.get_ship().get_shipContainer());
 
-
     // loader.add_camera(*cameraPlayer);
     loader.add_camera(dollyCameraPlayerToPanoramic);
     loader.add_camera(dollyCameraPanoramicToPlayer);
@@ -193,7 +191,6 @@ int main(int argc, char *argv[]) {
     });
 
     auto window = loader.get_window();
-    
 
     CollisionsManager manager;
 
@@ -202,10 +199,11 @@ int main(int argc, char *argv[]) {
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
         physObj.update(deltaTime);
-        auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
         auto raycast = RaycastCollider(player.get_global_position(),
                                        player.get_playerCamera().get_view());
-        auto col = manager.test_collision(raycast, sunCollider);
+        sunCollider.set_position(sun.get_global_position());
+        manager.add_or_update_collider(sunCollider);
+        auto col = manager.test_collision(raycast);
         if (col.isColliding) {
             std::cout << "dinheiros" << std::endl;
             sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
