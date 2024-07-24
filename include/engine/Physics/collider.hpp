@@ -86,12 +86,13 @@ class CollisionsManager {
 
     std::atomic<int> id{};
     std::map<int, Collider *> colliders;
+    CollisionData test_collision(Collider &first, Collider &second);
 
   public:
-    void add_collider(Collider &collider);
+    void add_or_update_collider(Collider &collider);
     void remove_collider(Collider &collider);
     void search_collider(Collider &collider, std::set<int> &found);
-    CollisionData test_collision(Collider &first, Collider &second);
+    CollisionData test_collision(Collider &collider);
 };
 
 #endif // COLLIDER_HEADER

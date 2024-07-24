@@ -88,12 +88,25 @@ float SphereCollider::get_radius() { return this->radius; }
 RaycastCollider::RaycastCollider(glm::vec4 start, glm::vec4 direction)
     : Collider(start, ColliderType::RAY_COLLIDER), displacement(direction) {}
 
-void CollisionsManager::add_collider(Collider &collider) {
+void CollisionsManager::add_or_update_collider(Collider &collider) {
     auto min_vec = collider.get_min();
     auto max_vec = collider.get_max();
     float min[3] = {min_vec.x, min_vec.y, min_vec.z};
     float max[3] = {max_vec.x, max_vec.y, max_vec.z};
-    collider.update_id(this->id++);
+    auto found_index = this->colliders.find(collider.get_id());
+    if (found_index != this->colliders.end()) {
+        auto found_collider = found_index->second;
+        auto found_min_vec = found_collider->get_min();
+        auto found_max_vec = found_collider->get_max();
+        float found_min[3] = {found_min_vec.x, found_min_vec.y,
+                              found_min_vec.z};
+        float found_max[3] = {found_max_vec.x, found_max_vec.y,
+                              found_max_vec.z};
+        this->collision_hierarchy.Remove(found_min, found_max,
+                                         found_collider->get_id());
+    } else {
+        collider.update_id(this->id++);
+    }
     this->colliders[collider.get_id()] = &collider;
     this->collision_hierarchy.Insert(min, max, collider.get_id());
 }
@@ -103,7 +116,10 @@ void CollisionsManager::remove_collider(Collider &collider) {
     auto max_vec = collider.get_max();
     float min[3] = {min_vec.x, min_vec.y, min_vec.z};
     float max[3] = {max_vec.x, max_vec.y, max_vec.z};
-    this->colliders.erase(collider.get_id());
+    auto entry = this->colliders.find(collider.get_id());
+    std::cout << entry->first << std::endl;
+    if (entry != this->colliders.end())
+        this->colliders.erase(this->colliders.find(collider.get_id()));
     this->collision_hierarchy.Remove(min, max, collider.get_id());
 }
 
@@ -156,6 +172,18 @@ CollisionData RaycastCollider::test_sphere(SphereCollider sphere) {
     return CollisionData(true, global_position + min_offset);
 }
 
+CollisionData CollisionsManager::test_collision(Collider &collider) {
+    std::set<int> found;
+    this->search_collider(collider, found);
+    for (int i = 0; i < found.size(); i++) {
+        Collider *hit = this->colliders[*found.find(i)];
+        auto data = test_collision(collider, *hit);
+        if (data.isColliding)
+            return data;
+    }
+    return CollisionData(false);
+}
+
 CollisionData CollisionsManager::test_collision(Collider &first,
                                                 Collider &second) {
     if (first.get_collider_type() == ColliderType::RAY_COLLIDER &&
@@ -170,25 +198,14 @@ CollisionData CollisionsManager::test_collision(Collider &first,
         auto sphere = dynamic_cast<SphereCollider &>(first);
         return ray.test_sphere(sphere);
     }
-    if ((first.get_collider_type() == ColliderType::RAY_COLLIDER &&
-         second.get_collider_type() == ColliderType::RAY_COLLIDER) ||
-        (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
-         second.get_collider_type() == ColliderType::BOX_COLLIDER) ||
-        (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
-         second.get_collider_type() == ColliderType::RAY_COLLIDER) ||
-        (first.get_collider_type() == ColliderType::RAY_COLLIDER &&
-         second.get_collider_type() == ColliderType::BOX_COLLIDER) ||
-        (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
-         second.get_collider_type() == ColliderType::BOX_COLLIDER) ||
-        (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
-         second.get_collider_type() == ColliderType::SPHERE_COLLIDER)) {
-        std::set<int> first_found;
-        std::set<int> second_found;
-        this->search_collider(first, first_found);
-        this->search_collider(first, second_found);
-        return CollisionData(
-            first_found.find(second.get_id()) != first_found.end() ||
-            second_found.find(first.get_id()) != second_found.end());
+    if (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
+        second.get_collider_type() == ColliderType::SPHERE_COLLIDER) {
+        auto first_sphere = dynamic_cast<SphereCollider &>(first);
+        auto second_sphere = dynamic_cast<SphereCollider &>(second);
+        auto center = first_sphere.get_global_position();
+        auto ray =
+            RaycastCollider(center, second.get_global_position() - center);
+        return ray.test_sphere(second_sphere);
     }
     return CollisionData(false);
 }
