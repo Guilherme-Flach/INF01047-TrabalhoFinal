@@ -194,6 +194,8 @@ Planet Loader::ParsePlanetInfo(std::string line) {
     const std::string tokenSeparator = ";";
     int tokenLimiter;
 
+    std::cout << line << std::endl;
+
     tokenLimiter = line.find(tokenSeparator);
     float x = stof(line.substr(0, tokenLimiter));
     line = line.substr(tokenLimiter + 1); // erase until separator
@@ -234,7 +236,6 @@ Planet Loader::ParsePlanetInfo(std::string line) {
 
 void Loader::LoadConfigFromFile(const char *filename) {
     std::ifstream config_file(filename);
-
     std::string line;
 
     if (config_file.is_open()) {
@@ -247,7 +248,7 @@ void Loader::LoadConfigFromFile(const char *filename) {
                 std::cout << "Explodiu!" << std::endl;
             }
         }
-
+        config_file.close();
     }
 }
 
@@ -281,8 +282,7 @@ void Loader::start(std::function<void(void)> act) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Model3D ballModel = Model3D("../../data/sphere.obj");
-    LoadConfigFromFile("../../data/bunny.obj");
+    LoadConfigFromFile("../../data/startingconfig.txt");
 
     float prev_time = 0;
     while (!glfwWindowShouldClose(window)) {

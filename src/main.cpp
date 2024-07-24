@@ -192,8 +192,6 @@ int main(int argc, char *argv[]) {
     manager.add_collider(sunCollider);
     manager.add_collider(player.get_playerCollider());
 
-    float balls = 0.0f;
-
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
@@ -201,10 +199,7 @@ int main(int argc, char *argv[]) {
         physObj.update(deltaTime);
         auto col = manager.test_collision(player.get_playerCollider(), sunCollider);
         if (col.isColliding) {
-            //sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
-            balls += deltaTime;
-            PrintVector(player.get_playerCollider().get_global_position());
-            std::cout << balls << std::endl;
+            sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
         }
         sun.update(deltaTime);
         sun.physicsUpdate(deltaTime);

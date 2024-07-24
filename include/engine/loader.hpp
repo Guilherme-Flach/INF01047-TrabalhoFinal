@@ -13,7 +13,6 @@
 #include <matrices.hpp>
 #include <vector>
 #include "glm/ext/vector_float4.hpp"
-#include <boost/log/attributes/named_scope.hpp>
 #include "Physics/planet.hpp"
 #include "Physics/player.hpp"
 
