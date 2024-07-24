@@ -13,8 +13,10 @@ class Planet : public PhysicsObject {
     GLfloat surfaceGravity;
 
   public:
-    Planet(glm::vec4 position, GLfloat mass, GLfloat surfaceGravity)
-        : PhysicsObject(position, mass), surfaceGravity(surfaceGravity){};
+    Planet(glm::vec4 position, GLfloat radius, GLfloat surfaceGravity)
+        : PhysicsObject(position, (surfaceGravity * radius * radius / PhysicsObject::G_CONSTANT)), surfaceGravity(surfaceGravity){
+          set_modelScaling(radius);
+        };
 
     GLfloat get_surfaceGravity() { return surfaceGravity; };
 

@@ -2,11 +2,13 @@
 #include "engine/Physics/physicsObject.hpp"
 #include "matrices.hpp"
 
+const float PhysicsObject::G_CONSTANT = 1.0f;
+
 PhysicsObject::PhysicsObject(glm::vec4 position, GLfloat mass)
     : GameObject(position), drag(0), mass(mass),
-      velocity({0.0f, 0.0f, 0.0f, 0.0f}),
-      acceleration({0.0f, 0.0f, 0.0f, 0.0f}),
-      angularVelocity({0.0f, 0.0f, 0.0f}) {}
+      velocity(NONE),
+      acceleration(NONE),
+      angularVelocity(NONE) {}
 
 void PhysicsObject::accelerate(glm::vec4 velocity) {
     this->velocity += velocity;

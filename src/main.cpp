@@ -17,6 +17,7 @@
 #include <functional>
 #include <iostream>
 #include "engine/Physics/collider.hpp"
+#include "matrices.hpp"
 
 int main(int argc, char *argv[]) {
     int width = 800, height = 800;
@@ -26,19 +27,12 @@ int main(int argc, char *argv[]) {
 
     Model3D bunnyModel = Model3D("../../data/bunny.obj");
     Model3D ballModel = Model3D("../../data/sphere.obj");
-    // Model3D wireCubeModel = WireCube();
-    // Model3D dotModel = DotModel();
-    // Model3D noModel = NoModel();
-    // Model3D axesModel = BaseAxesModel();
 
-    Planet sun = Planet(ORIGIN, 10.0f, 1.0f);
+    Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
     sun.set_model(ballModel);
-    sun.set_modelScaling({5.0f, 5.0f, 5.0f});
-    auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
-
+  
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
     sunBall.set_model(ballModel);
-    sunBall.set_modelScaling({3.0f, 3.0f, 3.0f});
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
     Player player = Player();
@@ -193,6 +187,9 @@ int main(int argc, char *argv[]) {
     auto window = loader.get_window();
 
     CollisionsManager manager;
+    auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
+    manager.add_collider(sunCollider);
+    manager.add_collider(player.get_playerCollider());
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
@@ -205,10 +202,10 @@ int main(int argc, char *argv[]) {
         manager.add_or_update_collider(sunCollider);
         auto col = manager.test_collision(raycast);
         if (col.isColliding) {
-            std::cout << "dinheiros" << std::endl;
             sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
         }
         sun.update(deltaTime);
+        sun.physicsUpdate(deltaTime);
         sun.rotate(0.4 * deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
         player.physicsUpdate(deltaTime);

@@ -87,7 +87,7 @@ void main()
         Kd = vec3(1.0,0.0,0.0);
         Ks = vec3(1.0,0.0,0.0);
         Ka = vec3(0.01,0.01,0.01);
-        q = 1.0;
+        q = 20.0;
     }
 
     // Espectro da fonte de iluminação

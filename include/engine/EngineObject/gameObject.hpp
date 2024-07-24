@@ -37,6 +37,7 @@ class GameObject {
 
     void set_model(Model3D &model);
     void set_modelScaling(glm::vec3 scaling);
+    void set_modelScaling(float scaling);
     void set_onUpdate(std::function<void(GLfloat deltaTime)> updateFunction);
 
     void set_position(glm::vec4 position);
