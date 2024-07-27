@@ -29,7 +29,7 @@ class Camera : public GameObject {
 
     float fov = M_PI_2;
     float nearPlane = -0.1f;
-    float farPlane = -100.0f;
+    float farPlane = -200.0f;
 
   public:
     Camera(glm::vec4 position, GameObject *target);

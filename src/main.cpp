@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
 
     Model3D bunnyModel = Model3D("../../data/bunny.obj");
     Model3D ballModel = Model3D("../../data/sphere.obj");
+    Model3D shipModel = Model3D("../../data/ship.obj");
 
     Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
     sun.set_model(ballModel);
@@ -38,10 +39,10 @@ int main(int argc, char *argv[]) {
     Player player = Player();
 
     Camera cameraPanoramic =
-        Camera({10.0f, 10.0f, 10.0f, 1.0f}, new GameObject(ORIGIN));
+        Camera({60.0f, 60.0f, 60.0f, 1.0f}, new GameObject(ORIGIN));
     // cameraPanoramic.set_model(noModel);
     cameraPanoramic.set_fov(0.6 * M_PI);
-    cameraPanoramic.set_farPlane(-500.0f);
+    cameraPanoramic.set_farPlane(-200.0f);
 
     const BezierPath_Quadratic cameraPathToPanoramic =
         QuadraticInterpolator::createPath(
@@ -60,8 +61,8 @@ int main(int argc, char *argv[]) {
         {player.get_playerCamera().get_fov(),
          player.get_playerCamera().get_nearPlane(),
          player.get_playerCamera().get_farPlane(), 1.0f},
-        {0.6 * M_PI, player.get_playerCamera().get_nearPlane(), -50.0f, 1.0f},
-        {0.8 * M_PI, player.get_playerCamera().get_nearPlane(), -50.0f, 1.0f}};
+        {0.6 * M_PI, player.get_playerCamera().get_nearPlane(), player.get_playerCamera().get_farPlane(), 1.0f},
+        {0.8 * M_PI, player.get_playerCamera().get_nearPlane(), player.get_playerCamera().get_farPlane(), 1.0f}};
 
     DollyCamera dollyCameraPlayerToPanoramic =
         DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
@@ -112,7 +113,7 @@ int main(int argc, char *argv[]) {
             }
         });
 
-    player.get_ship().get_shipContainer().set_model(bunnyModel);
+    player.get_ship().get_shipContainer().set_model(shipModel);
     player.set_model(ballModel);
 
     loader.add_game_object(sun);
@@ -188,8 +189,8 @@ int main(int argc, char *argv[]) {
 
     CollisionsManager manager;
     auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
-    manager.add_collider(sunCollider);
-    manager.add_collider(player.get_playerCollider());
+    manager.add_or_update_collider(sunCollider);
+    manager.add_or_update_collider(player.get_playerCollider());
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
