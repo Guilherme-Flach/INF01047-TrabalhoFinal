@@ -55,40 +55,10 @@ void main()
     vec3 Ka; // Refletância ambiente
     float q; // Expoente especular para o modelo de iluminação de Phong
 
-    if ( object_id == SPHERE )
-    {
-        // PREENCHA AQUI
-        // Propriedades espectrais da esfera
-        Kd = vec3(0.0,0.0,0.0);
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.0,0.0,0.0);
-        q = 1.0;
-    }
-    else if ( object_id == BUNNY )
-    {
-        // PREENCHA AQUI
-        // Propriedades espectrais do coelho
-        Kd = vec3(0.0,0.0,0.0);
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.0,0.0,0.0);
-        q = 1.0;
-    }
-    else if ( object_id == PLANE )
-    {
-        // PREENCHA AQUI
-        // Propriedades espectrais do plano
-        Kd = vec3(0.0,0.0,0.0);
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.0,0.0,0.0);
-        q = 1.0;
-    }
-    else // Objeto desconhecido = preto
-    {
-        Kd = vec3(1.0,0.0,0.0);
-        Ks = vec3(1.0,0.0,0.0);
-        Ka = vec3(0.01,0.01,0.01);
-        q = 20.0;
-    }
+    Kd = vec3(0.8,0.0,0.0);
+    Ks = vec3(1.0,1.0,1.0);
+    Ka = vec3(0.01,0.01,0.01);
+    q = 90;
 
     // Espectro da fonte de iluminação
     vec3 I = vec3(1.0,1.0,1.0); // PREENCH AQUI o espectro da fonte de luz
@@ -97,13 +67,13 @@ void main()
     vec3 Ia = vec3(0.2,0.2,0.2); // PREENCHA AQUI o espectro da luz ambiente
 
     // Termo difuso utilizando a lei dos cossenos de Lambert
-    vec3 lambert_diffuse_term = Kd * I * max(0, dot(n,l)); // PREENCHA AQUI o termo difuso de Lambert
+    vec3 lambert_diffuse_term = Kd * I * max(0, dot(n,l)); 
 
     // Termo ambiente
     vec3 ambient_term = Ka*Ia; // PREENCHA AQUI o termo ambiente
 
     // Termo especular utilizando o modelo de iluminação de Phong
-    vec3 phong_specular_term  = Ks* I *max(pow(dot(n,h), q),0); // PREENCH AQUI o termo especular de Phong
+    vec3 phong_specular_term  = Ks* I * max(pow(dot(n,h), q),0); // PREENCH AQUI o termo especular de Phong
 
     // NOTE: Se você quiser fazer o rendering de objetos transparentes, é
     // necessário:
