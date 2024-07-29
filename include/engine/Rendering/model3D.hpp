@@ -26,7 +26,8 @@ class Model3D {
     std::vector<GLfloat> normals;
     std::vector<GLfloat> textures;
     std::vector<GLuint> indices;
-
+    glm::vec3 bbox_min;
+    glm::vec3 bbox_max;
     GLuint vertexArrayId;
     GLuint verticesId;
     GLuint normalsId;

@@ -2,8 +2,8 @@
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/ship.hpp"
 
-const GLfloat Ship::shipBaseSpeed = 0.5f;
-const GLfloat Ship::shipBoostingSpeed = 2.0f;
+const GLfloat Ship::shipBaseSpeed = 2.5f;
+const GLfloat Ship::shipBoostingSpeed = 5.0f;
 const GLfloat Ship::turningSpeed = 1.5f;
 const GLfloat Ship::shipDrag = 0.5f;
 

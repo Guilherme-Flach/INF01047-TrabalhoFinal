@@ -5,10 +5,14 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include <limits>
+#include <algorithm>
+
+
 #include <stdexcept>
 #include <vector>
-#include "tiny_obj_loader.h"
+#include <tiny_obj_loader.h>
+
 #include "matrices.hpp"
 
 Model3D::Model3D(const char* path) : vertexArrayId(0), line_width(4.0f) {
@@ -19,69 +23,68 @@ Model3D::Model3D(const char* path) : vertexArrayId(0), line_width(4.0f) {
     ObjModel model(path);
 
     ComputeNormals(&model);
-
-    // std::vector<GLuint> indices;
-    // std::vector<float> model_coefficients;
-    // std::vector<float> normal_coefficients;
-    // std::vector<float> texture_coefficients;
-
-    for (size_t shape = 0; shape < model.shapes.size(); ++shape) {
+    for (size_t shape = 0; shape < model.shapes.size(); ++shape)
+    {
         size_t first_index = indices.size();
-        size_t num_triangles =
-            model.shapes[shape].mesh.num_face_vertices.size();
+        size_t num_triangles = model.shapes[shape].mesh.num_face_vertices.size();
 
-        for (size_t triangle = 0; triangle < num_triangles; ++triangle) {
+        const float minval = std::numeric_limits<float>::min();
+        const float maxval = std::numeric_limits<float>::max();
+
+        glm::vec3 bbox_min = glm::vec3(maxval,maxval,maxval);
+        glm::vec3 bbox_max = glm::vec3(minval,minval,minval);
+
+        for (size_t triangle = 0; triangle < num_triangles; ++triangle)
+        {
             assert(model.shapes[shape].mesh.num_face_vertices[triangle] == 3);
 
-            for (size_t vertex = 0; vertex < 3; ++vertex) {
-                tinyobj::index_t idx =
-                    model.shapes[shape].mesh.indices[3 * triangle + vertex];
+            for (size_t vertex = 0; vertex < 3; ++vertex)
+            {
+                tinyobj::index_t idx = model.shapes[shape].mesh.indices[3*triangle + vertex];
 
-                indices.push_back(first_index + 3 * triangle + vertex);
+                indices.push_back(first_index + 3*triangle + vertex);
 
-                const float vx =
-                    model.attrib.vertices[3 * idx.vertex_index + 0];
-                const float vy =
-                    model.attrib.vertices[3 * idx.vertex_index + 1];
-                const float vz =
-                    model.attrib.vertices[3 * idx.vertex_index + 2];
-                // printf("tri %d vert %d = (%.2f, %.2f, %.2f)\n",
-                // (int)triangle, (int)vertex, vx, vy, vz);
-                vertices.push_back(vx);   // X
-                vertices.push_back(vy);   // Y
-                vertices.push_back(vz);   // Z
-                vertices.push_back(1.0f); // W
+                const float vx = model.attrib.vertices[3*idx.vertex_index + 0];
+                const float vy = model.attrib.vertices[3*idx.vertex_index + 1];
+                const float vz = model.attrib.vertices[3*idx.vertex_index + 2];
+                //printf("tri %d vert %d = (%.2f, %.2f, %.2f)\n", (int)triangle, (int)vertex, vx, vy, vz);
+                vertices.push_back( vx ); // X
+                vertices.push_back( vy ); // Y
+                vertices.push_back( vz ); // Z
+                vertices.push_back( 1.0f ); // W
+
+                bbox_min.x = std::min(bbox_min.x, vx);
+                bbox_min.y = std::min(bbox_min.y, vy);
+                bbox_min.z = std::min(bbox_min.z, vz);
+                bbox_max.x = std::max(bbox_max.x, vx);
+                bbox_max.y = std::max(bbox_max.y, vy);
+                bbox_max.z = std::max(bbox_max.z, vz);
 
                 // Inspecionando o código da tinyobjloader, o aluno Bernardo
                 // Sulzbach (2017/1) apontou que a maneira correta de testar se
                 // existem normais e coordenadas de textura no ObjModel é
                 // comparando se o índice retornado é -1. Fazemos isso abaixo.
 
-                if (idx.normal_index != -1) {
-                    const float nx =
-                        model.attrib.normals[3 * idx.normal_index + 0];
-                    const float ny =
-                        model.attrib.normals[3 * idx.normal_index + 1];
-                    const float nz =
-                        model.attrib.normals[3 * idx.normal_index + 2];
-                    normals.push_back(nx);   // X
-                    normals.push_back(ny);   // Y
-                    normals.push_back(nz);   // Z
-                    normals.push_back(0.0f); // W
+                if ( idx.normal_index != -1 )
+                {
+                    const float nx = model.attrib.normals[3*idx.normal_index + 0];
+                    const float ny = model.attrib.normals[3*idx.normal_index + 1];
+                    const float nz = model.attrib.normals[3*idx.normal_index + 2];
+                    normals.push_back( nx ); // X
+                    normals.push_back( ny ); // Y
+                    normals.push_back( nz ); // Z
+                    normals.push_back( 0.0f ); // W
                 }
 
-                if (idx.texcoord_index != -1) {
-                    const float u =
-                        model.attrib.texcoords[2 * idx.texcoord_index + 0];
-                    const float v =
-                        model.attrib.texcoords[2 * idx.texcoord_index + 1];
-                    textures.push_back(u);
-                    textures.push_back(v);
+                if ( idx.texcoord_index != -1 )
+                {
+                    const float u = model.attrib.texcoords[2*idx.texcoord_index + 0];
+                    const float v = model.attrib.texcoords[2*idx.texcoord_index + 1];
+                    textures.push_back( u );
+                    textures.push_back( v );
                 }
             }
         }
-
-        size_t last_index = indices.size() - 1;
 
         this->name = model.shapes[shape].name;
         this->renderType = GL_TRIANGLES;

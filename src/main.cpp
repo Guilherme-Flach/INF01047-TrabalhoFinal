@@ -8,6 +8,7 @@
 #include "engine/Physics/ship.hpp"
 #include "engine/Rendering/defaultModels.hpp"
 #include "engine/Rendering/model3D.hpp"
+#include "engine/Rendering/renderer.hpp"
 #include "engine/loader.hpp"
 #include "engine/Input/inputHandler.hpp"
 #include "GLFW/glfw3.h"
@@ -26,6 +27,7 @@ int main(int argc, char *argv[]) {
     auto loader = Loader(width, height, title);
 
     Model3D bunnyModel = Model3D("../../data/bunny.obj");
+    Model3D playerModel = Model3D("../../data/bunny.obj");
     Model3D ballModel = Model3D("../../data/sphere.obj");
     Model3D shipModel = Model3D("../../data/ship.obj");
 
@@ -40,7 +42,6 @@ int main(int argc, char *argv[]) {
 
     Camera cameraPanoramic =
         Camera({60.0f, 60.0f, 60.0f, 1.0f}, new GameObject(ORIGIN));
-    // cameraPanoramic.set_model(noModel);
     cameraPanoramic.set_fov(0.6 * M_PI);
     cameraPanoramic.set_farPlane(-200.0f);
 
@@ -55,7 +56,6 @@ int main(int argc, char *argv[]) {
             cameraPanoramic.get_target()->get_global_position());
 
     PhysicsObject physObj = PhysicsObject({0.0f, 0.0f, 0.0f, 1.0f}, 1.0f);
-    // physObj.set_model(cuboModel);
 
     const BezierPath_Quadratic lensPathToPanoramic = {
         {player.get_playerCamera().get_fov(),
@@ -68,7 +68,6 @@ int main(int argc, char *argv[]) {
         DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
                     targetPathToPanoramic, 0.5f, lensPathToPanoramic);
 
-    // dollyCameraPlayerToPanoramic.set_model(noModel);
 
     dollyCameraPlayerToPanoramic.set_onUpdate(
         [&dollyCameraPlayerToPanoramic, &loader,
@@ -102,8 +101,6 @@ int main(int argc, char *argv[]) {
         DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
                     targetPathToPanoramic, 0.5f, lensPathToPlayer);
 
-    // dollyCameraPanoramicToPlayer.set_model(noModel);
-
     dollyCameraPanoramicToPlayer.set_onUpdate(
         [&dollyCameraPanoramicToPlayer, &loader,
          &player](GLfloat deltaTime) -> void {
@@ -114,11 +111,13 @@ int main(int argc, char *argv[]) {
         });
 
     player.get_ship().get_shipContainer().set_model(shipModel);
-    player.set_model(ballModel);
+    player.get_playerCamera().set_model(playerModel);
+
 
     loader.add_game_object(sun);
     loader.add_game_object(player);
     loader.add_game_object(player.get_ship().get_shipContainer());
+    loader.add_game_object(player.get_playerCamera());
 
     // loader.add_camera(*cameraPlayer);
     loader.add_camera(dollyCameraPlayerToPanoramic);
@@ -191,6 +190,16 @@ int main(int argc, char *argv[]) {
     auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
     manager.add_or_update_collider(sunCollider);
     manager.add_or_update_collider(player.get_playerCollider());
+
+    Renderer& renderer = Renderer::instance(loader.get_window());
+
+    std::cout << "Witches created" << std::endl;
+    
+    renderer.addToRenderQueue(Renderer::PHONG, &player.get_ship().get_shipContainer());
+    Renderer& renderer2 = Renderer::instance(loader.get_window());
+    renderer2.addToRenderQueue(Renderer::GOURAUD, &sun);
+
+    std::cout << "Umineko golden started" << std::endl;
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
