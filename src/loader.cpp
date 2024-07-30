@@ -2,7 +2,6 @@
 #include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <GL/gl.h>
 #include <string>
 #include "engine/loader.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
@@ -134,7 +133,7 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetMouseButtonCallback(window, InputHandler::handleMouseClick);
     glfwSetCursorPosCallback(window, InputHandler::handleCursorPosChange);
     glfwSetCursorPos(window, 0, 0);
-    glfwFocusWindow(window);
+    //glfwFocusWindow(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Renderer& renderer = Renderer::instance(get_window());
@@ -161,7 +160,7 @@ void Loader::start(std::function<void(void)> act) {
         Loader::delta_t = current_time - prev_time;
         prev_time = current_time;
 
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         act();       
         

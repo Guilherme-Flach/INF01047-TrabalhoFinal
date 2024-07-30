@@ -14,7 +14,6 @@
 
 #define ASSERT assert // RTree uses ASSERT( condition )
 #define __min(a, b) (((a) < (b)) ? (a) : (b))
-#define __max(a, b) (((a) < (b)) ? (b) : (a))
 #ifndef Min
 #define Min __min
 #endif // Min

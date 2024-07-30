@@ -9,6 +9,11 @@
 
 #include <vector>
 
+struct Texture {
+  GLuint texture_id;
+  GLuint sampler_id;
+};
+
 struct ObjModel {
     tinyobj::attrib_t                 attrib;
     std::vector<tinyobj::shape_t>     shapes;

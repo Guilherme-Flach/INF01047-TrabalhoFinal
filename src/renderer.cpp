@@ -3,24 +3,27 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Rendering/model3D.hpp"
-#include "engine/loader.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "stb_image.h"
 
 #include <iostream>
 #include <map>
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include "matrices.hpp"
+
+std::map<const char*, Texture> Renderer::textures = std::map<const char*, Texture>();
+std::vector<Model3D> Renderer::renderModels = std::vector<Model3D>();
 
 Renderer::Renderer(GLFWwindow *window)
     : window(window), programs(std::map<RenderMode, RenderProgram>()),
-      renderModels(std::vector<Model3D>()),
       renderQueues(std::map<RenderMode, std::vector<GameObject *>>()) {
-    createProgram(PHONG, "../../data/phong_shader_vertex.glsl",
-                  "../../data/phong_shader_fragment.glsl");
+    createProgram(PHONG, "../../data/phong_shader.vert",
+                  "../../data/phong_shader.frag");
 
-    createProgram(GOURAUD, "../../data/gouraud_shader_vertex.glsl",
-                  "../../data/gouraud_shader_fragment.glsl");
+    createProgram(GOURAUD, "../../data/gouraud_shader.vert",
+                  "../../data/gouraud_shader.frag");
 }
 
 Renderer &Renderer::instance(GLFWwindow *window) {
@@ -50,9 +53,19 @@ void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera) {
                        glm::value_ptr(camera->get_viewMatrix()));
 
     for (GameObject *gameObject : renderQueues[renderMode]) {
+        // Render the game object
         if (gameObject != NULL &&
             (gameObject->get_isRenderable() || debugMode)) {
-            glUniform1i(programs[renderMode].objectid_uniform, -1);
+            // Set texture
+            if (gameObject->get_texture() != nullptr) {
+                const Texture texture = *gameObject->get_texture();
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, texture.texture_id);
+                glBindSampler(GL_TEXTURE0, texture.sampler_id);
+                glUniform1i(programs[renderMode].texture0, 0);
+            }
+            
+            //
             glUniformMatrix4fv(programs[renderMode].model_uniform, 1, GL_FALSE,
                                glm::value_ptr(gameObject->get_model_matrix()));
             gameObject->get_model()->render();
@@ -103,11 +116,11 @@ void Renderer::createProgram(RenderMode renderMode,
     GLint model_uniform = glGetUniformLocation(program_id, "model");
     GLint view_uniform = glGetUniformLocation(program_id, "view");
     GLint projection_uniform = glGetUniformLocation(program_id, "projection");
-    GLint object_id_uniform = glGetUniformLocation(program_id, "object_id");
+    GLint texture0_uniform = glGetUniformLocation(program_id, "Texture0");
 
     RenderProgram program =
         RenderProgram{program_id, model_uniform, view_uniform,
-                      projection_uniform, object_id_uniform};
+                      projection_uniform, texture0_uniform};
 
     programs[renderMode] = program;
 }
@@ -189,4 +202,62 @@ GLuint Renderer::loadShader_Fragment(const char *filename) {
 
 void Renderer::addToRenderQueue(RenderMode renderMode, GameObject *object) {
     renderQueues[renderMode].push_back(object);
+}
+
+Texture& Renderer::loadTexture(const char* name, const char* filename) {
+    auto textureIterator = textures.find(name);
+
+    if (textureIterator != textures.end()) {
+        return textureIterator->second;
+    }
+
+    printf("Carregando imagem \"%s\"... ", filename);
+
+    // Primeiro fazemos a leitura da imagem do disco
+    stbi_set_flip_vertically_on_load(true);
+    int width;
+    int height;
+    int channels;
+    unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
+
+    if ( data == NULL )
+    {
+        fprintf(stderr, "ERROR: Cannot open image file \"%s\".\n", filename);
+        std::exit(EXIT_FAILURE);
+    }
+
+    printf("OK (%dx%d).\n", width, height);
+
+    // Agora criamos objetos na GPU com OpenGL para armazenar a textura
+    GLuint texture_id;
+    GLuint sampler_id;
+    glGenTextures(1, &texture_id);
+    glGenSamplers(1, &sampler_id);
+
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Agora enviamos a imagem lida do disco para a GPU
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindSampler(GL_TEXTURE0, sampler_id);
+
+    stbi_image_free(data);
+
+    textures[name] = Texture{
+        texture_id,
+        sampler_id
+    };
+        
+    return textures[name];
 }

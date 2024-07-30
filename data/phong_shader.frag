@@ -1,9 +1,5 @@
 #version 330 core
 
-// Atributos de fragmentos recebidos como entrada ("in") pelo Fragment Shader.
-// Neste exemplo, este atributo foi gerado pelo rasterizador como a
-// interpolação da posição global e a normal de cada vértice, definidas em
-// "shader_vertex.glsl" e "main.cpp".
 in vec4 position_world;
 in vec4 normal;
 
@@ -11,12 +7,7 @@ in vec4 normal;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-
-// Identificador que define qual objeto está sendo desenhado no momento
-#define SPHERE 0
-#define BUNNY  1
-#define PLANE  2
-uniform int object_id;
+uniform sampler2D Texture0;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
@@ -87,7 +78,7 @@ void main()
     //    suas distâncias para a câmera (desenhando primeiro objetos
     //    transparentes que estão mais longe da câmera).
     // Alpha default = 1 = 100% opaco = 0% transparente
-    color.a = 0.7;
+    color.a = 1.0;
 
     // Cor final do fragmento calculada com uma combinação dos termos difuso,
     // especular, e ambiente. Veja slide 129 do documento Aula_17_e_18_Modelos_de_Iluminacao.pdf.

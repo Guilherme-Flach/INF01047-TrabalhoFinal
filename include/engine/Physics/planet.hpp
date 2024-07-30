@@ -6,6 +6,7 @@
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "glm/ext/vector_float4.hpp"
+#include "engine/Rendering/renderer.hpp"
 
 class Planet : public PhysicsObject {
   private:
@@ -16,6 +17,7 @@ class Planet : public PhysicsObject {
     Planet(glm::vec4 position, GLfloat radius, GLfloat surfaceGravity)
         : PhysicsObject(position, (surfaceGravity * radius * radius / PhysicsObject::G_CONSTANT)), surfaceGravity(surfaceGravity){
           set_modelScaling(radius);
+          texture = &Renderer::loadTexture("ag", "../../data/ag.jpg");
         };
 
     GLfloat get_surfaceGravity() { return surfaceGravity; };

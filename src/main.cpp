@@ -129,7 +129,6 @@ int main(int argc, char *argv[]) {
     // InputHandler::addKeyMapping(GLFW_KEY_T, [&ship, &sun](Action action) {
     //     if (action == GLFW_PRESS) {
     //         ship.set_currentPlanet(&sun);
-    //         std::cout << "balls"<< std::endl;
     //     }
     // });
 
@@ -193,13 +192,8 @@ int main(int argc, char *argv[]) {
 
     Renderer& renderer = Renderer::instance(loader.get_window());
 
-    std::cout << "Witches created" << std::endl;
-    
     renderer.addToRenderQueue(Renderer::PHONG, &player.get_ship().get_shipContainer());
-    Renderer& renderer2 = Renderer::instance(loader.get_window());
-    renderer2.addToRenderQueue(Renderer::GOURAUD, &sun);
-
-    std::cout << "Umineko golden started" << std::endl;
+    renderer.addToRenderQueue(Renderer::GOURAUD, &sun);
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
@@ -212,7 +206,7 @@ int main(int argc, char *argv[]) {
         manager.add_or_update_collider(sunCollider);
         auto col = manager.test_collision(raycast);
         if (col.isColliding) {
-            sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
+            //sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
         }
         sun.update(deltaTime);
         sun.physicsUpdate(deltaTime);

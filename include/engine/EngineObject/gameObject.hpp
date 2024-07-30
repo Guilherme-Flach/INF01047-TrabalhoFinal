@@ -17,6 +17,7 @@ class GameObject {
     std::vector<GameObject *> children;
     glm::vec3 modelScaling = {1.0f, 1.0f, 1.0f};
     Model3D *model;
+    Texture *texture;
     GameObject *parent;
     bool isRenderable = false;
     void set_parent(GameObject &parent);
@@ -32,10 +33,12 @@ class GameObject {
     glm::mat3x4 get_global_basis();
     glm::mat3x4 get_basis();
     Model3D *get_model();
+    Texture *get_texture();
     glm::vec3 get_modelScaling();
     bool get_isRenderable();
 
     void set_model(Model3D &model);
+    void set_texture(Texture &texture);
     void set_modelScaling(glm::vec3 scaling);
     void set_modelScaling(float scaling);
     void set_onUpdate(std::function<void(GLfloat deltaTime)> updateFunction);

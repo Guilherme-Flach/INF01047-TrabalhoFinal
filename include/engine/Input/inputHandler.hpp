@@ -1,5 +1,5 @@
-#ifndef KEYMAP_HEADER
-#define KEYMAP_HEADER
+#ifndef INPUTHANDLER_HEADER
+#define INPUTHANDLER_HEADER
 #include <functional>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>

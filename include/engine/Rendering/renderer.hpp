@@ -23,14 +23,14 @@ class Renderer {
       GLint model_uniform;
       GLint view_uniform;
       GLint projection_uniform;
-      GLint objectid_uniform;
+      GLint texture0;
     };
-
   private:
     Renderer(GLFWwindow *window);
     GLFWwindow *window;
 
-    std::vector<Model3D> renderModels;
+    static std::vector<Model3D> renderModels;
+    static std::map<const char*, Texture> textures;
     std::map<RenderMode, std::vector<GameObject *>>  renderQueues;
     std::map<RenderMode, RenderProgram> programs;
 
@@ -47,7 +47,8 @@ class Renderer {
     void addToRenderQueue(RenderMode renderMode, GameObject *object);
     static Renderer &instance(GLFWwindow *window);
     
-    void addModel(Model3D *object);
+    static void addModel(Model3D *object);
+    static Texture& loadTexture(const char* name, const char* filename);
     void setDebugMode(bool debugMode);
 
     RenderProgram get_programSpec(RenderMode renderMode);

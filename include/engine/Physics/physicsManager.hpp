@@ -1,5 +1,5 @@
-#ifndef RENDEROBJECT_HEADER
-#define RENDEROBJECT_HEADER
+#ifndef PHYSICSMANAGER_HEADER
+#define PHYSICSMANAGER_HEADER
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/planet.hpp"
 #include <glm/vec4.hpp>
