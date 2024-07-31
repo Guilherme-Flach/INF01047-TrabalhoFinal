@@ -10,7 +10,10 @@ const GLfloat Ship::shipDrag = 0.5f;
 Ship::Ship(glm::vec4 position)
         : PhysicsObject(position, playerMass) {
         set_drag(shipDrag);
-        this->addChild(shipContainer);
+        addChild(shipContainer);
+        shipContainer.set_texture(Renderer::instance().loadTexture("ship", "../../data/ship/ship.jpeg"));
+        shipContainer.set_model(Renderer::instance().loadModel("ship", "../../data/ship/ship.obj"));
+        Renderer::instance().addToRenderQueue(Renderer::RenderMode::PHONG, &shipContainer);
     };
 
 void Ship::physicsUpdate(GLfloat deltaTime) {

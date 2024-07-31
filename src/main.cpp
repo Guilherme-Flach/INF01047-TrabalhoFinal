@@ -26,8 +26,6 @@ int main(int argc, char *argv[]) {
 
     auto loader = Loader(width, height, title);
 
-    Renderer& renderer = Renderer::instance();
-
     Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
 
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
@@ -179,12 +177,8 @@ int main(int argc, char *argv[]) {
     auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
     manager.add_or_update_collider(sunCollider);
     manager.add_or_update_collider(player.get_playerCollider());
-
-    renderer.addToRenderQueue(Renderer::PHONG,
-                              &player.get_ship().get_shipContainer());
-    renderer.addToRenderQueue(Renderer::GOURAUD, &sun);
-    player.get_ship().get_shipContainer().set_texture(Renderer::instance().loadTexture("ship", "../../data/ship/internal.jpeg"));
-
+    Renderer::instance().addToRenderQueue(Renderer::RenderMode::GOURAUD, &sun);
+    
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
@@ -197,7 +191,7 @@ int main(int argc, char *argv[]) {
         manager.add_or_update_collider(sunCollider);
         auto col = manager.test_collision(player.get_playerCollider());
         if (col.isColliding) {
-            std::cout << "ROAMROPWINMDOIADNAOIWD" << std::endl;
+            //std::cout << "ROAMROPWINMDOIADNAOIWD" << std::endl;
             // sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
         }
         sun.update(deltaTime);

@@ -82,8 +82,9 @@ void Renderer::renderModel(Model3D model) {
 
 void Renderer::renderTexture(RenderMode renderMode, Texture texture) {
     glActiveTexture(GL_TEXTURE0);
+    glBindSampler(0, texture.sampler_id);
     glBindTexture(GL_TEXTURE_2D, texture.texture_id);
-    glBindSampler(GL_TEXTURE0, texture.sampler_id);
+
     glUniform1i(programs[renderMode].texture0, 0);
 }
 
@@ -277,7 +278,6 @@ Texture* Renderer::loadTexture(const char* name, const char* filename) {
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-    glBindSampler(GL_TEXTURE0, sampler_id);
 
     stbi_image_free(data);
 

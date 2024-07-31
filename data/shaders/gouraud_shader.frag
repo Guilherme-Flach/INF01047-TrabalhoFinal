@@ -4,13 +4,34 @@
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform sampler2D Texture0;
 
-in vec4 color_v;
+
+in vec3 illumination;
+
+in vec2 texcoords;
 
 out vec4 color;
 
 void main()
 {
-    color = color_v; 
+    // Coordenadas de textura
+    float U = texcoords.x;
+    float V = texcoords.y;
+
+    vec3 Kd0 = texture(Texture0, vec2(U,V)).rgb;
+    vec3 Ka = Kd0/4;
+
+    // Termo ambiente
+    vec3 lambert_diffuse_term = Kd0 * illumination;
+    vec3 ambient_term = Ka * vec3(0.2,0.2,0.2);
+
+    // Nao definimos termo especular devido as limitacoes de gouraud shading
+    color.a = 1.0;
+
+    color.rgb = lambert_diffuse_term + ambient_term;
+
+    // Cor final com correção gamma, considerando monitor sRGB.
+    color.rgb = pow(color.rgb, vec3(1.0,1.0,1.0)/2.2);
 } 
 

@@ -7,9 +7,9 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform sampler2D Texture0;
+out vec3 illumination;
 
-out vec4 color_v;
+out vec2 texcoords;
 
 void main()
 {
@@ -38,13 +38,6 @@ void main()
     // Vetor que define o sentido da reflexão especular ideal.
     vec4 h = normalize(v+l);
 
-    // Coordenadas de textura
-    float U = texture_coefficients.x;
-    float V = texture_coefficients.y;
-
-    vec3 Kd0 = texture(Texture0, vec2(U,V)).rgb;
-    vec3 Ka = Kd0/2;
-
     // Espectro da fonte de iluminação
     vec3 I = vec3(1.0,1.0,1.0); // PREENCH AQUI o espectro da fonte de luz
 
@@ -52,18 +45,8 @@ void main()
     vec3 Ia = vec3(0.2,0.2,0.2);
 
     // Termo difuso utilizando a lei dos cossenos de Lambert
-    vec3 lambert_diffuse_term = Kd0 * I * max(0, dot(n,l)); 
+    illumination = I * max(0, dot(n,l)); 
 
-    // Termo ambiente
-    vec3 ambient_term = Ka * Ia;
-
-    // Nao definimos termo especular devido as limitacoes de gouraud shading
-    color_v.a = 1.0;
-
-    color_v.rgb = lambert_diffuse_term + ambient_term;
-
-    // Cor final com correção gamma, considerando monitor sRGB.
-    color_v.rgb = pow(color_v.rgb, vec3(1.0,1.0,1.0)/2.2);
-
+    texcoords = texture_coefficients;
 }
 

@@ -19,7 +19,6 @@ class Planet : public PhysicsObject {
           set_modelScaling(radius);
           texture = Renderer::instance().loadTexture("ag", "../../data/planets/ag.jpg");
           model = Renderer::instance().loadModel("planet", "../../data/planets/sphere.obj");
-
         };
 
     GLfloat get_surfaceGravity() { return surfaceGravity; };

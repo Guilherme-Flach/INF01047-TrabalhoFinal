@@ -179,8 +179,8 @@ CollisionData CollisionsManager::test_collision(Collider &collider) {
         Collider *hit = this->colliders[*found.find(i)];
         if (hit->get_id() == collider.get_id())
             continue;
-        std::cout << collider.get_id() << std::endl;
-        std::cout << hit->get_id() << std::endl;
+        //std::cout << collider.get_id() << std::endl;
+        //std::cout << hit->get_id() << std::endl;
         auto data = test_collision(collider, *hit);
         if (data.isColliding)
             return data;

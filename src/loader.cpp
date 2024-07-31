@@ -13,7 +13,6 @@
 #include <fstream>
 #include "GLFW/glfw3.h"
 
-
 void TextRendering_Init();
 void TextRendering_ShowFramesPerSecond(GLFWwindow *window);
 
