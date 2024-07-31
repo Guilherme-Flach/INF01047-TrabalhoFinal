@@ -1,7 +1,6 @@
 #include <iostream>
 #include <functional>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <string>
 #include "engine/loader.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
@@ -12,11 +11,15 @@
 #include "matrices.hpp"
 #include <sstream>
 #include <fstream>
+#include "GLFW/glfw3.h"
+
 
 void TextRendering_Init();
 void TextRendering_ShowFramesPerSecond(GLFWwindow *window);
 
 float Loader::delta_t = 0;
+GLFWwindow* Loader::window = nullptr;
+Camera* Loader::active_camera = nullptr;
 
 Loader::Loader(int width, int height, char title[]) {
     int success = glfwInit();
@@ -136,7 +139,7 @@ void Loader::start(std::function<void(void)> act) {
     //glfwFocusWindow(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    Renderer& renderer = Renderer::instance(get_window());
+    Renderer& renderer = Renderer::instance();
 
     // renderer.setDebugMode(true);
 
@@ -164,8 +167,8 @@ void Loader::start(std::function<void(void)> act) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         act();       
         
-        renderer.renderRenderQueue(Renderer::PHONG, active_camera);
-        renderer.renderRenderQueue(Renderer::GOURAUD, active_camera);
+        renderer.renderRenderQueue(Renderer::PHONG, active_camera, window);
+        renderer.renderRenderQueue(Renderer::GOURAUD, active_camera, window);
 
         TextRendering_ShowFramesPerSecond(window);
 

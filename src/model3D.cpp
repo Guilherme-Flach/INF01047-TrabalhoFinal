@@ -15,12 +15,21 @@
 
 #include "matrices.hpp"
 
-Model3D::Model3D(const char* path) : vertexArrayId(0), line_width(4.0f) {
+Model3D::Model3D() {};
+
+Model3D::Model3D(const char* path) : vertexArrayId(0) {
 
     glGenVertexArrays(1, &vertexArrayId);
     glBindVertexArray(vertexArrayId);
 
     ObjModel model(path);
+
+    std::vector<GLfloat> vertices;
+    std::vector<GLfloat> normals;
+    std::vector<GLfloat> textures;
+    std::vector<GLuint> indices;
+    //glm::vec3 bbox_min;
+    //glm::vec3 bbox_max;
 
     ComputeNormals(&model);
     for (size_t shape = 0; shape < model.shapes.size(); ++shape)
@@ -86,9 +95,7 @@ Model3D::Model3D(const char* path) : vertexArrayId(0), line_width(4.0f) {
             }
         }
 
-        this->name = model.shapes[shape].name;
         this->renderType = GL_TRIANGLES;
-
     }
 
     GLuint VBO_model_coefficients_id;
@@ -145,6 +152,8 @@ Model3D::Model3D(const char* path) : vertexArrayId(0), line_width(4.0f) {
     GLuint indices_id;
     glGenBuffers(1, &indices_id);
 
+    numIndices = indices.size();
+
     // "Ligamos" o buffer. Note que o tipo agora é GL_ELEMENT_ARRAY_BUFFER.
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_id);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), NULL,
@@ -160,20 +169,6 @@ Model3D::Model3D(const char* path) : vertexArrayId(0), line_width(4.0f) {
 
 }
 
-GLuint Model3D::get_vertexArrayId() { return this->vertexArrayId; }
-
-void Model3D::render() {
-    if (indices.size() == 0) {
-        return;
-    }
-    glBindVertexArray(vertexArrayId);
-    glLineWidth(line_width);
-    glPointSize(line_width);
-    glDrawElements(renderType, indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-    
-
-}
 ObjModel::ObjModel(const char *filename, const char *basepath,
                    bool triangulate) {
     printf("Carregando objetos do arquivo \"%s\"...\n", filename);

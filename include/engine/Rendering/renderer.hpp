@@ -13,42 +13,44 @@
 
 class Renderer {
   public:
-    enum RenderMode {
-      PHONG,
-      GOURAUD
-    };
-    
-    struct RenderProgram {
-      GLuint program_id;
-      GLint model_uniform;
-      GLint view_uniform;
-      GLint projection_uniform;
-      GLint texture0;
-    };
-  private:
-    Renderer(GLFWwindow *window);
-    GLFWwindow *window;
+    enum RenderMode { PHONG, GOURAUD };
 
-    static std::map<const char*, Texture> textures;
-    static std::map<const char*, Model3D> renderModels;
-    std::map<RenderMode, std::vector<GameObject *>>  renderQueues;
+    struct RenderProgram {
+        GLuint program_id;
+        GLint model_uniform;
+        GLint view_uniform;
+        GLint projection_uniform;
+        GLint texture0;
+    };
+
+  private:
+    Renderer();
+
+    std::map<RenderMode, std::vector<GameObject *>> renderQueues;
     std::map<RenderMode, RenderProgram> programs;
+    static std::map<const char *, Texture> textures;
+    static std::map<const char *, Model3D> renderModels;
 
     bool debugMode = false;
 
-    void createProgram(RenderMode renderMode, const char *vertexShaderFile, const char *fragmentShaderFile);
+    void createProgram(RenderMode renderMode, const char *vertexShaderFile,
+                       const char *fragmentShaderFile);
 
     void loadShader(const char *filename, GLuint shader_id);
     GLuint loadShader_Vertex(const char *filename);
     GLuint loadShader_Fragment(const char *filename);
-    
+
+    void renderModel(Model3D model);
+    void renderTexture(RenderMode renderMode, Texture texture);
+    void renderGameObject(GameObject *GameObject);
+
   public:
-    void renderRenderQueue(RenderMode renderMode, Camera *camera);
+    void renderRenderQueue(RenderMode renderMode, Camera *camera, GLFWwindow *window);
     void addToRenderQueue(RenderMode renderMode, GameObject *object);
-    static Renderer &instance(GLFWwindow *window);
-    
-    static void addModel(Model3D *object);
-    static Texture& loadTexture(const char* name, const char* filename);
+    static Renderer &instance();
+
+    Texture *loadTexture(const char *name, const char *filename);
+    Model3D *loadModel(const char *name, const char *filename);
     void setDebugMode(bool debugMode);
 
     RenderProgram get_programSpec(RenderMode renderMode);

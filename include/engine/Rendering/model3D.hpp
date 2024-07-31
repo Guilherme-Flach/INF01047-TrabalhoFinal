@@ -10,51 +10,35 @@
 #include <vector>
 
 struct Material {
-  glm::vec3 Kd;
-  glm::vec3 Ka;
-  glm::vec3 Ks;
-  GLfloat q;
+    glm::vec3 Kd;
+    glm::vec3 Ka;
+    glm::vec3 Ks;
+    GLfloat q;
 };
 
 struct Texture {
-  GLuint texture_id;
-  GLuint sampler_id;
+    GLuint texture_id;
+    GLuint sampler_id;
 };
 
 struct ObjModel {
-    tinyobj::attrib_t                 attrib;
-    std::vector<tinyobj::shape_t>     shapes;
-    std::vector<tinyobj::material_t>  materials;
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
 
-    ObjModel(const char* filename, const char* basepath = NULL, bool triangulate = true);
+    ObjModel(const char *filename, const char *basepath = NULL,
+             bool triangulate = true);
 };
 
-class Model3D {
-  protected:
-    std::string name;
-    std::vector<GLfloat> vertices;
-    std::vector<GLfloat> normals;
-    std::vector<GLfloat> textures;
-    std::vector<GLuint> indices;
-    glm::vec3 bbox_min;
-    glm::vec3 bbox_max;
+struct Model3D {
+  public:
     GLuint vertexArrayId;
-    GLuint verticesId;
-    GLuint normalsId;
-    GLuint texturesId;
-    GLuint indicesId;
-
+    int numIndices;
     int renderType;
 
-    GLfloat line_width;
-
-  public:
-    Model3D(const char* path);
-
-    static void ComputeNormals(ObjModel* model);
-
-    GLuint get_vertexArrayId();
-    void render();
+    Model3D();
+    Model3D(const char *path);
+    static void ComputeNormals(ObjModel *model);
 };
 
 #endif // MODEL3D

@@ -26,16 +26,11 @@ int main(int argc, char *argv[]) {
 
     auto loader = Loader(width, height, title);
 
-    Model3D bunnyModel = Model3D("../../data/bunny/bunny.obj");
-    Model3D playerModel = Model3D("../../data/bunny/bunny.obj");
-    Model3D ballModel = Model3D("../../data/planets/sphere.obj");
-    Model3D shipModel = Model3D("../../data/ship/ship.obj");
+    Renderer& renderer = Renderer::instance();
 
     Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
-    sun.set_model(ballModel);
 
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
-    sunBall.set_model(ballModel);
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
     Player player = Player();
@@ -110,10 +105,7 @@ int main(int argc, char *argv[]) {
                 dollyCameraPanoramicToPlayer.set_progress(0.0f);
             }
         });
-
-    player.get_ship().get_shipContainer().set_model(shipModel);
-    player.get_playerCamera().set_model(playerModel);
-
+    
     loader.add_game_object(sun);
     loader.add_game_object(player);
     loader.add_game_object(player.get_ship().get_shipContainer());
@@ -188,13 +180,10 @@ int main(int argc, char *argv[]) {
     manager.add_or_update_collider(sunCollider);
     manager.add_or_update_collider(player.get_playerCollider());
 
-    Renderer &renderer = Renderer::instance(loader.get_window());
-
     renderer.addToRenderQueue(Renderer::PHONG,
                               &player.get_ship().get_shipContainer());
     renderer.addToRenderQueue(Renderer::GOURAUD, &sun);
-    player.get_ship().get_shipContainer().set_texture(
-        Renderer::loadTexture("ship", "../../data/ship/internal.jpeg"));
+    player.get_ship().get_shipContainer().set_texture(Renderer::instance().loadTexture("ship", "../../data/ship/internal.jpeg"));
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();

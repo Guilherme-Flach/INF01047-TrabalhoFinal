@@ -34,6 +34,19 @@ class Collider : public GameObject {
     virtual glm::vec4 get_min() = 0;
     virtual glm::vec4 get_max() = 0;
 };
+class SphereCollider : public Collider {
+
+  public:
+    SphereCollider(glm::vec4 center, float radius);
+
+  protected:
+    float radius;
+
+  public:
+    float get_radius();
+    glm::vec4 get_min() override;
+    glm::vec4 get_max() override;
+};
 
 class BoxCollider : public Collider {
 
@@ -45,20 +58,7 @@ class BoxCollider : public Collider {
     glm::vec4 vertices[4];
 
   public:
-    glm::vec4 get_min() override;
-    glm::vec4 get_max() override;
-};
-
-class SphereCollider : public Collider {
-
-  public:
-    SphereCollider(glm::vec4 center, float radius);
-
-  protected:
-    float radius;
-
-  public:
-    float get_radius();
+    CollisionData test_sphere(SphereCollider& sphere);
     glm::vec4 get_min() override;
     glm::vec4 get_max() override;
 };
