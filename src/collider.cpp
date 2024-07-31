@@ -5,9 +5,9 @@
 #include <iostream>
 
 CollisionData::CollisionData(bool isColliding)
-    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}){};
+    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}) {};
 CollisionData::CollisionData(bool isColliding, glm::vec4 collisionPoint)
-    : isColliding(isColliding), collisionPoint(collisionPoint){};
+    : isColliding(isColliding), collisionPoint(collisionPoint) {};
 
 Collider::Collider(glm::vec4 center, ColliderType colliderType)
     : GameObject(center), colliderType(colliderType) {}
@@ -177,11 +177,50 @@ CollisionData CollisionsManager::test_collision(Collider &collider) {
     this->search_collider(collider, found);
     for (int i = 0; i < found.size(); i++) {
         Collider *hit = this->colliders[*found.find(i)];
+        if (hit->get_id() == collider.get_id())
+            continue;
+        std::cout << collider.get_id() << std::endl;
+        std::cout << hit->get_id() << std::endl;
         auto data = test_collision(collider, *hit);
         if (data.isColliding)
             return data;
     }
     return CollisionData(false);
+}
+
+float squaredDistPointAABB(glm::vec4 sphere_center, glm::vec4 min,
+                           glm::vec4 max) {
+    auto check = [&](const double point, const double bmin,
+                     const double bmax) -> double {
+        double out = 0;
+        double v = point;
+
+        if (v < bmin) {
+            double val = (bmin - v);
+            out += val * val;
+        }
+
+        if (v > bmax) {
+            double val = (v - bmax);
+            out += val * val;
+        }
+
+        return out;
+    };
+
+    double sq = 0.0;
+
+    sq += check(sphere_center.x, min.x, max.x);
+    sq += check(sphere_center.y, min.y, max.y);
+    sq += check(sphere_center.z, min.z, max.z);
+
+    return sq;
+}
+
+CollisionData BoxCollider::test_sphere(SphereCollider &other) {
+    return CollisionData(squaredDistPointAABB(other.get_global_position(),
+                                              get_min(), get_max()) <=
+                         other.get_radius() * other.get_radius());
 }
 
 CollisionData CollisionsManager::test_collision(Collider &first,
@@ -206,6 +245,18 @@ CollisionData CollisionsManager::test_collision(Collider &first,
         auto ray =
             RaycastCollider(center, second.get_global_position() - center);
         return ray.test_sphere(second_sphere);
+    }
+    if (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
+        second.get_collider_type() == ColliderType::SPHERE_COLLIDER) {
+        auto first_aabb = dynamic_cast<BoxCollider &>(first);
+        auto second_sphere = dynamic_cast<SphereCollider &>(second);
+        return first_aabb.test_sphere(second_sphere);
+    }
+    if (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
+        second.get_collider_type() == ColliderType::BOX_COLLIDER) {
+        auto first_sphere = dynamic_cast<SphereCollider &>(first);
+        auto second_aabb = dynamic_cast<BoxCollider &>(second);
+        return second_aabb.test_sphere(first_sphere);
     }
     return CollisionData(false);
 }

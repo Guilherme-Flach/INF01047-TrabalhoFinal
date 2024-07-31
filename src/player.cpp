@@ -160,14 +160,14 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
             isPiloting = !isPiloting;
         }
     });
-
 }
 
 void Player::physicsUpdate(GLfloat deltaTime) {
     ship.physicsUpdate(deltaTime);
     if (isPiloting) {
         // Update camera to follow ship
-        const glm::mat3x4 shipBasis = ship.get_shipContainer().get_global_basis();
+        const glm::mat3x4 shipBasis =
+            ship.get_shipContainer().get_global_basis();
 
         playerCamera.rotate(ship.get_rotatioRate().x * deltaTime *
                                 Ship::turningSpeed,
@@ -175,7 +175,7 @@ void Player::physicsUpdate(GLfloat deltaTime) {
 
         playerCamera.rotate(ship.get_rotatioRate().y * deltaTime *
                                 Ship::turningSpeed,
-                           shipBasis[1]);
+                            shipBasis[1]);
 
         playerCamera.rotate(ship.get_rotatioRate().z * deltaTime *
                                 Ship::turningSpeed,

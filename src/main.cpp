@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
     Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
     sun.set_model(ballModel);
-  
+
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
     sunBall.set_model(ballModel);
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
@@ -61,13 +61,14 @@ int main(int argc, char *argv[]) {
         {player.get_playerCamera().get_fov(),
          player.get_playerCamera().get_nearPlane(),
          player.get_playerCamera().get_farPlane(), 1.0f},
-        {0.6 * M_PI, player.get_playerCamera().get_nearPlane(), player.get_playerCamera().get_farPlane(), 1.0f},
-        {0.8 * M_PI, player.get_playerCamera().get_nearPlane(), player.get_playerCamera().get_farPlane(), 1.0f}};
+        {0.6 * M_PI, player.get_playerCamera().get_nearPlane(),
+         player.get_playerCamera().get_farPlane(), 1.0f},
+        {0.8 * M_PI, player.get_playerCamera().get_nearPlane(),
+         player.get_playerCamera().get_farPlane(), 1.0f}};
 
     DollyCamera dollyCameraPlayerToPanoramic =
         DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
                     targetPathToPanoramic, 0.5f, lensPathToPanoramic);
-
 
     dollyCameraPlayerToPanoramic.set_onUpdate(
         [&dollyCameraPlayerToPanoramic, &loader,
@@ -187,24 +188,28 @@ int main(int argc, char *argv[]) {
     manager.add_or_update_collider(sunCollider);
     manager.add_or_update_collider(player.get_playerCollider());
 
-    Renderer& renderer = Renderer::instance(loader.get_window());
+    Renderer &renderer = Renderer::instance(loader.get_window());
 
-    renderer.addToRenderQueue(Renderer::PHONG, &player.get_ship().get_shipContainer());
+    renderer.addToRenderQueue(Renderer::PHONG,
+                              &player.get_ship().get_shipContainer());
     renderer.addToRenderQueue(Renderer::GOURAUD, &sun);
-    player.get_ship().get_shipContainer().set_texture(Renderer::loadTexture("ship", "../../data/ship/internal.jpeg"));
+    player.get_ship().get_shipContainer().set_texture(
+        Renderer::loadTexture("ship", "../../data/ship/internal.jpeg"));
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
         physObj.update(deltaTime);
-        auto raycast = RaycastCollider(player.get_global_position(),
-                                       player.get_playerCamera().get_view());
+        player.get_playerCollider().set_position(player.get_global_position());
+        manager.add_or_update_collider(player.get_playerCollider());
+
         sunCollider.set_position(sun.get_global_position());
         manager.add_or_update_collider(sunCollider);
-        auto col = manager.test_collision(raycast);
+        auto col = manager.test_collision(player.get_playerCollider());
         if (col.isColliding) {
-            //sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
+            std::cout << "ROAMROPWINMDOIADNAOIWD" << std::endl;
+            // sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
         }
         sun.update(deltaTime);
         sun.physicsUpdate(deltaTime);
