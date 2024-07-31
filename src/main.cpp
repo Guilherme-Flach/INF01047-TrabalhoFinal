@@ -29,10 +29,8 @@ int main(int argc, char *argv[]) {
     Renderer& renderer = Renderer::instance();
 
     Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
-    sun.set_model(ballModel);
 
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
-    sunBall.set_model(ballModel);
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
     Player player = Player();

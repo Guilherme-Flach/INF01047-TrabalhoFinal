@@ -1,7 +1,6 @@
 #include <iostream>
 #include <functional>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <string>
 #include "engine/loader.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
@@ -12,11 +11,15 @@
 #include "matrices.hpp"
 #include <sstream>
 #include <fstream>
+#include "GLFW/glfw3.h"
+
 
 void TextRendering_Init();
 void TextRendering_ShowFramesPerSecond(GLFWwindow *window);
 
 float Loader::delta_t = 0;
+GLFWwindow* Loader::window = nullptr;
+Camera* Loader::active_camera = nullptr;
 
 Loader::Loader(int width, int height, char title[]) {
     int success = glfwInit();
