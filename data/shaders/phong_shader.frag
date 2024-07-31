@@ -2,6 +2,7 @@
 
 in vec4 position_world;
 in vec4 normal;
+in vec2 texcoords;
 
 // Matrizes computadas no código C++ e enviadas para a GPU
 uniform mat4 model;
@@ -46,9 +47,12 @@ void main()
     vec3 Ka; // Refletância ambiente
     float q; // Expoente especular para o modelo de iluminação de Phong
 
-    Kd = vec3(0.8,0.0,0.0);
+    float U = texcoords.x;
+    float V = texcoords.y;
+
+    Kd = texture(Texture0, vec2(U, V)).rgb;
     Ks = vec3(1.0,1.0,1.0);
-    Ka = vec3(0.01,0.01,0.01);
+    Ka = Kd/2;
     q = 90;
 
     // Espectro da fonte de iluminação

@@ -2,6 +2,8 @@
     "cmake.configureOnOpen": true,
     "files.associations": {
         "istream": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "random": "cpp",
+        "sstream": "cpp"
     }
 }

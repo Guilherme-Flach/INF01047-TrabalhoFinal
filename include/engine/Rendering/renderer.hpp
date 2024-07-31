@@ -23,15 +23,14 @@ class Renderer {
       GLint model_uniform;
       GLint view_uniform;
       GLint projection_uniform;
-      Material material_uniform;
       GLint texture0;
     };
   private:
     Renderer(GLFWwindow *window);
     GLFWwindow *window;
 
-    static std::vector<Model3D> renderModels;
     static std::map<const char*, Texture> textures;
+    static std::map<const char*, Model3D> renderModels;
     std::map<RenderMode, std::vector<GameObject *>>  renderQueues;
     std::map<RenderMode, RenderProgram> programs;
 

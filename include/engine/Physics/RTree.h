@@ -13,11 +13,12 @@
 #include <stdlib.h>
 
 #define ASSERT assert // RTree uses ASSERT( condition )
-#define __min(a, b) (((a) < (b)) ? (a) : (b))
 #ifndef Min
+#define __min(a, b) (((a) < (b)) ? (a) : (b))
 #define Min __min
 #endif // Min
 #ifndef Max
+#define __max(a, b) (((a) > (b)) ? (a) : (b))
 #define Max __max
 #endif // Max
 

@@ -113,7 +113,6 @@ int main(int argc, char *argv[]) {
     player.get_ship().get_shipContainer().set_model(shipModel);
     player.get_playerCamera().set_model(playerModel);
 
-
     loader.add_game_object(sun);
     loader.add_game_object(player);
     loader.add_game_object(player.get_ship().get_shipContainer());
@@ -183,8 +182,6 @@ int main(int argc, char *argv[]) {
         }
     });
 
-    auto window = loader.get_window();
-
     CollisionsManager manager;
     auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
     manager.add_or_update_collider(sunCollider);
@@ -194,6 +191,7 @@ int main(int argc, char *argv[]) {
 
     renderer.addToRenderQueue(Renderer::PHONG, &player.get_ship().get_shipContainer());
     renderer.addToRenderQueue(Renderer::GOURAUD, &sun);
+    player.get_ship().get_shipContainer().set_texture(Renderer::loadTexture("ship", "../../data/ship/internal.jpeg"));
 
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();

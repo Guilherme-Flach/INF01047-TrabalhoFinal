@@ -9,15 +9,6 @@ uniform mat4 projection;
 
 uniform sampler2D Texture0;
 
-struct Material {
-    vec3 Kd;
-    vec3 Ka;
-    vec3 Ks;
-    float q;
-};
-
-uniform Material material;
-
 out vec4 color_v;
 
 void main()
@@ -52,6 +43,7 @@ void main()
     float V = texture_coefficients.y;
 
     vec3 Kd0 = texture(Texture0, vec2(U,V)).rgb;
+    vec3 Ka = Kd0/2;
 
     // Espectro da fonte de iluminação
     vec3 I = vec3(1.0,1.0,1.0); // PREENCH AQUI o espectro da fonte de luz
@@ -60,10 +52,10 @@ void main()
     vec3 Ia = vec3(0.2,0.2,0.2);
 
     // Termo difuso utilizando a lei dos cossenos de Lambert
-    vec3 lambert_diffuse_term = Kd0 * material.Kd * I * max(0, dot(n,l)); 
+    vec3 lambert_diffuse_term = Kd0 * I * max(0, dot(n,l)); 
 
     // Termo ambiente
-    vec3 ambient_term = material.Ka * Ia;
+    vec3 ambient_term = Ka * Ia;
 
     // Nao definimos termo especular devido as limitacoes de gouraud shading
     color_v.a = 1.0;

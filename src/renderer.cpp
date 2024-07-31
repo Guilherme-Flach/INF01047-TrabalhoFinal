@@ -14,7 +14,7 @@
 #include "matrices.hpp"
 
 std::map<const char*, Texture> Renderer::textures = std::map<const char*, Texture>();
-std::vector<Model3D> Renderer::renderModels = std::vector<Model3D>();
+std::map<const char*, Model3D> Renderer::renderModels = std::map<const char*, Model3D>();
 
 Renderer::Renderer(GLFWwindow *window)
     : window(window), programs(std::map<RenderMode, RenderProgram>()),
