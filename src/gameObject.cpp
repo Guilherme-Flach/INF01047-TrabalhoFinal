@@ -11,9 +11,10 @@
 
 #include <vector>
 
-
-GameObject::GameObject(glm::vec4 position) : model(nullptr), parent(nullptr), texture(nullptr) {
-    //static Model3D default_model = BaseAxesModel();
+GameObject::GameObject(glm::vec4 position)
+    : model(nullptr), parent(nullptr), texture(nullptr),
+      modelScaling({1.0f, 1.0f, 1.0f}) {
+    // static Model3D default_model = BaseAxesModel();
     this->onUpdate = [](GLfloat _) -> void {};
     this->model_matrix = Matrix_Identity();
     this->model_matrix[3] = position;
@@ -89,21 +90,17 @@ glm::mat3x4 GameObject::get_basis() {
             this->model_matrix[2]};
 }
 
-Model3D* GameObject::get_model() { return model; }
-Texture* GameObject::get_texture() { return texture; }
+Model3D *GameObject::get_model() { return model; }
+Texture *GameObject::get_texture() { return texture; }
 glm::vec3 GameObject::get_modelScaling() { return modelScaling; }
 
-bool GameObject::get_isRenderable() { return isRenderable; }
-
-void GameObject::set_model(Model3D &model) {
-    this->model = &model;
-    isRenderable = true;
+bool GameObject::get_isRenderable() {
+    return model != nullptr && texture != nullptr;
 }
 
-void GameObject::set_texture(Texture &texture) {
-    this->texture = &texture;
-    isRenderable = true;
-}
+void GameObject::set_model(Model3D *model) { this->model = model; }
+
+void GameObject::set_texture(Texture *texture) { this->texture = texture; }
 
 void GameObject::set_modelScaling(float modelScaling) {
     this->modelScaling = {modelScaling, modelScaling, modelScaling};
@@ -113,10 +110,9 @@ void GameObject::set_modelScaling(glm::vec3 modelScaling) {
     this->modelScaling = modelScaling;
 }
 
-void GameObject::set_onUpdate(std::function<void(GLfloat deltaTime)> updateFunction) {
+void GameObject::set_onUpdate(
+    std::function<void(GLfloat deltaTime)> updateFunction) {
     this->onUpdate = updateFunction;
 }
 
-void GameObject::update(GLfloat deltaTime) {
-    this->onUpdate(deltaTime);
-}
+void GameObject::update(GLfloat deltaTime) { this->onUpdate(deltaTime); }

@@ -136,7 +136,7 @@ void Loader::start(std::function<void(void)> act) {
     //glfwFocusWindow(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    Renderer& renderer = Renderer::instance(get_window());
+    Renderer& renderer = Renderer::instance();
 
     // renderer.setDebugMode(true);
 
@@ -164,8 +164,8 @@ void Loader::start(std::function<void(void)> act) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         act();       
         
-        renderer.renderRenderQueue(Renderer::PHONG, active_camera);
-        renderer.renderRenderQueue(Renderer::GOURAUD, active_camera);
+        renderer.renderRenderQueue(Renderer::PHONG, active_camera, window);
+        renderer.renderRenderQueue(Renderer::GOURAUD, active_camera, window);
 
         TextRendering_ShowFramesPerSecond(window);
 

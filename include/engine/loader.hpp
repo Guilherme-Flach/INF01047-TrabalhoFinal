@@ -20,15 +20,11 @@ class Loader {
   
   private:
     static float delta_t;
-    GLFWwindow *window;
+    static GLFWwindow *window;
+    static Camera *active_camera;
     std::vector<GameObject *> game_object_store;
     std::vector<Camera *> camera_store;
-    Camera *active_camera;
 
-    void LoadShader(const char *filename, GLuint shader_id);
-    GLuint LoadShader_Vertex(const char *filename);
-    GLuint LoadShader_Fragment(const char *filename);
-    void LoadShadersFromFiles();
     void LoadConfigFromFile(const char *filename);
 
     Planet ParsePlanetInfo(std::string line);
@@ -46,8 +42,8 @@ class Loader {
 
     void start(std::function<void(void)> act);
 
-    GLFWwindow *get_window() { return window; }
-    Camera* get_active_camera() { return active_camera; }
+    static Camera* get_active_camera() { return active_camera; }
+    static GLFWwindow *get_window() { return window; }
     
     void set_active_camera(Camera *camera);
 };

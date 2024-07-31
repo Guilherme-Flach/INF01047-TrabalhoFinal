@@ -12,12 +12,15 @@
 #include <fstream>
 #include <sstream>
 #include "matrices.hpp"
+#include "engine/Rendering/renderer.hpp"
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 std::map<const char*, Texture> Renderer::textures = std::map<const char*, Texture>();
 std::map<const char*, Model3D> Renderer::renderModels = std::map<const char*, Model3D>();
 
-Renderer::Renderer(GLFWwindow *window)
-    : window(window), programs(std::map<RenderMode, RenderProgram>()),
+Renderer::Renderer()
+    : programs(std::map<RenderMode, RenderProgram>()),
       renderQueues(std::map<RenderMode, std::vector<GameObject *>>()) {
     createProgram(PHONG, "../../data/shaders/phong_shader.vert",
                   "../../data/shaders/phong_shader.frag");
@@ -26,17 +29,17 @@ Renderer::Renderer(GLFWwindow *window)
                   "../../data/shaders/gouraud_shader.frag");
 }
 
-Renderer &Renderer::instance(GLFWwindow *window) {
+Renderer &Renderer::instance() {
     static Renderer *instanced;
     if (instanced == nullptr) {
-        instanced = new Renderer(window);
+        instanced = new Renderer();
     }
     return *instanced;
 }
 
 void Renderer::setDebugMode(bool debugMode) { this->debugMode = debugMode; }
 
-void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera) {
+void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera, GLFWwindow *window) {
     glUseProgram(programs[renderMode].program_id);
     glm::mat4 projection;
 
@@ -58,20 +61,33 @@ void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera) {
             (gameObject->get_isRenderable() || debugMode)) {
             // Set texture
             if (gameObject->get_texture() != nullptr) {
-                const Texture texture = *gameObject->get_texture();
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, texture.texture_id);
-                glBindSampler(GL_TEXTURE0, texture.sampler_id);
-                glUniform1i(programs[renderMode].texture0, 0);
+                renderTexture(renderMode, *gameObject->get_texture());                
             }
-            
-            //
             glUniformMatrix4fv(programs[renderMode].model_uniform, 1, GL_FALSE,
                                glm::value_ptr(gameObject->get_model_matrix()));
-            gameObject->get_model()->render();
+            renderModel(*gameObject->get_model());
         }
     }
 }
+
+void Renderer::renderModel(Model3D model) {
+    if (model.numIndices == 0) {
+        return;
+    }
+    glBindVertexArray(model.vertexArrayId);
+    glDrawElements(model.renderType, model.numIndices, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+}
+
+void Renderer::renderTexture(RenderMode renderMode, Texture texture) {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.texture_id);
+    glBindSampler(GL_TEXTURE0, texture.sampler_id);
+    glUniform1i(programs[renderMode].texture0, 0);
+}
+
+void Renderer::renderGameObject(GameObject *GameObject) {}
 
 void Renderer::createProgram(RenderMode renderMode,
                              const char *vertexShaderFile,
@@ -204,11 +220,22 @@ void Renderer::addToRenderQueue(RenderMode renderMode, GameObject *object) {
     renderQueues[renderMode].push_back(object);
 }
 
-Texture& Renderer::loadTexture(const char* name, const char* filename) {
+Model3D* Renderer::loadModel(const char* name, const char* filename) {
+    auto modelIterator = renderModels.find(name);
+
+    if (modelIterator != renderModels.end()) {
+        return &modelIterator->second;
+    }
+
+    renderModels[name] = Model3D(filename);
+    return &renderModels[name];
+}
+
+Texture* Renderer::loadTexture(const char* name, const char* filename) {
     auto textureIterator = textures.find(name);
 
     if (textureIterator != textures.end()) {
-        return textureIterator->second;
+        return &textureIterator->second;
     }
 
     printf("Carregando imagem \"%s\"... ", filename);
@@ -259,5 +286,5 @@ Texture& Renderer::loadTexture(const char* name, const char* filename) {
         sampler_id
     };
         
-    return textures[name];
+    return &textures[name];
 }
