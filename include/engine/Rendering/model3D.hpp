@@ -9,6 +9,13 @@
 
 #include <vector>
 
+struct Material {
+  glm::vec3 Kd;
+  glm::vec3 Ka;
+  glm::vec3 Ks;
+  GLfloat q;
+};
+
 struct Texture {
   GLuint texture_id;
   GLuint sampler_id;
@@ -19,8 +26,6 @@ struct ObjModel {
     std::vector<tinyobj::shape_t>     shapes;
     std::vector<tinyobj::material_t>  materials;
 
-    // Este construtor lê o modelo de um arquivo utilizando a biblioteca tinyobjloader.
-    // Veja: https://github.com/syoyo/tinyobjloader
     ObjModel(const char* filename, const char* basepath = NULL, bool triangulate = true);
 };
 

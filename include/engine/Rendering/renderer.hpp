@@ -23,6 +23,7 @@ class Renderer {
       GLint model_uniform;
       GLint view_uniform;
       GLint projection_uniform;
+      Material material_uniform;
       GLint texture0;
     };
   private:

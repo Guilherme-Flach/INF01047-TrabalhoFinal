@@ -26,10 +26,10 @@ int main(int argc, char *argv[]) {
 
     auto loader = Loader(width, height, title);
 
-    Model3D bunnyModel = Model3D("../../data/bunny.obj");
-    Model3D playerModel = Model3D("../../data/bunny.obj");
-    Model3D ballModel = Model3D("../../data/sphere.obj");
-    Model3D shipModel = Model3D("../../data/ship.obj");
+    Model3D bunnyModel = Model3D("../../data/bunny/bunny.obj");
+    Model3D playerModel = Model3D("../../data/bunny/bunny.obj");
+    Model3D ballModel = Model3D("../../data/planets/sphere.obj");
+    Model3D shipModel = Model3D("../../data/ship/ship.obj");
 
     Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
     sun.set_model(ballModel);

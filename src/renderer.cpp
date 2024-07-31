@@ -20,10 +20,10 @@ Renderer::Renderer(GLFWwindow *window)
     : window(window), programs(std::map<RenderMode, RenderProgram>()),
       renderQueues(std::map<RenderMode, std::vector<GameObject *>>()) {
     createProgram(PHONG, "../../data/phong_shader.vert",
-                  "../../data/phong_shader.frag");
+                  "../../data/shaders/phong_shader.frag");
 
     createProgram(GOURAUD, "../../data/gouraud_shader.vert",
-                  "../../data/gouraud_shader.frag");
+                  "../../data/shaders/gouraud_shader.frag");
 }
 
 Renderer &Renderer::instance(GLFWwindow *window) {

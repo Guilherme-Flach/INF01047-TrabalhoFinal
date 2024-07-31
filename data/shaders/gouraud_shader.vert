@@ -9,6 +9,15 @@ uniform mat4 projection;
 
 uniform sampler2D Texture0;
 
+struct Material {
+    vec3 Kd;
+    vec3 Ka;
+    vec3 Ks;
+    float q;
+};
+
+uniform Material material;
+
 out vec4 color_v;
 
 void main()
@@ -38,17 +47,11 @@ void main()
     // Vetor que define o sentido da reflexão especular ideal.
     vec4 h = normalize(v+l);
 
-    // Parâmetros que definem as propriedades espectrais da superfície
-    vec3 Kd; // Refletância difusa
-    vec3 Ka; // Refletância ambiente
-    float q; // Expoente especular para o modelo de iluminação de Phong
-
     // Coordenadas de textura
     float U = texture_coefficients.x;
     float V = texture_coefficients.y;
 
-    Kd = texture(Texture0, vec2(U,V)).rgb;
-    Ka = vec3(0.01,0.01,0.01);
+    vec3 Kd0 = texture(Texture0, vec2(U,V)).rgb;
 
     // Espectro da fonte de iluminação
     vec3 I = vec3(1.0,1.0,1.0); // PREENCH AQUI o espectro da fonte de luz
@@ -57,10 +60,10 @@ void main()
     vec3 Ia = vec3(0.2,0.2,0.2);
 
     // Termo difuso utilizando a lei dos cossenos de Lambert
-    vec3 lambert_diffuse_term = Kd * I * max(0, dot(n,l)); 
+    vec3 lambert_diffuse_term = Kd0 * material.Kd * I * max(0, dot(n,l)); 
 
     // Termo ambiente
-    vec3 ambient_term = Ka*Ia;
+    vec3 ambient_term = material.Ka * Ia;
 
     // Nao definimos termo especular devido as limitacoes de gouraud shading
     color_v.a = 1.0;

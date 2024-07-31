@@ -17,7 +17,7 @@ class Planet : public PhysicsObject {
     Planet(glm::vec4 position, GLfloat radius, GLfloat surfaceGravity)
         : PhysicsObject(position, (surfaceGravity * radius * radius / PhysicsObject::G_CONSTANT)), surfaceGravity(surfaceGravity){
           set_modelScaling(radius);
-          texture = &Renderer::loadTexture("ag", "../../data/ag.jpg");
+          texture = &Renderer::loadTexture("ag", "../../data/planets/ag.jpg");
         };
 
     GLfloat get_surfaceGravity() { return surfaceGravity; };
