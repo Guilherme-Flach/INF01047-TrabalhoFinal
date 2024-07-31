@@ -19,10 +19,10 @@ std::vector<Model3D> Renderer::renderModels = std::vector<Model3D>();
 Renderer::Renderer(GLFWwindow *window)
     : window(window), programs(std::map<RenderMode, RenderProgram>()),
       renderQueues(std::map<RenderMode, std::vector<GameObject *>>()) {
-    createProgram(PHONG, "../../data/phong_shader.vert",
+    createProgram(PHONG, "../../data/shaders/phong_shader.vert",
                   "../../data/shaders/phong_shader.frag");
 
-    createProgram(GOURAUD, "../../data/gouraud_shader.vert",
+    createProgram(GOURAUD, "../../data/shaders/gouraud_shader.vert",
                   "../../data/shaders/gouraud_shader.frag");
 }
 
