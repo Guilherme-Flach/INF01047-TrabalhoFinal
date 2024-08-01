@@ -7,7 +7,7 @@ const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
 const GLfloat Player::playerMass = 0.5f;
 
-const glm::vec4 Player::startingPosition = {-10.0f, +10.0f, -5.0f, 1.0f};
+const glm::vec4 Player::startingPosition = {-10.0f, 0.0f, -5.0f, 1.0f};
 
 Player::Player()
     : PhysicsObject(startingPosition, playerMass),
@@ -15,7 +15,7 @@ Player::Player()
       shipCheck(SphereCollider(ORIGIN, 1.0f)),
       playerCollider(BoxCollider(ORIGIN, 0.5f, 1.0f, 0.5f)),
       playerMovement({0.0f, 0.0f, 0.0f}),
-      isPiloting(false) {
+      isPiloting(true) {
     addChild(playerCamera);
     addChild(shipCheck);
     addChild(playerCollider);

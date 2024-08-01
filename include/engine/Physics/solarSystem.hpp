@@ -15,13 +15,15 @@ class SolarSystem {
   private: 
     std::vector<Planet*> planets;
     Player player;
+    float timeSinceLastFrame;
 
     Planet* ParsePlanetInfo(std::string line);
     void LoadConfigFromFile(const char *filename);
+    glm::vec4 calculateGravityPull(int index, PhysicsObject *obj);
   public: 
     SolarSystem();
 
-    constexpr static float physicsUpdateFreq = 1.0f / 80.0f;
+    const static float physicsUpdateTime;
     Player& get_player();
 
     void FixedUpdate(GLfloat deltaTime);

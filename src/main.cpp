@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
     auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
     manager.add_or_update_collider(sunCollider);
     manager.add_or_update_collider(player.get_playerCollider());
-    Renderer::instance().addToRenderQueue(Renderer::RenderMode::GOURAUD, &sun);
+    //Renderer::instance().addToRenderQueue(Renderer::RenderMode::GOURAUD, &sun);
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         // dollyCameraPlayerToPanoramic.update(deltaTime);
@@ -191,7 +191,7 @@ int main(int argc, char *argv[]) {
         sun.physicsUpdate(deltaTime);
         sun.rotate(0.4 * deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
-        player.physicsUpdate(deltaTime);
+        s.FixedUpdate(deltaTime);
     });
     return 0;
 }
