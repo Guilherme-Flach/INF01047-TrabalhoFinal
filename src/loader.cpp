@@ -6,11 +6,10 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Input/inputHandler.hpp"
+#include "engine/Physics/solarSystem.hpp"
 #include "engine/Rendering/renderer.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "matrices.hpp"
-#include <sstream>
-#include <fstream>
 #include "GLFW/glfw3.h"
 
 void TextRendering_Init();
@@ -68,65 +67,6 @@ void Loader::add_camera(Camera &camera) {
 
 void Loader::set_active_camera(Camera *camera) { this->active_camera = camera; }
 
-Planet Loader::ParsePlanetInfo(std::string line) {
-    const std::string tokenSeparator = ";";
-    int tokenLimiter;
-    tokenLimiter = line.find(tokenSeparator);
-    float x = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    tokenLimiter = line.find(tokenSeparator);
-    float y = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    tokenLimiter = line.find(tokenSeparator);
-    float z = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    tokenLimiter = line.find(tokenSeparator);
-    float radius = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    tokenLimiter = line.find(tokenSeparator);
-    float surface_gravity = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    tokenLimiter = line.find(tokenSeparator);
-    float vel_x = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    tokenLimiter = line.find(tokenSeparator);
-    float vel_y = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    tokenLimiter = line.find(tokenSeparator);
-    float vel_z = stof(line.substr(0, tokenLimiter));
-    line = line.substr(tokenLimiter + 1); // erase until separator
-
-    Planet p = Planet(glm::vec4(x, y, z, 1.0f), radius, surface_gravity);
-    p.set_velocity(glm::vec4(vel_x, vel_y, vel_z, 0.0f));
-
-    return p;
-}
-
-void Loader::LoadConfigFromFile(const char *filename) {
-    std::ifstream config_file(filename);
-    std::string line;
-
-    if (config_file.is_open()) {
-        while (config_file) {
-            try {
-                std::getline(config_file, line);
-                Planet planet = ParsePlanetInfo(line);
-                add_game_object(planet);
-            } catch (...) {
-                std::cout << "Explodiu!" << std::endl;
-            }
-        }
-        config_file.close();
-    }
-}
-
 
 void Loader::start(std::function<void(void)> act) {
     TextRendering_Init();
@@ -152,7 +92,7 @@ void Loader::start(std::function<void(void)> act) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    LoadConfigFromFile("../../data/startingconfig.txt");
+    //SolarSystem solarSystem = SolarSystem();
 
     float prev_time = 0;
     while (!glfwWindowShouldClose(window)) {

@@ -21,12 +21,12 @@ class Player : public PhysicsObject {
     const static glm::vec4 startingPosition;
 
   protected:
-    FreeCamera playerCamera = FreeCamera(ORIGIN, FRONT);
-    Ship ship = Ship(startingPosition);
-    SphereCollider shipCheck = SphereCollider(ORIGIN,  1.0f);
-    BoxCollider playerCollider = BoxCollider(ORIGIN, 0.5f, 1.0f, 0.5f);
+    FreeCamera playerCamera;;
+    Ship ship;
+    SphereCollider shipCheck;
+    BoxCollider playerCollider;
 
-    glm::vec3 playerMovement = {0.0f, 0.0f, 0.0f};
+    glm::vec3 playerMovement;
 
     bool isPiloting;    
 

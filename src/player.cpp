@@ -1,6 +1,7 @@
 #include "engine/Physics/player.hpp"
 #include "engine/Input/inputHandler.hpp"
 #include "matrices.hpp"
+#include <iostream>
 
 const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
@@ -8,7 +9,13 @@ const GLfloat Player::playerMass = 0.5f;
 
 const glm::vec4 Player::startingPosition = {-10.0f, +10.0f, -5.0f, 1.0f};
 
-Player::Player() : PhysicsObject(startingPosition, playerMass) {
+Player::Player()
+    : PhysicsObject(startingPosition, playerMass),
+      playerCamera(FreeCamera(ORIGIN, FRONT)), ship(Ship(startingPosition)),
+      shipCheck(SphereCollider(ORIGIN, 1.0f)),
+      playerCollider(BoxCollider(ORIGIN, 0.5f, 1.0f, 0.5f)),
+      playerMovement({0.0f, 0.0f, 0.0f}),
+      isPiloting(false) {
     addChild(playerCamera);
     addChild(shipCheck);
     addChild(playerCollider);
@@ -128,6 +135,7 @@ Player::Player() : PhysicsObject(startingPosition, playerMass) {
             ship.set_isBoosting(false);
         }
     });
+
 
     static glm::vec2 prevPos = InputHandler::getMousePos();
     playerCamera.set_onUpdate([this](GLfloat deltaTime) -> void {

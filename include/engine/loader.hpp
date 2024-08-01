@@ -25,10 +25,6 @@ class Loader {
     std::vector<GameObject *> game_object_store;
     std::vector<Camera *> camera_store;
 
-    void LoadConfigFromFile(const char *filename);
-
-    Planet ParsePlanetInfo(std::string line);
-
   public:
     int program_id = 0;
     InputHandler* inputHandler;

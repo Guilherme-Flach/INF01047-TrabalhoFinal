@@ -6,6 +6,7 @@
 #include "engine/Physics/planet.hpp"
 #include "engine/Physics/player.hpp"
 #include "engine/Physics/ship.hpp"
+#include "engine/Physics/solarSystem.hpp"
 #include "engine/Rendering/defaultModels.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "engine/Rendering/renderer.hpp"
@@ -26,12 +27,15 @@ int main(int argc, char *argv[]) {
 
     auto loader = Loader(width, height, title);
 
+    SolarSystem s = SolarSystem();
+
     Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
 
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
-    Player player = Player();
+    Player& player = s.get_player();
+
 
     Camera cameraPanoramic =
         Camera({60.0f, 60.0f, 60.0f, 1.0f}, new GameObject(ORIGIN));
@@ -103,16 +107,7 @@ int main(int argc, char *argv[]) {
                 dollyCameraPanoramicToPlayer.set_progress(0.0f);
             }
         });
-    
-    loader.add_game_object(sun);
-    loader.add_game_object(player);
-    loader.add_game_object(player.get_ship().get_shipContainer());
-    loader.add_game_object(player.get_playerCamera());
 
-    // loader.add_camera(*cameraPlayer);
-    loader.add_camera(dollyCameraPlayerToPanoramic);
-    loader.add_camera(dollyCameraPanoramicToPlayer);
-    loader.add_camera(player.get_playerCamera());
     loader.set_active_camera(&player.get_playerCamera());
 
     // Locking
@@ -172,18 +167,16 @@ int main(int argc, char *argv[]) {
             }
         }
     });
-
     CollisionsManager manager;
     auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
     manager.add_or_update_collider(sunCollider);
     manager.add_or_update_collider(player.get_playerCollider());
     Renderer::instance().addToRenderQueue(Renderer::RenderMode::GOURAUD, &sun);
-    
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
-        dollyCameraPlayerToPanoramic.update(deltaTime);
-        dollyCameraPanoramicToPlayer.update(deltaTime);
-        physObj.update(deltaTime);
+        // dollyCameraPlayerToPanoramic.update(deltaTime);
+        // dollyCameraPanoramicToPlayer.update(deltaTime);
+        // physObj.update(deltaTime);
         player.get_playerCollider().set_position(player.get_global_position());
         manager.add_or_update_collider(player.get_playerCollider());
 

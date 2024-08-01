@@ -20,7 +20,7 @@ void main()
     float V = texcoords.y;
 
     vec3 Kd0 = texture(Texture0, vec2(U,V)).rgb;
-    vec3 Ka = Kd0/4;
+    vec3 Ka = Kd0 * 0.5;
 
     // Termo ambiente
     vec3 lambert_diffuse_term = Kd0 * illumination;

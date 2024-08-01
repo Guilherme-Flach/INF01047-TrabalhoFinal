@@ -21,6 +21,7 @@ set(SOURCES
   src/player.cpp
   src/physicsObject.cpp
   src/ship.cpp
+  src/solarSystem.cpp
   src/stb_image.cpp
   src/textrendering.cpp
   src/tiny_obj_loader.cpp
