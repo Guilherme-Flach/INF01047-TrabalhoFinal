@@ -22,6 +22,7 @@ class GameObject {
     Model3D *model;
     glm::vec3 modelScaling;
     void set_parent(GameObject &parent);
+    void remove_parent();
     std::function<void(GLfloat deltaTime)> onUpdate;
 
   public:

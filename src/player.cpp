@@ -1,20 +1,22 @@
 #include "engine/Physics/player.hpp"
 #include "engine/Input/inputHandler.hpp"
+#include "engine/Physics/physicsObject.hpp"
 #include "matrices.hpp"
 
 const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
 const GLfloat Player::playerMass = 0.5f;
 
-const glm::vec4 Player::startingPosition = {-10.0f, 0.0f, -5.0f, 1.0f};
+const glm::vec4 Player::startingPosition = {0.0f, 5.0f, -10.0f, 1.0f};
 
 Player::Player()
-    : PhysicsObject(startingPosition, playerMass),
+    : PhysicsObject(ORIGIN, playerMass),
       playerCamera(FreeCamera(ORIGIN, FRONT)), ship(Ship(startingPosition)),
       shipCheck(SphereCollider(this, ORIGIN, 1.0f)),
       playerMovement({0.0f, 0.0f, 0.0f}), isPiloting(true) {
     addChild(playerCamera);
     addChild(shipCheck);
+    set_parent(ship);
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [this](Action action) {
         const glm::vec4 direction = FRONT;
@@ -139,8 +141,6 @@ Player::Player()
         float dx = mousePos.x - prevPos.x;
         float dy = mousePos.y - prevPos.y;
 
-        // Atualizamos parâmetros da câmera com os deslocamentos
-
         playerCamera.rotate(-0.01f * dx, playerCamera.get_v_vector());
         playerCamera.rotate(-0.01f * dy, playerCamera.get_u_vector());
 
@@ -151,8 +151,6 @@ Player::Player()
             playerCamera.rotate(0.01f * dy, playerCamera.get_u_vector());
         }
 
-        // Atualizamos as variáveis globais para armazenar a posição atual do
-        // cursor como sendo a última posição conhecida do cursor.
         prevPos.x = mousePos.x;
         prevPos.y = mousePos.y;
     });
@@ -160,13 +158,21 @@ Player::Player()
     // Board Ship
     InputHandler::addKeyMapping(GLFW_KEY_T, [this](Action action) {
         if (action == GLFW_PRESS) {
-            isPiloting = !isPiloting;
+            if (isPiloting) {
+                isPiloting = false;
+                set_position(get_global_position());
+                remove_parent();
+            } else {
+                isPiloting = true;
+                set_position({0.0f, 0.0f, 0.0f, 1.0f});
+                acceleration = {0.0f, 0.0f, 0.0f, 0.0f};
+                set_parent(ship);
+            }
         }
     });
 }
 
 void Player::physicsUpdate(GLfloat deltaTime) {
-    ship.physicsUpdate(deltaTime);
     if (isPiloting) {
         // Update camera to follow ship
         const glm::mat3x4 shipBasis =
@@ -184,8 +190,6 @@ void Player::physicsUpdate(GLfloat deltaTime) {
                                 Ship::turningSpeed,
                             shipBasis[2]);
         playerCamera.set_up_vector(shipBasis[1]);
-
-        set_position(ship.get_global_position());
     } else {
         // if (currentPlanet != nullptr) {
         //     const glm::vec4 out_vector = this->get_global_position() -
@@ -194,5 +198,6 @@ void Player::physicsUpdate(GLfloat deltaTime) {
         //     playerCamera->set_up_vector(out_vector / distance);
         //     set_up_vector(out_vector / distance);
         // }
+        PhysicsObject::physicsUpdate(deltaTime);
     }
 }

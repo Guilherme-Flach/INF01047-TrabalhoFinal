@@ -26,6 +26,7 @@ GameObject *GameObject::get_parent() { return parent; }
 glm::vec4 GameObject::get_position() { return model_matrix[3]; }
 
 void GameObject::set_parent(GameObject &parent) { this->parent = &parent; }
+void GameObject::remove_parent() { this->parent = nullptr; }
 void GameObject::set_position(glm::vec4 position) {
     this->model_matrix[3] = position;
 }

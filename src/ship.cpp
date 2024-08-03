@@ -17,6 +17,7 @@ Ship::Ship(glm::vec4 position) : PhysicsObject(position, playerMass) {
         Renderer::instance().loadModel("ship", "../../data/ship/ship.obj"));
     Renderer::instance().addToRenderQueue(Renderer::RenderMode::PHONG,
                                           &shipContainer);
+    shipContainer.set_modelScaling(0.6f);
 };
 
 void Ship::physicsUpdate(GLfloat deltaTime) {
@@ -38,7 +39,7 @@ void Ship::physicsUpdate(GLfloat deltaTime) {
         const glm::vec4 movementFrontal = thrusters.z * basis[2];
         const glm::vec4 movementTotal =
             movementFrontal + movementVertical + movementLateral;
-        velocity += movementTotal * deltaTime * movementSpeed;
+        applyForce(movementTotal * deltaTime * movementSpeed);
 
         PhysicsObject::physicsUpdate(deltaTime);
     };

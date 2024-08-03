@@ -20,15 +20,20 @@ void PhysicsObject::increase_angularVelocity(glm::vec3 angularVelocity) {
     this->angularVelocity += angularVelocity;
 }
 
-void PhysicsObject::applyForce(glm::vec4 force) { velocity += force * mass; }
+void PhysicsObject::applyForce(glm::vec4 force) {
+    acceleration += force / mass;
+}
 
 void PhysicsObject::physicsUpdate(GLfloat deltaTime) {
-    velocity += acceleration;
+    velocity += acceleration * deltaTime;
+
     float velocityNorm = norm(velocity);
+
     // Keep velocity bound inside of the limits
     if (velocityNorm > speedLimit) {
         velocity = speedLimit * (velocity / velocityNorm);
     }
+
     translate(velocity * deltaTime);
 
     for (auto child : children) {

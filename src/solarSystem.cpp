@@ -22,11 +22,18 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
     // Update at a constant rate:
     timeSinceLastFrame += deltaTime;
     if (timeSinceLastFrame >= physicsUpdateTime) {
+        glm::vec4 pull;
         for (size_t i = 0; i < planets.size(); i++) {
             planets[i]->applyForce(calculateGravityPull(i, planets[i]));
         }
 
+        player.get_ship().applyForce(
+            calculateGravityPull(-1, &player.get_ship()));
+        player.applyForce(calculateGravityPull(-1, &player));
+
+        player.get_ship().physicsUpdate(physicsUpdateTime);
         player.physicsUpdate(physicsUpdateTime);
+
         for (size_t i = 0; i < planets.size(); i++) {
             planets[i]->physicsUpdate(physicsUpdateTime);
         }
@@ -48,7 +55,8 @@ glm::vec4 SolarSystem::calculateGravityPull(int index, PhysicsObject *obj) {
                 planets[i]->get_global_position() - objPosition;
 
             const float dist = norm(direction);
-            const glm::vec4 pull = direction / dist * planets[i]->get_mass() *
+            const glm::vec4 pull = PhysicsObject::G_CONSTANT *
+                                   (direction / dist) * planets[i]->get_mass() *
                                    obj->get_mass() / (dist * dist);
 
             totalPull += pull;

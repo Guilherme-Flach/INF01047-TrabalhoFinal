@@ -15,11 +15,15 @@ class Planet : public PhysicsObject {
 
   public:
     Planet(glm::vec4 position, GLfloat radius, GLfloat surfaceGravity)
-        : PhysicsObject(position, (surfaceGravity * radius * radius / PhysicsObject::G_CONSTANT)), surfaceGravity(surfaceGravity){
-          set_modelScaling(radius);
-          texture = Renderer::instance().loadTexture("ag", "../../data/planets/ag.jpg");
-          model = Renderer::instance().loadModel("planet", "../../data/planets/sphere.obj");
-        };
+        : PhysicsObject(position, (surfaceGravity * radius * radius /
+                                   PhysicsObject::G_CONSTANT)),
+          surfaceGravity(surfaceGravity) {
+        set_modelScaling(radius);
+        texture =
+            Renderer::instance().loadTexture("ag", "../../data/planets/ag.jpg");
+        model = Renderer::instance().loadModel("planet",
+                                               "../../data/planets/sphere.obj");
+    };
 
     GLfloat get_surfaceGravity() { return surfaceGravity; };
 
