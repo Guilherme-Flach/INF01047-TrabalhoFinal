@@ -1,44 +1,54 @@
 #include "engine/Physics/collider.hpp"
 #include "engine/EngineObject/gameObject.hpp"
+#include "engine/Physics/physicsObject.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include <cmath>
+#include <functional>
 #include <iostream>
 
 CollisionData::CollisionData(bool isColliding)
     : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}) {};
 CollisionData::CollisionData(bool isColliding, glm::vec4 collisionPoint)
-    : isColliding(isColliding), collisionPoint(collisionPoint) {};
+    : isColliding(isColliding), collisionPoint(collisionPoint) {}
 
-Collider::Collider(glm::vec4 center, ColliderType colliderType)
-    : GameObject(center), colliderType(colliderType) {}
+Collider::Collider(PhysicsObject *parent, glm::vec4 position,
+                   ColliderType colliderType)
+    : GameObject(GameObjectType::COLLIDER, position),
+      physicsObjectParent(parent), colliderType(colliderType) {}
+
+PhysicsObject *Collider::get_parent() { return this->physicsObjectParent; }
 
 void Collider::update_id(int new_id) { this->id = new_id; }
+
 int Collider::get_id() { return this->id; }
 
 ColliderType Collider::get_collider_type() { return this->colliderType; }
 
-BoxCollider::BoxCollider(glm::vec4 center, float x, float y, float z)
-    : Collider(center, ColliderType::BOX_COLLIDER), x(x), y(y), z(z) {
-    this->vertices[0] =
-        this->center + glm::vec4(this->x, this->y, this->z, 0.0f);
-    this->vertices[1] =
-        this->center + glm::vec4(this->x, -this->y, this->z, 0.0f);
-    this->vertices[2] =
-        this->center + glm::vec4(this->x, this->y, -this->z, 0.0f);
-    this->vertices[3] =
-        this->center + glm::vec4(this->x, -this->y, -this->z, 0.0f);
-
-    this->vertices[4] =
-        this->center + glm::vec4(-this->x, this->y, this->z, 0.0f);
-    this->vertices[5] =
-        this->center + glm::vec4(-this->x, -this->y, this->z, 0.0f);
-    this->vertices[6] =
-        this->center + glm::vec4(-this->x, this->y, -this->z, 0.0f);
-    this->vertices[7] =
-        this->center + glm::vec4(-this->x, -this->y, -this->z, 0.0f);
-}
+BoxCollider::BoxCollider(PhysicsObject *parent, glm::vec4 center, float x,
+                         float y, float z)
+    : Collider(parent, center, ColliderType::BOX_COLLIDER), width(x), height(y),
+      depth(z) {}
 
 glm::vec4 BoxCollider::get_min() {
+    glm::vec4 vertices[8];
+    auto global_position = this->get_global_position();
+    vertices[0] = global_position +
+                  glm::vec4(this->width, this->height, this->depth, 0.0f);
+    vertices[1] = global_position +
+                  glm::vec4(this->width, -this->height, this->depth, 0.0f);
+    vertices[2] = global_position +
+                  glm::vec4(this->width, this->height, -this->depth, 0.0f);
+    vertices[3] = global_position +
+                  glm::vec4(this->width, -this->height, -this->depth, 0.0f);
+
+    vertices[4] = global_position +
+                  glm::vec4(-this->width, this->height, this->depth, 0.0f);
+    vertices[5] = global_position +
+                  glm::vec4(-this->width, -this->height, this->depth, 0.0f);
+    vertices[6] = global_position +
+                  glm::vec4(-this->width, this->height, -this->depth, 0.0f);
+    vertices[7] = global_position +
+                  glm::vec4(-this->width, -this->height, -this->depth, 0.0f);
     float min_x = std::fmin(
         vertices[0].x,
         std::fmin(vertices[1].x, std::fmin(vertices[2].x, vertices[3].x)));
@@ -52,6 +62,25 @@ glm::vec4 BoxCollider::get_min() {
 }
 
 glm::vec4 BoxCollider::get_max() {
+    glm::vec4 vertices[8];
+    auto global_position = this->get_global_position();
+    vertices[0] = global_position +
+                  glm::vec4(this->width, this->height, this->depth, 0.0f);
+    vertices[1] = global_position +
+                  glm::vec4(this->width, -this->height, this->depth, 0.0f);
+    vertices[2] = global_position +
+                  glm::vec4(this->width, this->height, -this->depth, 0.0f);
+    vertices[3] = global_position +
+                  glm::vec4(this->width, -this->height, -this->depth, 0.0f);
+
+    vertices[4] = global_position +
+                  glm::vec4(-this->width, this->height, this->depth, 0.0f);
+    vertices[5] = global_position +
+                  glm::vec4(-this->width, -this->height, this->depth, 0.0f);
+    vertices[6] = global_position +
+                  glm::vec4(-this->width, this->height, -this->depth, 0.0f);
+    vertices[7] = global_position +
+                  glm::vec4(-this->width, -this->height, -this->depth, 0.0f);
     float max_x = std::fmax(
         vertices[0].x,
         std::fmax(vertices[1].x, std::fmax(vertices[2].x, vertices[3].x)));
@@ -65,28 +94,31 @@ glm::vec4 BoxCollider::get_max() {
 }
 
 glm::vec4 SphereCollider::get_min() {
-    return this->center -
+    return this->get_global_position() -
            glm::vec4(this->radius, this->radius, this->radius, 0.0f);
 }
 
 glm::vec4 SphereCollider::get_max() {
-    return this->center +
+    return this->get_global_position() +
            glm::vec4(this->radius, this->radius, this->radius, 0.0f);
 }
 
-glm::vec4 RaycastCollider::get_min() { return this->center; }
+glm::vec4 RaycastCollider::get_min() { return this->get_global_position(); }
 
 glm::vec4 RaycastCollider::get_max() {
-    return this->center + this->displacement;
+    return this->get_global_position() + this->displacement;
 }
 
-SphereCollider::SphereCollider(glm::vec4 center, float radius)
-    : Collider(center, ColliderType::SPHERE_COLLIDER), radius(radius) {}
+SphereCollider::SphereCollider(PhysicsObject *parent, glm::vec4 center,
+                               float radius)
+    : Collider(parent, center, ColliderType::SPHERE_COLLIDER), radius(radius) {}
 
 float SphereCollider::get_radius() { return this->radius; }
 
-RaycastCollider::RaycastCollider(glm::vec4 start, glm::vec4 direction)
-    : Collider(start, ColliderType::RAY_COLLIDER), displacement(direction) {}
+RaycastCollider::RaycastCollider(PhysicsObject *parent, glm::vec4 start,
+                                 glm::vec4 direction)
+    : Collider(parent, start, ColliderType::RAY_COLLIDER),
+      displacement(direction) {}
 
 void CollisionsManager::add_or_update_collider(Collider &collider) {
     auto min_vec = collider.get_min();
@@ -95,16 +127,14 @@ void CollisionsManager::add_or_update_collider(Collider &collider) {
     float max[3] = {max_vec.x, max_vec.y, max_vec.z};
     auto found_index = this->colliders.find(collider.get_id());
     if (found_index != this->colliders.end()) {
-        auto found_collider = found_index->second;
-        auto found_min_vec = found_collider->get_min();
-        auto found_max_vec = found_collider->get_max();
-        float found_min[3] = {found_min_vec.x, found_min_vec.y,
-                              found_min_vec.z};
-        float found_max[3] = {found_max_vec.x, found_max_vec.y,
-                              found_max_vec.z};
-        this->collision_hierarchy.Remove(found_min, found_max,
-                                         found_collider->get_id());
+        float min[3] = {-INFINITY, INFINITY, INFINITY};
+        float max[3] = {INFINITY, INFINITY, INFINITY};
+        this->collision_hierarchy.Remove(min, max, collider.get_id());
     } else {
+        if (collider.get_collider_type() == ColliderType::BOX_COLLIDER) {
+            printf("Box min: %f %f %f, max: %f %f %f\n", min_vec.x, min_vec.y,
+                   min_vec.z, max_vec.x, max_vec.y, max_vec.x);
+        }
         collider.update_id(this->id++);
     }
     this->colliders[collider.get_id()] = &collider;
@@ -117,19 +147,26 @@ void CollisionsManager::remove_collider(Collider &collider) {
     float min[3] = {min_vec.x, min_vec.y, min_vec.z};
     float max[3] = {max_vec.x, max_vec.y, max_vec.z};
     auto entry = this->colliders.find(collider.get_id());
-    std::cout << entry->first << std::endl;
     if (entry != this->colliders.end())
         this->colliders.erase(this->colliders.find(collider.get_id()));
     this->collision_hierarchy.Remove(min, max, collider.get_id());
 }
 
-void CollisionsManager::search_collider(Collider &collider,
-                                        std::set<int> &found) {
-    auto min_vec = collider.get_min();
-    auto max_vec = collider.get_max();
+void CollisionsManager::search_collider(
+    Collider *collider, std::function<void(Collider *)> on_hit) {
+    auto min_vec = collider->get_min();
+    auto max_vec = collider->get_max();
     float min[3] = {min_vec.x, min_vec.y, min_vec.z};
     float max[3] = {max_vec.x, max_vec.y, max_vec.z};
-    this->collision_hierarchy.Search(min, max, found);
+    std::set<int> nodes;
+    this->collision_hierarchy.Search(min, max, nodes);
+    std::set<int>::iterator node;
+    for (node = nodes.begin(); node != nodes.end(); node++) {
+        auto found_collider = this->colliders[*node];
+        if (found_collider->get_id() == collider->get_id())
+            continue;
+        on_hit(found_collider);
+    }
 }
 
 glm::vec4 RaycastCollider::get_displacement() { return this->displacement; }
@@ -172,22 +209,6 @@ CollisionData RaycastCollider::test_sphere(SphereCollider sphere) {
     return CollisionData(true, global_position + min_offset);
 }
 
-CollisionData CollisionsManager::test_collision(Collider &collider) {
-    std::set<int> found;
-    this->search_collider(collider, found);
-    for (int i = 0; i < found.size(); i++) {
-        Collider *hit = this->colliders[*found.find(i)];
-        if (hit->get_id() == collider.get_id())
-            continue;
-        //std::cout << collider.get_id() << std::endl;
-        //std::cout << hit->get_id() << std::endl;
-        auto data = test_collision(collider, *hit);
-        if (data.isColliding)
-            return data;
-    }
-    return CollisionData(false);
-}
-
 float squaredDistPointAABB(glm::vec4 sphere_center, glm::vec4 min,
                            glm::vec4 max) {
     auto check = [&](const double point, const double bmin,
@@ -218,45 +239,87 @@ float squaredDistPointAABB(glm::vec4 sphere_center, glm::vec4 min,
 }
 
 CollisionData BoxCollider::test_sphere(SphereCollider &other) {
-    return CollisionData(squaredDistPointAABB(other.get_global_position(),
-                                              get_min(), get_max()) <=
+    auto placeholder =
+        squaredDistPointAABB(other.get_global_position(), get_min(), get_max());
+    std::cout << placeholder << std::endl;
+    return CollisionData(placeholder <=
                          other.get_radius() * other.get_radius());
 }
 
-CollisionData CollisionsManager::test_collision(Collider &first,
-                                                Collider &second) {
-    if (first.get_collider_type() == ColliderType::RAY_COLLIDER &&
-        second.get_collider_type() == ColliderType::SPHERE_COLLIDER) {
-        auto ray = dynamic_cast<RaycastCollider &>(first);
-        auto sphere = dynamic_cast<SphereCollider &>(second);
-        return ray.test_sphere(sphere);
+CollisionData SphereCollider::test_collision(Collider &other) {
+    switch (other.get_collider_type()) {
+    case BOX_COLLIDER: {
+        auto box_collider = static_cast<BoxCollider &>(other);
+        return box_collider.test_sphere(*this);
     }
-    if (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
-        second.get_collider_type() == ColliderType::RAY_COLLIDER) {
-        auto ray = dynamic_cast<RaycastCollider &>(second);
-        auto sphere = dynamic_cast<SphereCollider &>(first);
-        return ray.test_sphere(sphere);
+    case SPHERE_COLLIDER: {
+        auto other_sphere = static_cast<SphereCollider &>(other);
+        auto global_position = this->get_global_position();
+        auto distance = other.get_global_position() - global_position;
+        auto areColliding =
+            glm::length(distance) <= other_sphere.get_radius() + radius;
+        return CollisionData(areColliding);
     }
-    if (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
-        second.get_collider_type() == ColliderType::SPHERE_COLLIDER) {
-        auto first_sphere = dynamic_cast<SphereCollider &>(first);
-        auto second_sphere = dynamic_cast<SphereCollider &>(second);
-        auto center = first_sphere.get_global_position();
-        auto ray =
-            RaycastCollider(center, second.get_global_position() - center);
-        return ray.test_sphere(second_sphere);
+    case RAY_COLLIDER:
+        auto raycast_collider = static_cast<RaycastCollider &>(other);
+        return raycast_collider.test_sphere(*this);
     }
-    if (first.get_collider_type() == ColliderType::BOX_COLLIDER &&
-        second.get_collider_type() == ColliderType::SPHERE_COLLIDER) {
-        auto first_aabb = dynamic_cast<BoxCollider &>(first);
-        auto second_sphere = dynamic_cast<SphereCollider &>(second);
-        return first_aabb.test_sphere(second_sphere);
+}
+
+CollisionData BoxCollider::test_collision(Collider &other) {
+    switch (other.get_collider_type()) {
+    case BOX_COLLIDER:
+        break;
+    case SPHERE_COLLIDER: {
+        return test_sphere(static_cast<SphereCollider &>(other));
     }
-    if (first.get_collider_type() == ColliderType::SPHERE_COLLIDER &&
-        second.get_collider_type() == ColliderType::BOX_COLLIDER) {
-        auto first_sphere = dynamic_cast<SphereCollider &>(first);
-        auto second_aabb = dynamic_cast<BoxCollider &>(second);
-        return second_aabb.test_sphere(first_sphere);
+    case RAY_COLLIDER:
+        break;
     }
-    return CollisionData(false);
+}
+
+CollisionData RaycastCollider::test_collision(Collider &other) {
+    switch (other.get_collider_type()) {
+    case BOX_COLLIDER:
+    case SPHERE_COLLIDER: {
+        return test_sphere(static_cast<SphereCollider &>(other));
+    }
+    case RAY_COLLIDER:
+        break;
+    }
+}
+
+void CollisionsManager::update_colliders() {
+    std::map<int, Collider *>::iterator node;
+    for (node = this->colliders.begin(); node != this->colliders.end();
+         node++) {
+        add_or_update_collider(*node->second);
+    }
+}
+
+void CollisionsManager::handle_collisions() {
+    for (std::map<int, Collider *>::iterator node = colliders.begin();
+         node != colliders.end(); node++) {
+        auto collider = node->second;
+        search_collider(collider, [&](Collider *hit) {
+            if (collider->test_collision(*hit).isColliding) {
+                auto first_object =
+                    static_cast<PhysicsObject *>(collider->get_parent());
+                auto second_object =
+                    static_cast<PhysicsObject *>(hit->get_parent());
+                first_object->handle_collision(*second_object);
+            }
+        });
+    }
+}
+
+void CollisionsManager::add_object(PhysicsObject &object) {
+    for (std::vector<GameObject *>::iterator node =
+             object.get_children()->begin();
+         node != object.get_children()->end(); node++) {
+        if ((*node)->get_type() != GameObjectType::COLLIDER)
+            continue;
+        auto collider = static_cast<Collider *>(*node);
+        add_or_update_collider(*collider);
+    }
 }

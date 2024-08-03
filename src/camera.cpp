@@ -1,6 +1,5 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
-#include "engine/loader.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
@@ -8,7 +7,8 @@
 glm::vec4 Camera::DEFAULT_UP_VECTOR = {0.0, 1.0, 0.0, 0.0};
 
 Camera::Camera(glm::vec4 position, GameObject *target)
-    : GameObject(position), target(target), up_vector(DEFAULT_UP_VECTOR) {}
+    : GameObject(GameObjectType::STANDARD, position),
+      up_vector(DEFAULT_UP_VECTOR), target(target) {}
 
 glm::mat4 Camera::get_viewMatrix() {
     return Matrix_Camera_View(get_global_position(), get_view(),

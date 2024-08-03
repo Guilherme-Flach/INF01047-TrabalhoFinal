@@ -9,9 +9,12 @@
 #include "glm/ext/matrix_float3x4.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 
+enum GameObjectType { STANDARD, COLLIDER };
+
 class GameObject {
 
   protected:
+    GameObjectType type;
     glm::mat4 model_matrix;
     std::vector<GameObject *> children;
     GameObject *parent;
@@ -22,7 +25,8 @@ class GameObject {
     std::function<void(GLfloat deltaTime)> onUpdate;
 
   public:
-    GameObject(glm::vec4 position);
+    GameObject(GameObjectType type, glm::vec4 position);
+    GameObjectType get_type();
     std::vector<GameObject *> *get_children();
     GameObject *get_parent();
     glm::vec4 get_position();

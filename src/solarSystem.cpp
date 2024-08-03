@@ -1,10 +1,12 @@
 #include "engine/Physics/solarSystem.hpp"
+#include "engine/EngineObject/gameObject.hpp"
+#include "engine/Physics/collider.hpp"
 #include "engine/Physics/physicsObject.hpp"
+#include "engine/Physics/planet.hpp"
 #include "engine/Physics/player.hpp"
 #include "matrices.hpp"
 #include <cstddef>
 #include <iostream>
-#include <sstream>
 #include <algorithm>
 #include <fstream>
 
@@ -63,8 +65,7 @@ Planet *SolarSystem::ParsePlanetInfo(std::string line) {
     const std::string initialVelocityLimier = "v";
 
     // clean up line
-    line.erase(std::remove_if(line.begin(), line.end(), ::isspace),
-        line.end());
+    line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
 
     int tokenLimiter;
     tokenLimiter = line.find(positionLimiter);
@@ -114,6 +115,9 @@ void SolarSystem::LoadConfigFromFile(const char *filename) {
             try {
                 std::cout << "Read:" << "    " << line << std::endl;
                 Planet *planet = ParsePlanetInfo(line);
+                auto collider =
+                    new SphereCollider(planet, {0.0, 0.0, 0.0, 1.0}, 1.0f);
+                planet->addChild(*collider);
                 Renderer::instance().addToRenderQueue(Renderer::GOURAUD,
                                                       planet);
                 planets.push_back(planet);
@@ -124,5 +128,20 @@ void SolarSystem::LoadConfigFromFile(const char *filename) {
         }
         std::cout << "Read " << planets.size() << " planets." << std::endl;
         config_file.close();
+    }
+}
+
+std::vector<Planet *> SolarSystem::get_planets() { return this->planets; }
+
+SolarSystem::~SolarSystem() {
+    std::vector<Planet *>::iterator planet;
+    for (planet = planets.begin(); planet != planets.end(); planet++) {
+        std::vector<GameObject *>::iterator collider;
+        for (collider = (*planet)->get_children()->begin();
+             collider != (*planet)->get_children()->end(); collider++) {
+            if ((*collider)->get_type() == GameObjectType::COLLIDER) {
+                delete *collider;
+            }
+        }
     }
 }

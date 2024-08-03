@@ -9,7 +9,6 @@
 #include "engine/Physics/ship.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "glm/ext/vector_float4.hpp"
-#include "matrices.hpp"
 #include "ship.hpp"
 
 class Player : public PhysicsObject {
@@ -21,24 +20,22 @@ class Player : public PhysicsObject {
     const static glm::vec4 startingPosition;
 
   protected:
-    FreeCamera playerCamera;;
+    FreeCamera playerCamera;
+    ;
     Ship ship;
     SphereCollider shipCheck;
-    BoxCollider playerCollider;
 
     glm::vec3 playerMovement;
 
-    bool isPiloting;    
+    bool isPiloting;
 
   public:
     Player();
 
-    FreeCamera& get_playerCamera() { return playerCamera; }
-    Ship& get_ship() { return ship; }
-    BoxCollider& get_playerCollider() { return playerCollider; }
+    FreeCamera &get_playerCamera() { return playerCamera; }
+    Ship &get_ship() { return ship; }
 
     void physicsUpdate(GLfloat deltaTime);
-
 };
 
 #endif // PLAYER_HEADER

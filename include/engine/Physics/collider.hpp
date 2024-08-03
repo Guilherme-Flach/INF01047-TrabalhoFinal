@@ -3,9 +3,10 @@
 
 #include "RTree.h"
 #include "engine/EngineObject/gameObject.hpp"
+#include "engine/Physics/physicsObject.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include <atomic>
-#include <set>
+#include <functional>
 
 struct CollisionData {
     bool isColliding;
@@ -21,23 +22,28 @@ class Collider : public GameObject {
 
   private:
     int id = -1;
+    PhysicsObject *physicsObjectParent;
 
   protected:
-    glm::vec4 center;
     ColliderType colliderType;
 
   public:
-    Collider(glm::vec4 center, ColliderType colliderType);
+    PhysicsObject *get_parent();
+    virtual ~Collider() = default;
+    Collider(PhysicsObject *parent, glm::vec4 position,
+             ColliderType colliderType);
     void update_id(int new_id);
     int get_id();
     ColliderType get_collider_type();
     virtual glm::vec4 get_min() = 0;
     virtual glm::vec4 get_max() = 0;
+    virtual CollisionData test_collision(Collider &other) = 0;
 };
+
 class SphereCollider : public Collider {
 
   public:
-    SphereCollider(glm::vec4 center, float radius);
+    SphereCollider(PhysicsObject *parent, glm::vec4 center, float radius);
 
   protected:
     float radius;
@@ -46,27 +52,30 @@ class SphereCollider : public Collider {
     float get_radius();
     glm::vec4 get_min() override;
     glm::vec4 get_max() override;
+    CollisionData test_collision(Collider &other) override;
 };
 
 class BoxCollider : public Collider {
 
   public:
-    BoxCollider(glm::vec4 center, float x, float y, float z);
+    BoxCollider(PhysicsObject *parent, glm::vec4 center, float x, float y,
+                float z);
 
   protected:
-    float x, y, z;
-    glm::vec4 vertices[4];
+    float width, height, depth;
 
   public:
-    CollisionData test_sphere(SphereCollider& sphere);
+    CollisionData test_sphere(SphereCollider &sphere);
     glm::vec4 get_min() override;
     glm::vec4 get_max() override;
+    CollisionData test_collision(Collider &other) override;
 };
 
 class RaycastCollider : public Collider {
 
   public:
-    RaycastCollider(glm::vec4 start, glm::vec4 direction);
+    RaycastCollider(PhysicsObject *parent, glm::vec4 start,
+                    glm::vec4 direction);
 
   protected:
     glm::vec4 displacement;
@@ -76,23 +85,27 @@ class RaycastCollider : public Collider {
     glm::vec4 get_displacement();
     glm::vec4 get_min() override;
     glm::vec4 get_max() override;
+    CollisionData test_collision(Collider &other) override;
 };
 
 class CollisionsManager {
 
   private:
     /* FONTE: Adapted from https://superliminal.com/sources/#C_Code */
-    RTree<int, float, 3, float> collision_hierarchy;
 
     std::atomic<int> id{};
-    std::map<int, Collider *> colliders;
-    CollisionData test_collision(Collider &first, Collider &second);
 
   public:
+    RTree<int, float, 3, float> collision_hierarchy;
+    std::map<int, Collider *> colliders;
+    void add_object(PhysicsObject &object);
     void add_or_update_collider(Collider &collider);
     void remove_collider(Collider &collider);
-    void search_collider(Collider &collider, std::set<int> &found);
-    CollisionData test_collision(Collider &collider);
+    void search_collider(Collider *collider,
+                         std::function<void(Collider *)> on_hit);
+    std::pair<int, Collider *> get_colliders();
+    void update_colliders();
+    void handle_collisions();
 };
 
 #endif // COLLIDER_HEADER

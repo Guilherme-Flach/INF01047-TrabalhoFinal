@@ -17,11 +17,10 @@ class PhysicsObject : public GameObject {
     glm::vec4 velocity;
     glm::vec4 acceleration;
     glm::vec3 angularVelocity;
-    
 
   public:
     const static float G_CONSTANT;
-    
+
     PhysicsObject(glm::vec4 position, GLfloat mass);
     void accelerate(glm::vec4 velocity);
     void increase_acceleration(glm::vec4 acceleration);
@@ -29,19 +28,23 @@ class PhysicsObject : public GameObject {
     void applyForce(glm::vec4 force);
     void physicsUpdate(GLfloat deltaTime);
 
-
     GLfloat get_drag() { return drag; };
     GLfloat get_mass() { return mass; };
     glm::vec4 get_velocity() { return velocity; };
     glm::vec4 get_acceleration() { return acceleration; };
-    glm::vec3 get_angular_velocity(){ return angularVelocity; };
+    glm::vec3 get_angular_velocity() { return angularVelocity; };
 
     void set_drag(GLfloat drag) { this->drag = drag; }
     void set_mass(GLfloat mass) { this->mass = mass; }
     void set_velocity(glm::vec4 velocity) { this->velocity = velocity; }
-    void set_acceleration(glm::vec4 acceleration) { this->acceleration = acceleration; }
-    void set_angular_velocity(glm::vec3 angularVelocity) { this->angularVelocity = angularVelocity; }
+    void set_acceleration(glm::vec4 acceleration) {
+        this->acceleration = acceleration;
+    }
+    void set_angular_velocity(glm::vec3 angularVelocity) {
+        this->angularVelocity = angularVelocity;
+    }
 
+    void handle_collision(PhysicsObject &other);
 };
 
 #endif // PHYSICSOJBECT_HEADER

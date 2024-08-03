@@ -1,6 +1,5 @@
 #ifndef SOLARSYSTEM_HEADER
 #define SOLARSYSTEM_HEADER
-#include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/planet.hpp"
 #include "engine/Physics/player.hpp"
 #include <glm/vec4.hpp>
@@ -12,21 +11,25 @@
 #include <vector>
 
 class SolarSystem {
-  private: 
-    std::vector<Planet*> planets;
+  private:
+    std::vector<Planet *> planets;
     Player player;
     float timeSinceLastFrame;
 
-    Planet* ParsePlanetInfo(std::string line);
+    Planet *ParsePlanetInfo(std::string line);
     void LoadConfigFromFile(const char *filename);
     glm::vec4 calculateGravityPull(int index, PhysicsObject *obj);
-  public: 
+
+  public:
+    ~SolarSystem();
     SolarSystem();
 
     const static float physicsUpdateTime;
-    Player& get_player();
+    Player &get_player();
 
     void FixedUpdate(GLfloat deltaTime);
+
+    std::vector<Planet *> get_planets();
 };
 
 #endif // RENDEROBJECT

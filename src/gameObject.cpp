@@ -11,8 +11,8 @@
 
 #include <vector>
 
-GameObject::GameObject(glm::vec4 position)
-    : model(nullptr), parent(nullptr), texture(nullptr),
+GameObject::GameObject(GameObjectType type, glm::vec4 position)
+    : type(type), parent(nullptr), texture(nullptr), model(nullptr),
       modelScaling({1.0f, 1.0f, 1.0f}) {
     // static Model3D default_model = BaseAxesModel();
     this->onUpdate = [](GLfloat _) -> void {};
@@ -116,3 +116,5 @@ void GameObject::set_onUpdate(
 }
 
 void GameObject::update(GLfloat deltaTime) { this->onUpdate(deltaTime); }
+
+GameObjectType GameObject::get_type() { return this->type; }

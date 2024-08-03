@@ -5,19 +5,16 @@
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/planet.hpp"
 #include "engine/Physics/player.hpp"
-#include "engine/Physics/ship.hpp"
 #include "engine/Physics/solarSystem.hpp"
 #include "engine/Rendering/defaultModels.hpp"
 #include "engine/Rendering/model3D.hpp"
-#include "engine/Rendering/renderer.hpp"
 #include "engine/loader.hpp"
 #include "engine/Input/inputHandler.hpp"
 #include "GLFW/glfw3.h"
-#include "glm/ext/quaternion_geometric.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "engine/interpolator.hpp"
+#include <csetjmp>
 #include <functional>
-#include <iostream>
 #include "engine/Physics/collider.hpp"
 #include "matrices.hpp"
 
@@ -34,11 +31,15 @@ int main(int argc, char *argv[]) {
     Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
-    Player& player = s.get_player();
-
+    Player &player = s.get_player();
+    // auto playerCollider =
+    //     BoxCollider(player.get_global_position(), 0.5, 1, 0.5);
+    auto playerCollider = SphereCollider(&player, {0.0, 0.0, 0.0, 1.0}, 5);
+    player.addChild(playerCollider);
 
     Camera cameraPanoramic =
-        Camera({60.0f, 60.0f, 60.0f, 1.0f}, new GameObject(ORIGIN));
+        Camera({60.0f, 60.0f, 60.0f, 1.0f},
+               new GameObject(GameObjectType::STANDARD, ORIGIN));
     cameraPanoramic.set_fov(0.6 * M_PI);
     cameraPanoramic.set_farPlane(-200.0f);
 
@@ -168,30 +169,26 @@ int main(int argc, char *argv[]) {
         }
     });
     CollisionsManager manager;
-    auto sunCollider = SphereCollider(sun.get_global_position(), 5.0f);
-    manager.add_or_update_collider(sunCollider);
-    manager.add_or_update_collider(player.get_playerCollider());
-    //Renderer::instance().addToRenderQueue(Renderer::RenderMode::GOURAUD, &sun);
+    manager.add_or_update_collider(playerCollider);
+    auto planets = s.get_planets();
+    for (std::vector<Planet *>::iterator node = planets.begin();
+         node != planets.end(); node++) {
+        manager.add_object(**node);
+    }
+    // Renderer::instance().addToRenderQueue(Renderer::RenderMode::GOURAUD,
+    // &sun);
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         // dollyCameraPlayerToPanoramic.update(deltaTime);
         // dollyCameraPanoramicToPlayer.update(deltaTime);
         // physObj.update(deltaTime);
-        player.get_playerCollider().set_position(player.get_global_position());
-        manager.add_or_update_collider(player.get_playerCollider());
-
-        sunCollider.set_position(sun.get_global_position());
-        manager.add_or_update_collider(sunCollider);
-        auto col = manager.test_collision(player.get_playerCollider());
-        if (col.isColliding) {
-            //std::cout << "ROAMROPWINMDOIADNAOIWD" << std::endl;
-            // sun.applyForce(glm::vec4(5.0f, 5.0f, 5.0f, 0.0f));
-        }
         sun.update(deltaTime);
         sun.physicsUpdate(deltaTime);
         sun.rotate(0.4 * deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
         s.FixedUpdate(deltaTime);
+        manager.update_colliders();
+        manager.handle_collisions();
     });
     return 0;
 }

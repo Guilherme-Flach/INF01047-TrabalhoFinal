@@ -7,17 +7,14 @@
 #include "Input/inputHandler.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
-#include "glm/ext/matrix_float4x4.hpp"
 #include <string>
 #include <utils.h>
 #include <matrices.hpp>
 #include <vector>
-#include "glm/ext/vector_float4.hpp"
 #include "Physics/planet.hpp"
-#include "Physics/player.hpp"
 
 class Loader {
-  
+
   private:
     static float delta_t;
     static GLFWwindow *window;
@@ -27,7 +24,7 @@ class Loader {
 
   public:
     int program_id = 0;
-    InputHandler* inputHandler;
+    InputHandler *inputHandler;
 
     Loader(int width, int height, char title[]);
 
@@ -38,9 +35,9 @@ class Loader {
 
     void start(std::function<void(void)> act);
 
-    static Camera* get_active_camera() { return active_camera; }
+    static Camera *get_active_camera() { return active_camera; }
     static GLFWwindow *get_window() { return window; }
-    
+
     void set_active_camera(Camera *camera);
 };
 #endif // LOADER_HEADER
