@@ -9,7 +9,11 @@ const GLfloat Ship::shipBoostingSpeed = 15.0f;
 const GLfloat Ship::turningSpeed = 1.5f;
 const GLfloat Ship::shipDrag = 0.5f;
 
-Ship::Ship(glm::vec4 position) : PhysicsObject(position, playerMass) {
+Ship::Ship(glm::vec4 position)
+    : PhysicsObject(position, playerMass),
+      shipContainer(
+          GameObject(GameObjectType::STANDARD, {0.0f, 0.0f, 0.0f, 1.0f})),
+      shipCollider(SphereCollider(this, {0.0, 0.0, 0.0, 1.0}, 1.0f)) {
     set_drag(shipDrag);
     addChild(shipContainer);
     shipContainer.set_texture(
@@ -19,6 +23,7 @@ Ship::Ship(glm::vec4 position) : PhysicsObject(position, playerMass) {
     Renderer::instance().addToRenderQueue(Renderer::RenderMode::PHONG,
                                           &shipContainer);
     shipContainer.set_modelScaling(0.6f);
+    addChild(shipCollider);
 };
 
 void Ship::physicsUpdate(GLfloat deltaTime) {

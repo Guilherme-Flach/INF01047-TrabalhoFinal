@@ -3,6 +3,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
+#include "collider.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Rendering/model3D.hpp"
@@ -16,15 +17,16 @@ class Ship : public PhysicsObject {
     static const GLfloat shipBaseSpeed;
     static const GLfloat shipBoostingSpeed;
 
-    GameObject shipContainer =
-        GameObject(GameObjectType::STANDARD, {0.0f, 0.0f, 0.0f, 1.0f});
-
   protected:
+    GameObject shipContainer;
+    SphereCollider shipCollider;
     glm::vec4 thrusters = {0.0f, 0.0f, 0.0f, 0.0f};
     glm::vec4 rotationRate = {0.0f, 0.0f, 0.0f, 0.0f};
     bool isBoosting;
 
   public:
+    Ship(glm::vec4 position);
+
     static const GLfloat turningSpeed;
 
     constexpr static const glm::vec4 ROTATE_FRONT = {+1.0f, 0.0f, 0.0f, 0.0f};
@@ -37,7 +39,6 @@ class Ship : public PhysicsObject {
     constexpr static const glm::vec4 ROTATE_CCLKWISE = {0.0f, 0.0f, -1.0f,
                                                         0.0f};
 
-    Ship(glm::vec4 position);
     void physicsUpdate(GLfloat deltaTime);
     void powerThrusters(glm::vec4 thrusters) {
         set_thrusting(this->thrusters + thrusters);
@@ -46,6 +47,7 @@ class Ship : public PhysicsObject {
         set_rotatioRate(this->rotationRate + rate);
     };
 
+    SphereCollider &get_shipCollider() { return shipCollider; };
     glm::vec4 get_thrusting() { return thrusters; }
     glm::vec4 get_rotatioRate() { return rotationRate; }
     GameObject &get_shipContainer() { return shipContainer; }

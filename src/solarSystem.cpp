@@ -11,11 +11,19 @@
 #include <fstream>
 
 const float SolarSystem::physicsUpdateTime = 1.0f / 40.0f;
+CollisionsManager SolarSystem::collisionsManager;
 
 SolarSystem::SolarSystem()
     : planets(std::vector<Planet *>()), player(Player()),
       timeSinceLastFrame(0.0f) {
     LoadConfigFromFile("../../data/startingconfig.txt");
+
+    collisionsManager.add_object(player.get_ship());
+
+    for (std::vector<Planet *>::iterator node = planets.begin();
+         node != planets.end(); node++) {
+        collisionsManager.add_object(**node);
+    }
 }
 
 void SolarSystem::FixedUpdate(GLfloat deltaTime) {
@@ -37,6 +45,9 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
         for (size_t i = 0; i < planets.size(); i++) {
             planets[i]->physicsUpdate(physicsUpdateTime);
         }
+
+        collisionsManager.update_colliders();
+        collisionsManager.handle_collisions(physicsUpdateTime);
 
         timeSinceLastFrame -= physicsUpdateTime;
     }

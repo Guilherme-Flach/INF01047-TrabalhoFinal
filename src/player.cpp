@@ -12,10 +12,8 @@ const glm::vec4 Player::startingPosition = {49.0f, 49.0f, 49.0f, 1.0f};
 Player::Player()
     : PhysicsObject(ORIGIN, playerMass),
       playerCamera(FreeCamera(ORIGIN, FRONT)), ship(Ship(startingPosition)),
-      shipCheck(SphereCollider(this, ORIGIN, 1.0f)),
       playerMovement({0.0f, 0.0f, 0.0f}), isPiloting(true) {
     addChild(playerCamera);
-    addChild(shipCheck);
     set_parent(ship);
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [this](Action action) {

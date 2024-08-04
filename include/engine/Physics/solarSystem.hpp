@@ -2,6 +2,7 @@
 #define SOLARSYSTEM_HEADER
 #include "engine/Physics/planet.hpp"
 #include "engine/Physics/player.hpp"
+#include <cstddef>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glad/glad.h>
@@ -15,6 +16,7 @@ class SolarSystem {
     std::vector<Planet *> planets;
     Player player;
     float timeSinceLastFrame;
+    static CollisionsManager collisionsManager;
 
     Planet *ParsePlanetInfo(std::string line);
     void LoadConfigFromFile(const char *filename);

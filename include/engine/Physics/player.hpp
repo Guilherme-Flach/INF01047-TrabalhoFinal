@@ -22,7 +22,6 @@ class Player : public PhysicsObject {
   protected:
     FreeCamera playerCamera;
     Ship ship;
-    SphereCollider shipCheck;
 
     glm::vec3 playerMovement;
 

@@ -5,7 +5,7 @@
 #include "matrices.hpp"
 #include <iostream>
 
-const float PhysicsObject::G_CONSTANT = 0.01f;
+const float PhysicsObject::G_CONSTANT = 0.001f;
 const GLfloat PhysicsObject::speedLimit = 20.0f;
 const GLfloat PhysicsObject::collisionAttenuation = 0.0;
 
@@ -77,7 +77,4 @@ void PhysicsObject::handle_collision(glm::vec4 collision_point,
 
     translate(first_acceleration * deltaTime);
     other.translate(second_acceleration * deltaTime);
-    std::cout << "colisao:" << std::endl;
-    PrintVector(velocity);
-    PrintVector(other.get_velocity());
 }
