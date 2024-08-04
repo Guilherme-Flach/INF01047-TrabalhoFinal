@@ -11,7 +11,7 @@
 class Ship : public PhysicsObject {
   private:
     constexpr static const GLfloat speedLimit = 20.0f;
-    constexpr static const GLfloat playerMass = 2.0f;
+    constexpr static const GLfloat playerMass = 1.00f;
     static const GLfloat shipDrag;
     static const GLfloat shipBaseSpeed;
     static const GLfloat shipBoostingSpeed;

@@ -5,8 +5,8 @@
 #include "matrices.hpp"
 #include <iostream>
 
-const float PhysicsObject::G_CONSTANT = 0.0001f;
-const GLfloat PhysicsObject::speedLimit = 10.0f;
+const float PhysicsObject::G_CONSTANT = 0.01f;
+const GLfloat PhysicsObject::speedLimit = 20.0f;
 const GLfloat PhysicsObject::collisionAttenuation = 0.0;
 
 PhysicsObject::PhysicsObject(glm::vec4 position, GLfloat mass)
@@ -26,9 +26,7 @@ void PhysicsObject::increase_angularVelocity(glm::vec3 angularVelocity) {
     this->angularVelocity += angularVelocity;
 }
 
-void PhysicsObject::applyForce(glm::vec4 force) {
-    acceleration += force / mass;
-}
+void PhysicsObject::applyForce(glm::vec4 force) { velocity += force / mass; }
 
 void PhysicsObject::physicsUpdate(GLfloat deltaTime) {
     velocity += acceleration * deltaTime;
@@ -36,10 +34,10 @@ void PhysicsObject::physicsUpdate(GLfloat deltaTime) {
 
     float velocityNorm = norm(velocity);
 
-    // Keep velocity bound inside of the limits
-    if (velocityNorm > speedLimit) {
-        velocity = speedLimit * (velocity / velocityNorm);
-    }
+    // // Keep velocity bound inside of the limits
+    // if (velocityNorm > speedLimit) {
+    //     velocity = speedLimit * (velocity / velocityNorm);
+    // }
 
     translate(velocity * deltaTime);
 
@@ -74,10 +72,12 @@ void PhysicsObject::handle_collision(glm::vec4 collision_point,
     auto first_acceleration = new_velocity_first - velocity;
     auto second_acceleration = new_velocity_second - other.velocity;
 
-    auto first_force = other.mass * first_acceleration;
-    auto second_force = mass * second_acceleration;
+    accelerate(first_acceleration);
+    other.accelerate(second_acceleration);
 
-    applyForce(first_force);
-    other.applyForce(second_force);
-    std::cout << "colisao" << std::endl;
+    translate(first_acceleration * deltaTime);
+    other.translate(second_acceleration * deltaTime);
+    std::cout << "colisao:" << std::endl;
+    PrintVector(velocity);
+    PrintVector(other.get_velocity());
 }

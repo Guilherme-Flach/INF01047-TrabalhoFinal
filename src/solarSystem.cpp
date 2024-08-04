@@ -123,8 +123,8 @@ void SolarSystem::LoadConfigFromFile(const char *filename) {
             try {
                 std::cout << "Read:" << "    " << line << std::endl;
                 Planet *planet = ParsePlanetInfo(line);
-                auto collider =
-                    new SphereCollider(planet, {0.0, 0.0, 0.0, 1.0}, 1.0f);
+                auto collider = new SphereCollider(planet, {0.0, 0.0, 0.0, 1.0},
+                                                   planet->get_radius());
                 planet->addChild(*collider);
                 Renderer::instance().addToRenderQueue(Renderer::GOURAUD,
                                                       planet);

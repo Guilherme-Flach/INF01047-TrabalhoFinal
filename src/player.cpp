@@ -5,9 +5,9 @@
 
 const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
-const GLfloat Player::playerMass = 0.5f;
+const GLfloat Player::playerMass = 1.0f;
 
-const glm::vec4 Player::startingPosition = {0.0f, 5.0f, -10.0f, 1.0f};
+const glm::vec4 Player::startingPosition = {49.0f, 49.0f, 49.0f, 1.0f};
 
 Player::Player()
     : PhysicsObject(ORIGIN, playerMass),
