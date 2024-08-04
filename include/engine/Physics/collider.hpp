@@ -22,9 +22,9 @@ class Collider : public GameObject {
 
   private:
     int id = -1;
-    PhysicsObject *physicsObjectParent;
 
   protected:
+    PhysicsObject *physicsObjectParent;
     ColliderType colliderType;
 
   public:
@@ -105,7 +105,7 @@ class CollisionsManager {
                          std::function<void(Collider *)> on_hit);
     std::pair<int, Collider *> get_colliders();
     void update_colliders();
-    void handle_collisions();
+    void handle_collisions(GLfloat deltaTime);
 };
 
 #endif // COLLIDER_HEADER

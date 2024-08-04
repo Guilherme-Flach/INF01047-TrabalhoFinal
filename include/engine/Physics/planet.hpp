@@ -3,6 +3,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
+#include <iostream>
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Rendering/model3D.hpp"
 #include "glm/ext/vector_float4.hpp"
@@ -12,12 +13,13 @@ class Planet : public PhysicsObject {
   private:
   protected:
     GLfloat surfaceGravity;
+    GLfloat radius;
 
   public:
     Planet(glm::vec4 position, GLfloat radius, GLfloat surfaceGravity)
         : PhysicsObject(position, (surfaceGravity * radius * radius /
                                    PhysicsObject::G_CONSTANT)),
-          surfaceGravity(surfaceGravity) {
+          radius(radius), surfaceGravity(surfaceGravity) {
         set_modelScaling(radius);
         texture =
             Renderer::instance().loadTexture("ag", "../../data/planets/ag.jpg");

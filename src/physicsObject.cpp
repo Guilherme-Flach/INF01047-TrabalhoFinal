@@ -1,12 +1,18 @@
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
+#include "engine/Physics/collider.hpp"
+#include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
+#include <iostream>
 
-const float PhysicsObject::G_CONSTANT = 1.0f;
+const float PhysicsObject::G_CONSTANT = 0.0001f;
+const GLfloat PhysicsObject::speedLimit = 10.0f;
+const GLfloat PhysicsObject::collisionAttenuation = 0.0;
 
 PhysicsObject::PhysicsObject(glm::vec4 position, GLfloat mass)
     : GameObject(GameObjectType::STANDARD, position), drag(0), mass(mass),
-      velocity(NONE), acceleration(NONE), angularVelocity(NONE) {}
+      velocity(NONE), acceleration(NONE), angularVelocity(NONE),
+      previousPosition(position) {}
 
 void PhysicsObject::accelerate(glm::vec4 velocity) {
     this->velocity += velocity;
@@ -26,6 +32,7 @@ void PhysicsObject::applyForce(glm::vec4 force) {
 
 void PhysicsObject::physicsUpdate(GLfloat deltaTime) {
     velocity += acceleration * deltaTime;
+    previousPosition = get_position();
 
     float velocityNorm = norm(velocity);
 
@@ -44,7 +51,8 @@ void PhysicsObject::physicsUpdate(GLfloat deltaTime) {
     velocity -= velocity * drag * deltaTime;
 }
 
-void PhysicsObject::handle_collision(PhysicsObject &other) {
+void PhysicsObject::handle_collision(glm::vec4 collision_point,
+                                     PhysicsObject &other, GLfloat deltaTime) {
     auto new_velocity_first = velocity;
     auto new_velocity_second = other.velocity;
 
@@ -66,9 +74,10 @@ void PhysicsObject::handle_collision(PhysicsObject &other) {
     auto first_acceleration = new_velocity_first - velocity;
     auto second_acceleration = new_velocity_second - other.velocity;
 
-    auto first_force = mass * first_acceleration;
+    auto first_force = other.mass * first_acceleration;
     auto second_force = mass * second_acceleration;
 
     applyForce(first_force);
     other.applyForce(second_force);
+    std::cout << "colisao" << std::endl;
 }

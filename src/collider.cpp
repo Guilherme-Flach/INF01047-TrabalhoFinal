@@ -7,7 +7,7 @@
 #include <iostream>
 
 CollisionData::CollisionData(bool isColliding)
-    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}) {};
+    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}){};
 CollisionData::CollisionData(bool isColliding, glm::vec4 collisionPoint)
     : isColliding(isColliding), collisionPoint(collisionPoint) {}
 
@@ -258,6 +258,13 @@ CollisionData SphereCollider::test_collision(Collider &other) {
         auto distance = other.get_global_position() - global_position;
         auto areColliding =
             glm::length(distance) <= other_sphere.get_radius() + radius;
+        // if (areColliding) {
+        //     RaycastCollider raycast_collider =
+        //         RaycastCollider(physicsObjectParent, get_global_position(),
+        //                         other.get_global_position());
+        //     return raycast_collider.test_sphere(
+        //         static_cast<SphereCollider &>(other));
+        // }
         return CollisionData(areColliding);
     }
     case RAY_COLLIDER:
@@ -297,17 +304,19 @@ void CollisionsManager::update_colliders() {
     }
 }
 
-void CollisionsManager::handle_collisions() {
+void CollisionsManager::handle_collisions(GLfloat deltaTime) {
     for (std::map<int, Collider *>::iterator node = colliders.begin();
          node != colliders.end(); node++) {
         auto collider = node->second;
         search_collider(collider, [&](Collider *hit) {
-            if (collider->test_collision(*hit).isColliding) {
+            const CollisionData collisionData = collider->test_collision(*hit);
+            if (collisionData.isColliding) {
                 auto first_object =
                     static_cast<PhysicsObject *>(collider->get_parent());
                 auto second_object =
                     static_cast<PhysicsObject *>(hit->get_parent());
-                first_object->handle_collision(*second_object);
+                first_object->handle_collision(collisionData.collisionPoint,
+                                               *second_object, deltaTime);
             }
         });
     }

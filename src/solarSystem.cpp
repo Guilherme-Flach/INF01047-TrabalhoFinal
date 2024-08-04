@@ -54,7 +54,7 @@ glm::vec4 SolarSystem::calculateGravityPull(int index, PhysicsObject *obj) {
             const glm::vec4 direction =
                 planets[i]->get_global_position() - objPosition;
 
-            const float dist = norm(direction);
+            const float dist = norm(direction) + 0.001f;
             const glm::vec4 pull = PhysicsObject::G_CONSTANT *
                                    (direction / dist) * planets[i]->get_mass() *
                                    obj->get_mass() / (dist * dist);

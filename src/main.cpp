@@ -32,10 +32,12 @@ int main(int argc, char *argv[]) {
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
     Player &player = s.get_player();
-    // auto playerCollider =
-    //     BoxCollider(player.get_global_position(), 0.5, 1, 0.5);
     auto playerCollider = SphereCollider(&player, {0.0, 0.0, 0.0, 1.0}, 5);
     player.addChild(playerCollider);
+
+    auto playerShipCollider =
+        SphereCollider(&player.get_ship(), {0.0, 0.0, 0.0, 1.0}, 1.0f);
+    player.get_ship().addChild(playerShipCollider);
 
     Camera cameraPanoramic =
         Camera({60.0f, 60.0f, 60.0f, 1.0f},
@@ -169,7 +171,8 @@ int main(int argc, char *argv[]) {
         }
     });
     CollisionsManager manager;
-    manager.add_or_update_collider(playerCollider);
+    // manager.add_or_update_collider(playerCollider);
+    manager.add_or_update_collider(playerShipCollider);
     auto planets = s.get_planets();
     for (std::vector<Planet *>::iterator node = planets.begin();
          node != planets.end(); node++) {
@@ -179,16 +182,15 @@ int main(int argc, char *argv[]) {
     // &sun);
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
-        // dollyCameraPlayerToPanoramic.update(deltaTime);
-        // dollyCameraPanoramicToPlayer.update(deltaTime);
-        // physObj.update(deltaTime);
+        dollyCameraPlayerToPanoramic.update(deltaTime);
+        dollyCameraPanoramicToPlayer.update(deltaTime);
         sun.update(deltaTime);
         sun.physicsUpdate(deltaTime);
         sun.rotate(0.4 * deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
         s.FixedUpdate(deltaTime);
         manager.update_colliders();
-        manager.handle_collisions();
+        manager.handle_collisions(deltaTime);
     });
     return 0;
 }

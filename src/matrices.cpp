@@ -3,6 +3,7 @@
 #include "glm/ext/matrix_float3x4.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float4.hpp"
+#include <cstdio>
 
 glm::mat4 Matrix(float m00, float m01, float m02, float m03, float m10,
                  float m11, float m12, float m13, float m20, float m21,
@@ -96,6 +97,8 @@ float dotproduct(glm::vec4 u, glm::vec4 v) {
     float v4 = v.w;
 
     if (u4 != 0.0f || v4 != 0.0f) {
+        PrintVector(u);
+        PrintVector(v);
         fprintf(stderr, "ERROR: Produto escalar não definido para pontos.\n");
         std::exit(EXIT_FAILURE);
     }

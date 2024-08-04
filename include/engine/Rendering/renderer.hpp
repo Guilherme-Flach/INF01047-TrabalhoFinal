@@ -45,7 +45,8 @@ class Renderer {
     void renderGameObject(GameObject *GameObject);
 
   public:
-    void renderRenderQueue(RenderMode renderMode, Camera *camera, GLFWwindow *window);
+    void renderRenderQueue(RenderMode renderMode, Camera *camera,
+                           GLFWwindow *window);
     void addToRenderQueue(RenderMode renderMode, GameObject *object);
     static Renderer &instance();
 

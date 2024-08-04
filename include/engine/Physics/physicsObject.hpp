@@ -9,7 +9,8 @@
 
 class PhysicsObject : public GameObject {
   private:
-    constexpr static const GLfloat speedLimit = 10.0f;
+    const static GLfloat speedLimit;
+    const static GLfloat collisionAttenuation;
 
   protected:
     GLfloat drag;
@@ -17,6 +18,7 @@ class PhysicsObject : public GameObject {
     glm::vec4 velocity;
     glm::vec4 acceleration;
     glm::vec3 angularVelocity;
+    glm::vec4 previousPosition;
 
   public:
     const static float G_CONSTANT;
@@ -30,6 +32,7 @@ class PhysicsObject : public GameObject {
 
     GLfloat get_drag() { return drag; };
     GLfloat get_mass() { return mass; };
+    glm::vec4 get_previous_position() { return previousPosition; };
     glm::vec4 get_velocity() { return velocity; };
     glm::vec4 get_acceleration() { return acceleration; };
     glm::vec3 get_angular_velocity() { return angularVelocity; };
@@ -44,7 +47,8 @@ class PhysicsObject : public GameObject {
         this->angularVelocity = angularVelocity;
     }
 
-    void handle_collision(PhysicsObject &other);
+    void handle_collision(glm::vec4 collision_point, PhysicsObject &other,
+                          GLfloat deltaTime);
 };
 
 #endif // PHYSICSOJBECT_HEADER
