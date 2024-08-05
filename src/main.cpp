@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
 
     Player &player = s.get_player();
-    auto playerCollider = SphereCollider(&player, {0.0, 0.0, 0.0, 1.0}, 5);
+    auto playerCollider = BoxCollider(&player, {0.0, 0.0, 0.0, 1.0}, 10, 5, 5);
     player.addChild(playerCollider);
 
     auto playerShipCollider =
