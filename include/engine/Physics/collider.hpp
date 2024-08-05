@@ -58,8 +58,8 @@ class SphereCollider : public Collider {
 class BoxCollider : public Collider {
 
   public:
-    BoxCollider(PhysicsObject *parent, glm::vec4 center, float x, float y,
-                float z);
+    BoxCollider(PhysicsObject *parent, glm::vec4 center, float width, float height,
+                float depth);
 
   protected:
     float width, height, depth;

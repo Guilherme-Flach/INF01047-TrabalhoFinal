@@ -26,13 +26,8 @@ int main(int argc, char *argv[]) {
 
     SolarSystem s = SolarSystem();
 
-    Planet sun = Planet(ORIGIN, 3.0f, 1.0f);
-
-    Planet sunBall = Planet(ORIGIN + (10.0f * FRONT), 1.0f, 1.0f);
-    sunBall.applyForce({0.0f, 0.5f, 0.0f, 0.0f});
-
     Player &player = s.get_player();
-    auto playerCollider = SphereCollider(&player, {0.0, 0.0, 0.0, 1.0}, 5);
+    auto playerCollider = BoxCollider(&player, {0.0, 0.0, 0.0, 1.0}, 10, 5, 5);
     player.addChild(playerCollider);
 
     auto playerShipCollider =
@@ -184,9 +179,6 @@ int main(int argc, char *argv[]) {
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
-        sun.update(deltaTime);
-        sun.physicsUpdate(deltaTime);
-        sun.rotate(0.4 * deltaTime, UP);
         player.get_playerCamera().update(deltaTime);
         s.FixedUpdate(deltaTime);
         manager.update_colliders();

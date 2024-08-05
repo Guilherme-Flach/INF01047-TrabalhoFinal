@@ -9,9 +9,6 @@
 #include "dejavufont.h"
 #include "utils.h"
 
-GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id);
-
-
 GLuint CreateGpuProgram(GLuint vertex_shader_id, GLuint fragment_shader_id) {
     // Criamos um identificador (ID) para este programa de GPU
     GLuint program_id = glCreateProgram();
@@ -80,7 +77,7 @@ const GLchar *const textfragmentshader_source =
     "out vec4 fragColor;\n"
     "void main()\n"
     "{\n"
-    "fragColor = vec4(0, 0, 0, texture(tex, texCoords).r);\n"
+    "fragColor = vec4(1, 1, 1, texture(tex, texCoords).r);\n"
     "}\n"
     "\0";
 
@@ -131,18 +128,17 @@ GLuint textVAO;
 GLuint textVBO;
 GLuint textprogram_id;
 GLuint texttexture_id;
+GLuint g_sampler;
 
 void TextRendering_Init() {
-  GLuint sampler;
-
   glGenBuffers(1, &textVBO);
   glGenVertexArrays(1, &textVAO);
   glGenTextures(1, &texttexture_id);
-  glGenSamplers(1, &sampler);
-  glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glGenSamplers(1, &g_sampler);
+  glSamplerParameteri(g_sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glSamplerParameteri(g_sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glSamplerParameteri(g_sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glSamplerParameteri(g_sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glCheckError();
 
   GLuint textvertexshader_id = glCreateShader(GL_VERTEX_SHADER);
@@ -166,7 +162,7 @@ void TextRendering_Init() {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, dejavufont.tex_width,
                dejavufont.tex_height, 0, GL_RED, GL_UNSIGNED_BYTE,
                dejavufont.tex_data);
-  glBindSampler(0, sampler);
+  glBindSampler(0, g_sampler);
   glCheckError();
 
   glBindVertexArray(textVAO);
@@ -199,6 +195,8 @@ void TextRendering_PrintString(GLFWwindow *window, const std::string &str,
   glfwGetWindowSize(window, &width, &height);
   float sx = scale / width;
   float sy = scale / height;
+  glBindSampler(0, g_sampler);
+
 
   for (size_t i = 0; i < str.size(); i++) {
     // Find the glyph for the character we are looking for

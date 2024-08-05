@@ -28,8 +28,8 @@ class Renderer {
 
     std::map<RenderMode, std::vector<GameObject *>> renderQueues;
     std::map<RenderMode, RenderProgram> programs;
-    static std::map<const char *, Texture> textures;
-    static std::map<const char *, Model3D> renderModels;
+    static std::map<std::string, Texture> textures;
+    static std::map<std::string, Model3D> renderModels;
 
     bool debugMode = false;
 
@@ -50,8 +50,8 @@ class Renderer {
     void addToRenderQueue(RenderMode renderMode, GameObject *object);
     static Renderer &instance();
 
-    Texture *loadTexture(const char *name, const char *filename);
-    Model3D *loadModel(const char *name, const char *filename);
+    Texture *loadTexture(std::string name, const char *filename);
+    Model3D *loadModel(std::string name, const char *filename);
     void setDebugMode(bool debugMode);
 
     RenderProgram get_programSpec(RenderMode renderMode);

@@ -24,7 +24,7 @@ void main()
 
     // Termo ambiente
     vec3 lambert_diffuse_term = Kd0 * illumination;
-    vec3 ambient_term = Ka * vec3(0.2,0.2,0.2);
+    vec3 ambient_term = Ka * vec3(0.001,0.001,0.001);
 
     // Nao definimos termo especular devido as limitacoes de gouraud shading
     color.a = 1.0;

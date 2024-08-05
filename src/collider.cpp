@@ -24,10 +24,10 @@ int Collider::get_id() { return this->id; }
 
 ColliderType Collider::get_collider_type() { return this->colliderType; }
 
-BoxCollider::BoxCollider(PhysicsObject *parent, glm::vec4 center, float x,
-                         float y, float z)
-    : Collider(parent, center, ColliderType::BOX_COLLIDER), width(x), height(y),
-      depth(z) {}
+BoxCollider::BoxCollider(PhysicsObject *parent, glm::vec4 center, float width,
+                         float height, float depth)
+    : Collider(parent, center, ColliderType::BOX_COLLIDER), width(width), height(height),
+      depth(depth) {}
 
 glm::vec4 BoxCollider::get_min() {
     glm::vec4 vertices[8];
@@ -131,10 +131,6 @@ void CollisionsManager::add_or_update_collider(Collider &collider) {
         float max[3] = {INFINITY, INFINITY, INFINITY};
         this->collision_hierarchy.Remove(min, max, collider.get_id());
     } else {
-        if (collider.get_collider_type() == ColliderType::BOX_COLLIDER) {
-            printf("Box min: %f %f %f, max: %f %f %f\n", min_vec.x, min_vec.y,
-                   min_vec.z, max_vec.x, max_vec.y, max_vec.x);
-        }
         collider.update_id(this->id++);
     }
     this->colliders[collider.get_id()] = &collider;
@@ -210,38 +206,24 @@ CollisionData RaycastCollider::test_sphere(SphereCollider sphere) {
 }
 
 float squaredDistPointAABB(glm::vec4 sphere_center, glm::vec4 min,
-                           glm::vec4 max) {
-    auto check = [&](const double point, const double bmin,
-                     const double bmax) -> double {
-        double out = 0;
-        double v = point;
-
-        if (v < bmin) {
-            double val = (bmin - v);
-            out += val * val;
-        }
-
-        if (v > bmax) {
-            double val = (v - bmax);
-            out += val * val;
-        }
-
-        return out;
+                           glm::vec4 max) {    
+    auto calculate = [&](const float point, const float min, const float max) -> float {
+        if(point < min) return (min - point) * (min - point);
+        if(point > max) return (point - max) * (point - max);
+        return 0.0f;
     };
 
-    double sq = 0.0;
+    float squaredDistance = 0.0f;
+    squaredDistance += calculate(sphere_center.x, min.x, max.x);
+    squaredDistance += calculate(sphere_center.y, min.y, max.y);
+    squaredDistance += calculate(sphere_center.z, min.z, max.z);
 
-    sq += check(sphere_center.x, min.x, max.x);
-    sq += check(sphere_center.y, min.y, max.y);
-    sq += check(sphere_center.z, min.z, max.z);
-
-    return sq;
+    return squaredDistance;
 }
 
 CollisionData BoxCollider::test_sphere(SphereCollider &other) {
     auto placeholder =
         squaredDistPointAABB(other.get_global_position(), get_min(), get_max());
-    std::cout << placeholder << std::endl;
     return CollisionData(placeholder <=
                          other.get_radius() * other.get_radius());
 }
