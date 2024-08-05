@@ -15,9 +15,10 @@
 #include "engine/Rendering/renderer.hpp"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <string>
 
-std::map<const char*, Texture> Renderer::textures = std::map<const char*, Texture>();
-std::map<const char*, Model3D> Renderer::renderModels = std::map<const char*, Model3D>();
+std::map<std::string, Texture> Renderer::textures = std::map<std::string, Texture>();
+std::map<std::string, Model3D> Renderer::renderModels = std::map<std::string, Model3D>();
 
 Renderer::Renderer()
     : programs(std::map<RenderMode, RenderProgram>()),
@@ -221,7 +222,7 @@ void Renderer::addToRenderQueue(RenderMode renderMode, GameObject *object) {
     renderQueues[renderMode].push_back(object);
 }
 
-Model3D* Renderer::loadModel(const char* name, const char* filename) {
+Model3D* Renderer::loadModel(std::string name, const char* filename) {
     auto modelIterator = renderModels.find(name);
 
     if (modelIterator != renderModels.end()) {
@@ -232,7 +233,7 @@ Model3D* Renderer::loadModel(const char* name, const char* filename) {
     return &renderModels[name];
 }
 
-Texture* Renderer::loadTexture(const char* name, const char* filename) {
+Texture* Renderer::loadTexture(std::string name, const char* filename) {
     auto textureIterator = textures.find(name);
 
     if (textureIterator != textures.end()) {
