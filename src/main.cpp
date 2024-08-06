@@ -27,12 +27,6 @@ int main(int argc, char *argv[]) {
     SolarSystem s = SolarSystem();
 
     Player &player = s.get_player();
-    auto playerCollider = BoxCollider(&player, {0.0, 0.0, 0.0, 1.0}, 10, 5, 5);
-    player.addChild(playerCollider);
-
-    auto playerShipCollider =
-        SphereCollider(&player.get_ship(), {0.0, 0.0, 0.0, 1.0}, 1.0f);
-    player.get_ship().addChild(playerShipCollider);
 
     Camera cameraPanoramic =
         Camera({60.0f, 60.0f, 60.0f, 1.0f},
@@ -165,24 +159,12 @@ int main(int argc, char *argv[]) {
             }
         }
     });
-    CollisionsManager manager;
-    // manager.add_or_update_collider(playerCollider);
-    manager.add_or_update_collider(playerShipCollider);
-    auto planets = s.get_planets();
-    for (std::vector<Planet *>::iterator node = planets.begin();
-         node != planets.end(); node++) {
-        manager.add_object(**node);
-    }
-    // Renderer::instance().addToRenderQueue(Renderer::RenderMode::GOURAUD,
-    // &sun);
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
         dollyCameraPlayerToPanoramic.update(deltaTime);
         dollyCameraPanoramicToPlayer.update(deltaTime);
         player.get_playerCamera().update(deltaTime);
         s.FixedUpdate(deltaTime);
-        manager.update_colliders();
-        manager.handle_collisions(deltaTime);
     });
     return 0;
 }

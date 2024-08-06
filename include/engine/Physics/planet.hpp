@@ -16,16 +16,14 @@ class Planet : public PhysicsObject {
     GLfloat radius;
 
   public:
-    Planet(glm::vec4 position, GLfloat radius, GLfloat surfaceGravity)
-        : PhysicsObject(position, (surfaceGravity * radius * radius /
-                                   PhysicsObject::G_CONSTANT)),
-          radius(radius), surfaceGravity(surfaceGravity) {
+    Planet(glm::vec4 position, GLfloat radius, GLfloat mass)
+        : PhysicsObject(position, mass), radius(radius), surfaceGravity(mass) {
         static int planetCount = 0;
         set_modelScaling(radius);
         switch (planetCount % 2) {
         case 1:
             texture = Renderer::instance().loadTexture(
-                "red", "../../data/planets/red.jpg");
+                "red", "../../data/planets/ag.jpg");
             break;
         default:
             texture = Renderer::instance().loadTexture(

@@ -26,8 +26,8 @@ ColliderType Collider::get_collider_type() { return this->colliderType; }
 
 BoxCollider::BoxCollider(PhysicsObject *parent, glm::vec4 center, float width,
                          float height, float depth)
-    : Collider(parent, center, ColliderType::BOX_COLLIDER), width(width), height(height),
-      depth(depth) {}
+    : Collider(parent, center, ColliderType::BOX_COLLIDER), width(width),
+      height(height), depth(depth) {}
 
 glm::vec4 BoxCollider::get_min() {
     glm::vec4 vertices[8];
@@ -206,10 +206,13 @@ CollisionData RaycastCollider::test_sphere(SphereCollider sphere) {
 }
 
 float squaredDistPointAABB(glm::vec4 sphere_center, glm::vec4 min,
-                           glm::vec4 max) {    
-    auto calculate = [&](const float point, const float min, const float max) -> float {
-        if(point < min) return (min - point) * (min - point);
-        if(point > max) return (point - max) * (point - max);
+                           glm::vec4 max) {
+    auto calculate = [&](const float point, const float min,
+                         const float max) -> float {
+        if (point < min)
+            return (min - point) * (min - point);
+        if (point > max)
+            return (point - max) * (point - max);
         return 0.0f;
     };
 

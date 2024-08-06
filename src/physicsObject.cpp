@@ -5,17 +5,22 @@
 #include "matrices.hpp"
 #include <iostream>
 
-const float PhysicsObject::G_CONSTANT = 0.001f;
-const GLfloat PhysicsObject::speedLimit = 20.0f;
+const float PhysicsObject::G_CONSTANT = 1.0f;
+const GLfloat PhysicsObject::speedLimit = 100.0f;
 const GLfloat PhysicsObject::collisionAttenuation = 0.0;
 
 PhysicsObject::PhysicsObject(glm::vec4 position, GLfloat mass)
     : GameObject(GameObjectType::STANDARD, position), drag(0), mass(mass),
       velocity(NONE), acceleration(NONE), angularVelocity(NONE),
+      nextPosition(position), nextVelocity(velocity),
       previousPosition(position) {}
 
 void PhysicsObject::accelerate(glm::vec4 velocity) {
-    this->velocity += velocity;
+    this->nextVelocity += velocity;
+}
+
+void PhysicsObject::translate(glm::vec4 direction) {
+    this->nextPosition += direction;
 }
 
 void PhysicsObject::increase_acceleration(glm::vec4 acceleration) {
@@ -26,27 +31,32 @@ void PhysicsObject::increase_angularVelocity(glm::vec3 angularVelocity) {
     this->angularVelocity += angularVelocity;
 }
 
-void PhysicsObject::applyForce(glm::vec4 force) { velocity += force / mass; }
+void PhysicsObject::applyForce(glm::vec4 force) {
+    nextVelocity += force / mass;
+}
 
 void PhysicsObject::physicsUpdate(GLfloat deltaTime) {
+    velocity = nextVelocity;
+    set_position(nextPosition);
+
     velocity += acceleration * deltaTime;
     previousPosition = get_position();
 
-    float velocityNorm = norm(velocity);
+    const float velocityNorm = norm(velocity);
+    if (velocityNorm >= 0.001f) {
+        velocity -= velocity * drag * deltaTime;
+    } else {
+        velocity = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
 
-    // // Keep velocity bound inside of the limits
-    // if (velocityNorm > speedLimit) {
-    //     velocity = speedLimit * (velocity / velocityNorm);
-    // }
-
-    translate(velocity * deltaTime);
+    GameObject::translate(velocity * deltaTime);
 
     for (auto child : children) {
         child->rotate(angularVelocity * deltaTime);
     }
 
-    // Pseudo drag
-    velocity -= velocity * drag * deltaTime;
+    nextVelocity = velocity;
+    nextPosition = get_position();
 }
 
 void PhysicsObject::handle_collision(glm::vec4 collision_point,
@@ -72,9 +82,10 @@ void PhysicsObject::handle_collision(glm::vec4 collision_point,
     auto first_acceleration = new_velocity_first - velocity;
     auto second_acceleration = new_velocity_second - other.velocity;
 
-    accelerate(first_acceleration);
-    other.accelerate(second_acceleration);
+    // Multiply by 0.5 since every collision will be counted twice
+    accelerate(first_acceleration * 0.5f);
+    other.accelerate(second_acceleration * 0.5f);
 
-    translate(first_acceleration * deltaTime);
-    other.translate(second_acceleration * deltaTime);
+    translate(first_acceleration * deltaTime * 0.5f);
+    other.translate(second_acceleration * deltaTime * 0.5f);
 }

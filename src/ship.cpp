@@ -5,7 +5,7 @@
 #include "matrices.hpp"
 
 const GLfloat Ship::shipBaseSpeed = 6.0f;
-const GLfloat Ship::shipBoostingSpeed = 15.0f;
+const GLfloat Ship::shipBoostingSpeed = 30.0f;
 const GLfloat Ship::turningSpeed = 1.5f;
 const GLfloat Ship::shipDrag = 0.5f;
 

@@ -1,4 +1,5 @@
 #include "engine/Physics/player.hpp"
+#include "engine/EngineObject/camera/camera.hpp"
 #include "engine/Input/inputHandler.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "matrices.hpp"
@@ -15,6 +16,8 @@ Player::Player()
       playerMovement({0.0f, 0.0f, 0.0f}), isPiloting(true) {
     addChild(playerCamera);
     set_parent(ship);
+
+    playerCamera.rotate(M_PI / 2.0f, UP);
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [this](Action action) {
         const glm::vec4 direction = FRONT;

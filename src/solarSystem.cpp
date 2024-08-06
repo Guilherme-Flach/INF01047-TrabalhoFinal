@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <fstream>
 
-const float SolarSystem::physicsUpdateTime = 1.0f / 40.0f;
+const float SolarSystem::physicsUpdateTime = 1.0f / 50.0f;
 CollisionsManager SolarSystem::collisionsManager;
 
 SolarSystem::SolarSystem()
@@ -32,12 +32,14 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
     if (timeSinceLastFrame >= physicsUpdateTime) {
         glm::vec4 pull;
         for (size_t i = 0; i < planets.size(); i++) {
-            planets[i]->applyForce(calculateGravityPull(i, planets[i]));
+            planets[i]->applyForce(calculateGravityPull(i, planets[i]) *
+                                   physicsUpdateTime);
         }
 
         player.get_ship().applyForce(
-            calculateGravityPull(-1, &player.get_ship()));
-        player.applyForce(calculateGravityPull(-1, &player));
+            calculateGravityPull(-1, &player.get_ship()) * physicsUpdateTime);
+        player.applyForce(calculateGravityPull(-1, &player) *
+                          physicsUpdateTime);
 
         player.get_ship().physicsUpdate(physicsUpdateTime);
         player.physicsUpdate(physicsUpdateTime);

@@ -20,6 +20,9 @@ class PhysicsObject : public GameObject {
     glm::vec3 angularVelocity;
     glm::vec4 previousPosition;
 
+    glm::vec4 nextPosition;
+    glm::vec4 nextVelocity;
+
   public:
     const static float G_CONSTANT;
 
@@ -37,9 +40,10 @@ class PhysicsObject : public GameObject {
     glm::vec4 get_acceleration() { return acceleration; };
     glm::vec3 get_angular_velocity() { return angularVelocity; };
 
+    void translate(glm::vec4 direction);
     void set_drag(GLfloat drag) { this->drag = drag; }
     void set_mass(GLfloat mass) { this->mass = mass; }
-    void set_velocity(glm::vec4 velocity) { this->velocity = velocity; }
+    void set_velocity(glm::vec4 velocity) { this->nextVelocity = velocity; }
     void set_acceleration(glm::vec4 acceleration) {
         this->acceleration = acceleration;
     }
