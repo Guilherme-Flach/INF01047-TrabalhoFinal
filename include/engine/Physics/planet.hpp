@@ -9,6 +9,8 @@
 #include "glm/ext/vector_float4.hpp"
 #include "engine/Rendering/renderer.hpp"
 
+const int NUMTEXTURES = 5;
+
 class Planet : public PhysicsObject {
   private:
   protected:
@@ -19,16 +21,12 @@ class Planet : public PhysicsObject {
     Planet(glm::vec4 position, GLfloat radius, GLfloat mass)
         : PhysicsObject(position, mass), radius(radius), surfaceGravity(mass) {
         static int planetCount = 0;
+
+        const int textureIndex = planetCount % NUMTEXTURES;
+        const auto texturePath = "../../data/planets/" + std::to_string(textureIndex) + ".jpg";
         set_modelScaling(radius);
-        switch (planetCount % 2) {
-        case 1:
             texture = Renderer::instance().loadTexture(
-                "red", "../../data/planets/ag.jpg");
-            break;
-        default:
-            texture = Renderer::instance().loadTexture(
-                "ag", "../../data/planets/ag.jpg");
-        }
+                std::to_string(textureIndex), texturePath.c_str());
         model = Renderer::instance().loadModel("planet",
                                                "../../data/planets/sphere.obj");
         planetCount++;

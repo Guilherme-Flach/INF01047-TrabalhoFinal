@@ -10,9 +10,11 @@ const GLfloat Player::playerMass = 1.0f;
 
 const glm::vec4 Player::startingPosition = {49.0f, 49.0f, 49.0f, 1.0f};
 
+const glm::vec4 POSITION_INSIDE_SHIP  = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
 Player::Player()
     : PhysicsObject(ORIGIN, playerMass),
-      playerCamera(FreeCamera(ORIGIN, FRONT)), ship(Ship(startingPosition)),
+      playerCamera(FreeCamera(POSITION_INSIDE_SHIP, FRONT)), ship(Ship(startingPosition)),
       playerMovement({0.0f, 0.0f, 0.0f}), isPiloting(true) {
     addChild(playerCamera);
     set_parent(ship);
@@ -165,7 +167,7 @@ Player::Player()
                 remove_parent();
             } else {
                 isPiloting = true;
-                set_position({0.0f, 0.0f, 0.0f, 1.0f});
+                set_position(ORIGIN);
                 acceleration = {0.0f, 0.0f, 0.0f, 0.0f};
                 set_parent(ship);
             }

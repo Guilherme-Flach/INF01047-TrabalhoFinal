@@ -4,16 +4,16 @@
 #include "engine/Rendering/renderer.hpp"
 #include "matrices.hpp"
 
-const GLfloat Ship::shipBaseSpeed = 6.0f;
-const GLfloat Ship::shipBoostingSpeed = 30.0f;
+const GLfloat Ship::shipBaseSpeed = 5.0f;
+const GLfloat Ship::shipBoostingSpeed = 10.0f;
 const GLfloat Ship::turningSpeed = 1.5f;
 const GLfloat Ship::shipDrag = 0.5f;
 
 Ship::Ship(glm::vec4 position)
     : PhysicsObject(position, playerMass),
       shipContainer(
-          GameObject(GameObjectType::STANDARD, {0.0f, 0.0f, 0.0f, 1.0f})),
-      shipCollider(SphereCollider(this, {0.0, 0.0, 0.0, 1.0}, 1.0f)) {
+          GameObject(GameObjectType::STANDARD, {0.0f, 0.2f, 0.0f, 1.0f})),
+      shipCollider(SphereCollider(this, {0.0, 0.0, 0.0, 1.0}, 2.0f)) {
     set_drag(shipDrag);
     addChild(shipContainer);
     shipContainer.set_texture(

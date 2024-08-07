@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <engine/Input/inputHandler.hpp>
 
 const float SolarSystem::physicsUpdateTime = 1.0f / 50.0f;
 CollisionsManager SolarSystem::collisionsManager;
@@ -20,10 +21,17 @@ SolarSystem::SolarSystem()
 
     collisionsManager.add_object(player.get_ship());
 
-    for (std::vector<Planet *>::iterator node = planets.begin();
-         node != planets.end(); node++) {
-        collisionsManager.add_object(**node);
-    }
+    InputHandler::addClickMapping(GLFW_MOUSE_BUTTON_1, [this](Action action) {
+        const glm::vec4 direction = FRONT;
+        if (action == GLFW_PRESS) {
+            const auto direction =
+                player.get_playerCamera().get_target()->get_global_position() -
+                player.get_playerCamera().get_global_position();
+            this->spawnPlanet(
+                player.get_playerCamera().get_target()->get_global_position() + 10.0f * direction,
+                0.5f, 1.0f);
+        }
+    });
 }
 
 void SolarSystem::FixedUpdate(GLfloat deltaTime) {
@@ -121,7 +129,7 @@ Planet *SolarSystem::ParsePlanetInfo(std::string line) {
     float vel_z = stof(line.substr(0, tokenLimiter));
     line = line.substr(tokenLimiter + 1); // erase until separator
 
-    Planet *p = new Planet(glm::vec4(x, y, z, 1.0f), radius, surface_gravity);
+    Planet *p = spawnPlanet(glm::vec4(x, y, z, 1.0f), radius, surface_gravity);
     p->set_velocity(glm::vec4(vel_x, vel_y, vel_z, 0.0f));
 
     return p;
@@ -136,12 +144,6 @@ void SolarSystem::LoadConfigFromFile(const char *filename) {
             try {
                 std::cout << "Read:" << "    " << line << std::endl;
                 Planet *planet = ParsePlanetInfo(line);
-                auto collider = new SphereCollider(planet, {0.0, 0.0, 0.0, 1.0},
-                                                   planet->get_radius());
-                planet->addChild(*collider);
-                Renderer::instance().addToRenderQueue(Renderer::GOURAUD,
-                                                      planet);
-                planets.push_back(planet);
             } catch (...) {
                 std::cout << "Explodiu!" << std::endl;
                 break;
@@ -165,4 +167,18 @@ SolarSystem::~SolarSystem() {
             }
         }
     }
+}
+
+Planet *SolarSystem::spawnPlanet(glm::vec4 position, GLfloat radius,
+                                 GLfloat mass) {
+    Planet *planet = new Planet(position, radius, mass);
+    auto collider =
+        new SphereCollider(planet, {0.0, 0.0, 0.0, 1.0}, planet->get_radius());
+    planet->addChild(*collider);
+
+    collisionsManager.add_object(*planet);
+    planets.push_back(planet);
+    Renderer::instance().addToRenderQueue(Renderer::GOURAUD, planet);
+
+    return planet;
 }

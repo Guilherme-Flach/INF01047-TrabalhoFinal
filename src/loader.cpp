@@ -14,6 +14,8 @@
 
 void TextRendering_Init();
 void TextRendering_ShowFramesPerSecond(GLFWwindow *window);
+void TextRendering_PrintString(GLFWwindow *window, const std::string &str,
+                               float x, float y, float scale = 1.0f);
 
 float Loader::delta_t = 0;
 GLFWwindow* Loader::window = nullptr;
@@ -110,6 +112,7 @@ void Loader::start(std::function<void(void)> act) {
         renderer.renderRenderQueue(Renderer::GOURAUD, active_camera, window);
 
         TextRendering_ShowFramesPerSecond(window);
+        TextRendering_PrintString(window, ".", 0.0, 0.0, 2.0f);
 
         glfwSwapBuffers(window);
 

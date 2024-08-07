@@ -21,6 +21,7 @@ class SolarSystem {
     Planet *ParsePlanetInfo(std::string line);
     void LoadConfigFromFile(const char *filename);
     glm::vec4 calculateGravityPull(int index, PhysicsObject *obj);
+    Planet *spawnPlanet(glm::vec4 position, GLfloat radius, GLfloat mass);
 
   public:
     ~SolarSystem();
