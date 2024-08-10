@@ -4,6 +4,8 @@
 #include "engine/Input/inputHandler.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "matrices.hpp"
+#include "engine/loader.hpp"
+#include <iostream>
 
 const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
@@ -14,18 +16,119 @@ const glm::vec4 Player::panoramicCameraPosition = {50.0f, 50.0f, 50.0f, 1.0f};
 
 const glm::vec4 POSITION_INSIDE_SHIP = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
+const GLfloat transitionDurationCameraIn = 0.10f;
+const GLfloat transitionDurationTargetIn = 0.20f;
+
+const GLfloat transitionDurationCameraOut = 0.6f;
+const GLfloat transitionDurationTargetOut = 0.2f;
+
+GameObject g_OriginObject = GameObject(GameObjectType::STANDARD, ORIGIN);
+GameObject g_DollyObject = GameObject(GameObjectType::STANDARD, ORIGIN);
+
 Player::Player()
     : PhysicsObject(ORIGIN, playerMass),
       playerCamera(FreeCamera(POSITION_INSIDE_SHIP, FRONT)),
       ship(Ship(startingPosition)), playerMovement({0.0f, 0.0f, 0.0f}),
       isPiloting(true), controlMode(Player::PILOTING_SHIP),
-      panoramicCamera(
-          Camera(panoramicCameraPosition,
-                 new GameObject(GameObjectType::STANDARD, ORIGIN))) {
+      panoramicCamera(Camera(panoramicCameraPosition, &g_OriginObject)),
+      // Maldade a frente, essas inicializações são só pra ter algo nas dolly
+      // cameras
+      playerToPanoramicDolly(
+          QuadraticInterpolator::createPath(
+              playerCamera.get_global_position(),
+              panoramicCamera.get_global_position()),
+          transitionDurationCameraIn, &g_DollyObject,
+          QuadraticInterpolator::createPath(
+              playerCamera.get_target()->get_global_position(),
+              panoramicCamera.get_target()->get_global_position()),
+          transitionDurationTargetIn,
+          {{playerCamera.get_fov(), playerCamera.get_nearPlane(),
+            playerCamera.get_farPlane(), 1.0f},
+           {0.6 * M_PI, playerCamera.get_nearPlane(),
+            playerCamera.get_farPlane(), 1.0f},
+           {0.8 * M_PI, playerCamera.get_nearPlane(),
+            playerCamera.get_farPlane(), 1.0f}}),
+      panoramicToPlayerDolly(
+          QuadraticInterpolator::createPath(
+              playerCamera.get_global_position(),
+              panoramicCamera.get_global_position()),
+          transitionDurationCameraOut, &g_DollyObject,
+          QuadraticInterpolator::createPath(
+              playerCamera.get_target()->get_global_position(),
+              panoramicCamera.get_target()->get_global_position()),
+          transitionDurationTargetOut,
+          {{panoramicCamera.get_fov(), panoramicCamera.get_nearPlane(),
+            panoramicCamera.get_farPlane(), 1.0f},
+           {playerCamera.get_fov(), playerCamera.get_nearPlane(),
+            playerCamera.get_farPlane(), 1.0f},
+           {0.1 * M_PI, playerCamera.get_nearPlane(),
+            playerCamera.get_farPlane(), 1.0f}}) {
+
     addChild(playerCamera);
     set_parent(ship);
     panoramicCamera.set_fov(0.6 * M_PI);
     panoramicCamera.set_farPlane(-200.0f);
+
+    playerToPanoramicDolly.set_onUpdate([this](GLfloat deltaTime) -> void {
+        if (playerToPanoramicDolly.get_isFinished()) {
+            Loader::set_active_camera(&panoramicCamera);
+            controlMode = PANORAMIC;
+            playerToPanoramicDolly.set_progress(0.0f);
+        }
+    });
+
+    panoramicToPlayerDolly.set_onUpdate([this](GLfloat deltaTime) -> void {
+        if (panoramicToPlayerDolly.get_isFinished()) {
+            Loader::set_active_camera(&playerCamera);
+            controlMode = PILOTING_SHIP;
+            panoramicToPlayerDolly.set_progress(0.0f);
+        }
+    });
+
+    InputHandler::addKeyMapping(GLFW_KEY_TAB, [this](Action action) {
+        if (action == GLFW_PRESS) {
+            // Transition to panoramic
+            if (controlMode == PILOTING_SHIP) {
+                Loader::set_active_camera(&playerToPanoramicDolly);
+                controlMode = TRANSITIONING;
+
+                const BezierPath_Quadratic cameraPath =
+                    QuadraticInterpolator::createPath(
+                        playerCamera.get_global_position(),
+                        panoramicCamera.get_global_position());
+                const BezierPath_Quadratic targetPath =
+                    QuadraticInterpolator::createPath(
+                        playerCamera.get_target()->get_global_position(),
+                        panoramicCamera.get_target()->get_global_position());
+
+                playerToPanoramicDolly.set_cameraPath(cameraPath);
+                playerToPanoramicDolly.set_targetPath(targetPath);
+
+                playerToPanoramicDolly.set_progress(0.0f);
+                playerToPanoramicDolly.startMoving();
+
+                // Transition to Ship
+            } else if (controlMode == PANORAMIC) {
+                Loader::set_active_camera(&panoramicToPlayerDolly);
+                controlMode = TRANSITIONING;
+
+                const BezierPath_Quadratic cameraPath =
+                    QuadraticInterpolator::createPath(
+                        panoramicCamera.get_global_position(),
+                        playerCamera.get_global_position());
+                const BezierPath_Quadratic targetPath =
+                    QuadraticInterpolator::createPath(
+                        panoramicCamera.get_target()->get_global_position(),
+                        playerCamera.get_target()->get_global_position());
+
+                panoramicToPlayerDolly.set_cameraPath(cameraPath);
+                panoramicToPlayerDolly.set_targetPath(targetPath);
+
+                panoramicToPlayerDolly.set_progress(0.0f);
+                panoramicToPlayerDolly.startMoving();
+            }
+        }
+    });
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [this](Action action) {
         const glm::vec4 direction = FRONT;
@@ -172,13 +275,20 @@ Player::Player()
                 set_position(get_global_position());
                 remove_parent();
             } else {
-                controlMode = FREE;
+                controlMode = PILOTING_SHIP;
                 set_position(ORIGIN);
                 acceleration = {0.0f, 0.0f, 0.0f, 0.0f};
                 set_parent(ship);
             }
         }
     });
+}
+
+void Player::update(GLfloat deltaTime) {
+    playerCamera.update(deltaTime);
+    panoramicToPlayerDolly.update(deltaTime);
+    playerToPanoramicDolly.update(deltaTime);
+    GameObject::update(deltaTime);
 }
 
 void Player::physicsUpdate(GLfloat deltaTime) {

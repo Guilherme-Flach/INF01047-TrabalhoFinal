@@ -29,72 +29,6 @@ int main(int argc, char *argv[]) {
     Player &player = s.get_player();
     Camera &cameraPanoramic = player.get_panoramicCamera();
 
-    const BezierPath_Quadratic cameraPathToPanoramic =
-        QuadraticInterpolator::createPath(
-            player.get_playerCamera().get_global_position(),
-            cameraPanoramic.get_global_position());
-
-    const BezierPath_Quadratic targetPathToPanoramic =
-        QuadraticInterpolator::createPath(
-            player.get_playerCamera().get_target()->get_global_position(),
-            cameraPanoramic.get_target()->get_global_position());
-
-    PhysicsObject physObj = PhysicsObject({0.0f, 0.0f, 0.0f, 1.0f}, 1.0f);
-
-    const BezierPath_Quadratic lensPathToPanoramic = {
-        {player.get_playerCamera().get_fov(),
-         player.get_playerCamera().get_nearPlane(),
-         player.get_playerCamera().get_farPlane(), 1.0f},
-        {0.6 * M_PI, player.get_playerCamera().get_nearPlane(),
-         player.get_playerCamera().get_farPlane(), 1.0f},
-        {0.8 * M_PI, player.get_playerCamera().get_nearPlane(),
-         player.get_playerCamera().get_farPlane(), 1.0f}};
-
-    DollyCamera dollyCameraPlayerToPanoramic =
-        DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
-                    targetPathToPanoramic, 0.5f, lensPathToPanoramic);
-
-    dollyCameraPlayerToPanoramic.set_onUpdate(
-        [&dollyCameraPlayerToPanoramic, &loader,
-         &cameraPanoramic](GLfloat deltaTime) -> void {
-            if (dollyCameraPlayerToPanoramic.get_isFinished()) {
-                loader.set_active_camera(&cameraPanoramic);
-                dollyCameraPlayerToPanoramic.set_progress(0.0f);
-            }
-        });
-
-    const BezierPath_Quadratic cameraPathToPlayer =
-        QuadraticInterpolator::createPath(
-            player.get_playerCamera().get_global_position(),
-            cameraPanoramic.get_global_position());
-
-    const BezierPath_Quadratic targetPathToPlayer =
-        QuadraticInterpolator::createPath(
-            player.get_playerCamera().get_target()->get_global_position(),
-            cameraPanoramic.get_target()->get_global_position());
-
-    const BezierPath_Quadratic lensPathToPlayer = {
-        {cameraPanoramic.get_fov(), cameraPanoramic.get_nearPlane(),
-         cameraPanoramic.get_farPlane(), 1.0f},
-        {player.get_playerCamera().get_fov(),
-         player.get_playerCamera().get_nearPlane(),
-         player.get_playerCamera().get_farPlane(), 1.0f},
-        {0.1 * M_PI, player.get_playerCamera().get_nearPlane(),
-         player.get_playerCamera().get_farPlane(), 1.0f}};
-
-    DollyCamera dollyCameraPanoramicToPlayer =
-        DollyCamera(cameraPathToPanoramic, 0.7f, &physObj,
-                    targetPathToPanoramic, 0.5f, lensPathToPlayer);
-
-    dollyCameraPanoramicToPlayer.set_onUpdate(
-        [&dollyCameraPanoramicToPlayer, &loader,
-         &player](GLfloat deltaTime) -> void {
-            if (dollyCameraPanoramicToPlayer.get_isFinished()) {
-                loader.set_active_camera(&player.get_playerCamera());
-                dollyCameraPanoramicToPlayer.set_progress(0.0f);
-            }
-        });
-
     loader.set_active_camera(&player.get_playerCamera());
 
     // Locking
@@ -103,62 +37,9 @@ int main(int argc, char *argv[]) {
     //         ship.set_currentPlanet(&sun);
     //     }
     // });
-
-    InputHandler::addKeyMapping(GLFW_KEY_TAB, [&dollyCameraPlayerToPanoramic,
-                                               &loader, &player,
-                                               &cameraPanoramic,
-                                               &dollyCameraPanoramicToPlayer](
-                                                  Action action) {
-        if (action == GLFW_PRESS) {
-            // Transition to panoramic
-            if (loader.get_active_camera() == &player.get_playerCamera()) {
-                loader.set_active_camera(&dollyCameraPlayerToPanoramic);
-
-                const BezierPath_Quadratic cameraPath =
-                    QuadraticInterpolator::createPath(
-                        player.get_playerCamera().get_global_position(),
-                        cameraPanoramic.get_global_position());
-                const BezierPath_Quadratic targetPath =
-                    QuadraticInterpolator::createPath(
-                        player.get_playerCamera()
-                            .get_target()
-                            ->get_global_position(),
-                        cameraPanoramic.get_target()->get_global_position());
-
-                dollyCameraPlayerToPanoramic.set_cameraPath(cameraPath);
-                dollyCameraPlayerToPanoramic.set_targetPath(targetPath);
-
-                dollyCameraPlayerToPanoramic.set_progress(0.0f);
-                dollyCameraPlayerToPanoramic.startMoving();
-
-                // Transition to Ship
-            } else if (loader.get_active_camera() == &cameraPanoramic) {
-                loader.set_active_camera(&dollyCameraPanoramicToPlayer);
-
-                const BezierPath_Quadratic cameraPath =
-                    QuadraticInterpolator::createPath(
-                        cameraPanoramic.get_global_position(),
-                        player.get_playerCamera().get_global_position());
-                const BezierPath_Quadratic targetPath =
-                    QuadraticInterpolator::createPath(
-                        cameraPanoramic.get_target()->get_global_position(),
-                        player.get_playerCamera()
-                            .get_target()
-                            ->get_global_position());
-
-                dollyCameraPanoramicToPlayer.set_cameraPath(cameraPath);
-                dollyCameraPanoramicToPlayer.set_targetPath(targetPath);
-
-                dollyCameraPanoramicToPlayer.set_progress(0.0f);
-                dollyCameraPanoramicToPlayer.startMoving();
-            }
-        }
-    });
     loader.start([&]() {
         const GLfloat deltaTime = Loader::get_delta_t();
-        dollyCameraPlayerToPanoramic.update(deltaTime);
-        dollyCameraPanoramicToPlayer.update(deltaTime);
-        player.get_playerCamera().update(deltaTime);
+        player.update(deltaTime);
         s.FixedUpdate(deltaTime);
     });
     return 0;

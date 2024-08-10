@@ -51,7 +51,7 @@ void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera,
     glfwGetFramebufferSize(window, &width, &height);
 
     projection =
-        Matrix_Perspective(camera->get_fov(), width / height,
+        Matrix_Perspective(camera->get_fov(), (float)width / height,
                            camera->get_nearPlane(), camera->get_farPlane());
     glUniformMatrix4fv(programs[renderMode].projection_uniform, 1, GL_FALSE,
                        glm::value_ptr(projection));

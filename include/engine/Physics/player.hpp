@@ -4,6 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 #include "collider.hpp"
+#include "engine/EngineObject/camera/dollyCamera.hpp"
 #include "engine/EngineObject/camera/freeCamera.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/ship.hpp"
@@ -13,7 +14,7 @@
 
 class Player : public PhysicsObject {
   public:
-    enum ControlMode { PILOTING_SHIP, FREE, PANORAMIC };
+    enum ControlMode { PILOTING_SHIP, FREE, PANORAMIC, TRANSITIONING };
 
   private:
     const static GLfloat speedLimit;
@@ -26,6 +27,10 @@ class Player : public PhysicsObject {
   protected:
     FreeCamera playerCamera;
     Camera panoramicCamera;
+
+    DollyCamera panoramicToPlayerDolly;
+    DollyCamera playerToPanoramicDolly;
+
     Ship ship;
 
     glm::vec3 playerMovement;
@@ -40,6 +45,9 @@ class Player : public PhysicsObject {
     Camera &get_panoramicCamera() { return panoramicCamera; }
     Ship &get_ship() { return ship; }
 
+    ControlMode get_controlMode() { return controlMode; }
+
+    void update(GLfloat deltaTime);
     void physicsUpdate(GLfloat deltaTime);
 };
 

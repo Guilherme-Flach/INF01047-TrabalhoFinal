@@ -23,12 +23,14 @@ SolarSystem::SolarSystem()
 
     InputHandler::addClickMapping(GLFW_MOUSE_BUTTON_1, [this](Action action) {
         const glm::vec4 direction = FRONT;
-        if (action == GLFW_PRESS) {
+        if (action == GLFW_PRESS &&
+            player.get_controlMode() == Player::PILOTING_SHIP) {
             const auto direction =
                 player.get_playerCamera().get_target()->get_global_position() -
                 player.get_playerCamera().get_global_position();
             this->spawnPlanet(
-                player.get_playerCamera().get_target()->get_global_position() + 10.0f * direction,
+                player.get_playerCamera().get_target()->get_global_position() +
+                    10.0f * direction,
                 0.5f, 1.0f);
         }
     });

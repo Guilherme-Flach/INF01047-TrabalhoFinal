@@ -57,6 +57,12 @@ float norm(glm::vec4 v) {
     return sqrt(vx * vx + vy * vy + vz * vz);
 }
 
+glm::vec4 normalize(glm::vec4 v) {
+    float vector_size = norm(v);
+    return glm::vec4(v.x / vector_size, v.y / vector_size, v.z / vector_size,
+                     v.w);
+}
+
 glm::mat4 Matrix_Rotate(float angle, glm::vec4 axis) {
     float c = cos(angle);
     float s = sin(angle);

@@ -6,10 +6,7 @@
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Input/inputHandler.hpp"
-#include "engine/Physics/solarSystem.hpp"
 #include "engine/Rendering/renderer.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "matrices.hpp"
 #include "GLFW/glfw3.h"
 
 void TextRendering_Init();
@@ -18,8 +15,8 @@ void TextRendering_PrintString(GLFWwindow *window, const std::string &str,
                                float x, float y, float scale = 1.0f);
 
 float Loader::delta_t = 0;
-GLFWwindow* Loader::window = nullptr;
-Camera* Loader::active_camera = nullptr;
+GLFWwindow *Loader::window = nullptr;
+Camera *Loader::active_camera = nullptr;
 
 Loader::Loader(int width, int height, char title[]) {
     int success = glfwInit();
@@ -67,8 +64,7 @@ void Loader::add_camera(Camera &camera) {
     this->camera_store.push_back(&camera);
 }
 
-void Loader::set_active_camera(Camera *camera) { this->active_camera = camera; }
-
+void Loader::set_active_camera(Camera *camera) { active_camera = camera; }
 
 void Loader::start(std::function<void(void)> act) {
     TextRendering_Init();
@@ -77,10 +73,10 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetMouseButtonCallback(window, InputHandler::handleMouseClick);
     glfwSetCursorPosCallback(window, InputHandler::handleCursorPosChange);
     glfwSetCursorPos(window, 0, 0);
-    //glfwFocusWindow(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwFocusWindow(window);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    Renderer& renderer = Renderer::instance();
+    Renderer &renderer = Renderer::instance();
 
     // renderer.setDebugMode(true);
 
@@ -94,7 +90,7 @@ void Loader::start(std::function<void(void)> act) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //SolarSystem solarSystem = SolarSystem();
+    // SolarSystem solarSystem = SolarSystem();
 
     float prev_time = 0;
     while (!glfwWindowShouldClose(window)) {
@@ -106,8 +102,8 @@ void Loader::start(std::function<void(void)> act) {
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        act();       
-        
+        act();
+
         renderer.renderRenderQueue(Renderer::PHONG, active_camera, window);
         renderer.renderRenderQueue(Renderer::GOURAUD, active_camera, window);
 

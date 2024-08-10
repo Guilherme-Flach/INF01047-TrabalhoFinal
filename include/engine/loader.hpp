@@ -7,11 +7,9 @@
 #include "Input/inputHandler.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
-#include <string>
 #include <utils.h>
 #include <matrices.hpp>
 #include <vector>
-#include "Physics/planet.hpp"
 
 class Loader {
 
@@ -37,7 +35,6 @@ class Loader {
 
     static Camera *get_active_camera() { return active_camera; }
     static GLFWwindow *get_window() { return window; }
-
-    void set_active_camera(Camera *camera);
+    static void set_active_camera(Camera *camera);
 };
 #endif // LOADER_HEADER
