@@ -44,10 +44,11 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
                                    physicsUpdateTime);
         }
 
-        player.get_ship().applyForce(
-            calculateGravityPull(-1, &player.get_ship()) * physicsUpdateTime);
-        player.applyForce(calculateGravityPull(-1, &player) *
-                          physicsUpdateTime);
+        // player.get_ship().applyForce(
+        //     calculateGravityPull(-1, &player.get_ship()) *
+        //     physicsUpdateTime);
+        // player.applyForce(calculateGravityPull(-1, &player) *
+        //                   physicsUpdateTime);
 
         player.get_ship().physicsUpdate(physicsUpdateTime);
         player.physicsUpdate(physicsUpdateTime);

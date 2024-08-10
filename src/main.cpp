@@ -27,12 +27,7 @@ int main(int argc, char *argv[]) {
     SolarSystem s = SolarSystem();
 
     Player &player = s.get_player();
-
-    Camera cameraPanoramic =
-        Camera({60.0f, 60.0f, 60.0f, 1.0f},
-               new GameObject(GameObjectType::STANDARD, ORIGIN));
-    cameraPanoramic.set_fov(0.6 * M_PI);
-    cameraPanoramic.set_farPlane(-200.0f);
+    Camera &cameraPanoramic = player.get_panoramicCamera();
 
     const BezierPath_Quadratic cameraPathToPanoramic =
         QuadraticInterpolator::createPath(

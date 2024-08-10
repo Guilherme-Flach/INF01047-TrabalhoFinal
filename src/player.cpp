@@ -1,5 +1,6 @@
 #include "engine/Physics/player.hpp"
 #include "engine/EngineObject/camera/camera.hpp"
+#include "engine/EngineObject/gameObject.hpp"
 #include "engine/Input/inputHandler.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "matrices.hpp"
@@ -9,17 +10,22 @@ const GLfloat Player::playerSpeed = 2.0f;
 const GLfloat Player::playerMass = 1.0f;
 
 const glm::vec4 Player::startingPosition = {49.0f, 49.0f, 49.0f, 1.0f};
+const glm::vec4 Player::panoramicCameraPosition = {50.0f, 50.0f, 50.0f, 1.0f};
 
-const glm::vec4 POSITION_INSIDE_SHIP  = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+const glm::vec4 POSITION_INSIDE_SHIP = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 Player::Player()
     : PhysicsObject(ORIGIN, playerMass),
-      playerCamera(FreeCamera(POSITION_INSIDE_SHIP, FRONT)), ship(Ship(startingPosition)),
-      playerMovement({0.0f, 0.0f, 0.0f}), isPiloting(true) {
+      playerCamera(FreeCamera(POSITION_INSIDE_SHIP, FRONT)),
+      ship(Ship(startingPosition)), playerMovement({0.0f, 0.0f, 0.0f}),
+      isPiloting(true), controlMode(Player::PILOTING_SHIP),
+      panoramicCamera(
+          Camera(panoramicCameraPosition,
+                 new GameObject(GameObjectType::STANDARD, ORIGIN))) {
     addChild(playerCamera);
     set_parent(ship);
-
-    playerCamera.rotate(M_PI / 2.0f, UP);
+    panoramicCamera.set_fov(0.6 * M_PI);
+    panoramicCamera.set_farPlane(-200.0f);
 
     InputHandler::addKeyMapping(GLFW_KEY_W, [this](Action action) {
         const glm::vec4 direction = FRONT;
@@ -161,12 +167,12 @@ Player::Player()
     // Board Ship
     InputHandler::addKeyMapping(GLFW_KEY_T, [this](Action action) {
         if (action == GLFW_PRESS) {
-            if (isPiloting) {
-                isPiloting = false;
+            if (controlMode == PILOTING_SHIP) {
+                controlMode = FREE;
                 set_position(get_global_position());
                 remove_parent();
             } else {
-                isPiloting = true;
+                controlMode = FREE;
                 set_position(ORIGIN);
                 acceleration = {0.0f, 0.0f, 0.0f, 0.0f};
                 set_parent(ship);
@@ -176,7 +182,7 @@ Player::Player()
 }
 
 void Player::physicsUpdate(GLfloat deltaTime) {
-    if (isPiloting) {
+    if (controlMode == PILOTING_SHIP) {
         // Update camera to follow ship
         const glm::mat3x4 shipBasis =
             ship.get_shipContainer().get_global_basis();

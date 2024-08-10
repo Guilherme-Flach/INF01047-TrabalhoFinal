@@ -13,7 +13,7 @@
 
 GameObject::GameObject(GameObjectType type, glm::vec4 position)
     : type(type), parent(nullptr), texture(nullptr), model(nullptr),
-      modelScaling({1.0f, 1.0f, 1.0f}) {
+      modelScaling({1.0f, 1.0f, 1.0f}), shouldRender(true) {
     // static Model3D default_model = BaseAxesModel();
     this->onUpdate = [](GLfloat _) -> void {};
     this->model_matrix = Matrix_Identity();
@@ -96,7 +96,7 @@ Texture *GameObject::get_texture() { return texture; }
 glm::vec3 GameObject::get_modelScaling() { return modelScaling; }
 
 bool GameObject::get_isRenderable() {
-    return model != nullptr && texture != nullptr;
+    return model != nullptr && texture != nullptr && shouldRender;
 }
 
 void GameObject::set_model(Model3D *model) { this->model = model; }

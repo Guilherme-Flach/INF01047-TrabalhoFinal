@@ -17,12 +17,15 @@ class GameObject {
     GameObjectType type;
     glm::mat4 model_matrix;
     std::vector<GameObject *> children;
+    void set_parent(GameObject &parent);
+    void remove_parent();
+
     GameObject *parent;
     Texture *texture;
     Model3D *model;
     glm::vec3 modelScaling;
-    void set_parent(GameObject &parent);
-    void remove_parent();
+    bool shouldRender;
+
     std::function<void(GLfloat deltaTime)> onUpdate;
 
   public:

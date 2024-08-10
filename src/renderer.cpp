@@ -17,8 +17,10 @@
 #include <glad/glad.h>
 #include <string>
 
-std::map<std::string, Texture> Renderer::textures = std::map<std::string, Texture>();
-std::map<std::string, Model3D> Renderer::renderModels = std::map<std::string, Model3D>();
+std::map<std::string, Texture> Renderer::textures =
+    std::map<std::string, Texture>();
+std::map<std::string, Model3D> Renderer::renderModels =
+    std::map<std::string, Model3D>();
 
 Renderer::Renderer()
     : programs(std::map<RenderMode, RenderProgram>()),
@@ -40,7 +42,8 @@ Renderer &Renderer::instance() {
 
 void Renderer::setDebugMode(bool debugMode) { this->debugMode = debugMode; }
 
-void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera, GLFWwindow *window) {
+void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera,
+                                 GLFWwindow *window) {
     glUseProgram(programs[renderMode].program_id);
     glm::mat4 projection;
 
@@ -62,7 +65,7 @@ void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera, GLFWwind
             (gameObject->get_isRenderable() || debugMode)) {
             // Set texture
             if (gameObject->get_texture() != nullptr) {
-                renderTexture(renderMode, *gameObject->get_texture());                
+                renderTexture(renderMode, *gameObject->get_texture());
             }
             glUniformMatrix4fv(programs[renderMode].model_uniform, 1, GL_FALSE,
                                glm::value_ptr(gameObject->get_model_matrix()));
@@ -78,7 +81,6 @@ void Renderer::renderModel(Model3D model) {
     glBindVertexArray(model.vertexArrayId);
     glDrawElements(model.renderType, model.numIndices, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
-
 }
 
 void Renderer::renderTexture(RenderMode renderMode, Texture texture) {
@@ -222,7 +224,7 @@ void Renderer::addToRenderQueue(RenderMode renderMode, GameObject *object) {
     renderQueues[renderMode].push_back(object);
 }
 
-Model3D* Renderer::loadModel(std::string name, const char* filename) {
+Model3D *Renderer::loadModel(std::string name, const char *filename) {
     auto modelIterator = renderModels.find(name);
 
     if (modelIterator != renderModels.end()) {
@@ -233,7 +235,7 @@ Model3D* Renderer::loadModel(std::string name, const char* filename) {
     return &renderModels[name];
 }
 
-Texture* Renderer::loadTexture(std::string name, const char* filename) {
+Texture *Renderer::loadTexture(std::string name, const char *filename) {
     auto textureIterator = textures.find(name);
 
     if (textureIterator != textures.end()) {
@@ -249,8 +251,7 @@ Texture* Renderer::loadTexture(std::string name, const char* filename) {
     int channels;
     unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
 
-    if ( data == NULL )
-    {
+    if (data == NULL) {
         fprintf(stderr, "ERROR: Cannot open image file \"%s\".\n", filename);
         std::exit(EXIT_FAILURE);
     }
@@ -266,7 +267,8 @@ Texture* Renderer::loadTexture(std::string name, const char* filename) {
     glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER,
+                        GL_LINEAR_MIPMAP_LINEAR);
     glSamplerParameteri(sampler_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Agora enviamos a imagem lida do disco para a GPU
@@ -277,15 +279,13 @@ Texture* Renderer::loadTexture(std::string name, const char* filename) {
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(data);
 
-    textures[name] = Texture{
-        texture_id,
-        sampler_id
-    };
-        
+    textures[name] = Texture{texture_id, sampler_id};
+
     return &textures[name];
 }

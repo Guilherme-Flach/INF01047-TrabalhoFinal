@@ -18,7 +18,6 @@
 #define M_PI_4 0.785398163397448309616
 #endif
 
-
 class Camera : public GameObject {
 
   protected:
@@ -43,7 +42,6 @@ class Camera : public GameObject {
     float get_fov();
     float get_nearPlane();
     float get_farPlane();
-
 
     GameObject *get_target();
 
