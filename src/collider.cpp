@@ -1,13 +1,14 @@
 #include "engine/Physics/collider.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
+#include "engine/Physics/planet.hpp"
 #include "glm/ext/vector_float4.hpp"
+#include "matrices.hpp"
 #include <cmath>
 #include <functional>
-#include <iostream>
 
 CollisionData::CollisionData(bool isColliding)
-    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}){};
+    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}) {};
 CollisionData::CollisionData(bool isColliding, glm::vec4 collisionPoint)
     : isColliding(isColliding), collisionPoint(collisionPoint) {}
 
@@ -243,18 +244,14 @@ CollisionData SphereCollider::test_collision(Collider &other) {
         auto distance = other.get_global_position() - global_position;
         auto areColliding =
             glm::length(distance) <= other_sphere.get_radius() + radius;
-        // if (areColliding) {
-        //     RaycastCollider raycast_collider =
-        //         RaycastCollider(physicsObjectParent, get_global_position(),
-        //                         other.get_global_position());
-        //     return raycast_collider.test_sphere(
-        //         static_cast<SphereCollider &>(other));
-        // }
         return CollisionData(areColliding);
     }
-    case RAY_COLLIDER:
+    case RAY_COLLIDER: {
         auto raycast_collider = static_cast<RaycastCollider &>(other);
         return raycast_collider.test_sphere(*this);
+    }
+    case PLANE_COLLIDER:
+        break;
     }
 }
 
@@ -267,6 +264,8 @@ CollisionData BoxCollider::test_collision(Collider &other) {
     }
     case RAY_COLLIDER:
         break;
+    case PLANE_COLLIDER:
+        break;
     }
 }
 
@@ -277,6 +276,20 @@ CollisionData RaycastCollider::test_collision(Collider &other) {
         return test_sphere(static_cast<SphereCollider &>(other));
     }
     case RAY_COLLIDER:
+        break;
+    case PLANE_COLLIDER:
+        return static_cast<PlaneCollider &>(other).test_raycast(*this);
+        break;
+    }
+}
+
+CollisionData PlaneCollider::test_collision(Collider &other) {
+    switch (other.get_collider_type()) {
+    case BOX_COLLIDER:
+    case SPHERE_COLLIDER:
+    case RAY_COLLIDER:
+    case PLANE_COLLIDER:
+        return test_raycast(static_cast<RaycastCollider &>(other));
         break;
     }
 }
@@ -317,3 +330,35 @@ void CollisionsManager::add_object(PhysicsObject &object) {
         add_or_update_collider(*collider);
     }
 }
+
+PlaneCollider::PlaneCollider(PhysicsObject *parent, glm::vec4 point,
+                             glm::vec4 normal, glm::vec4 min, glm::vec4 max)
+    : Collider(parent, point, ColliderType::PLANE_COLLIDER), normal(normal),
+      min(min), max(max) {}
+
+CollisionData PlaneCollider::test_raycast(RaycastCollider ray) {
+    auto ray_position = ray.get_global_position();
+    auto plane_position = get_global_position();
+    auto displacement = ray.get_displacement();
+    if (dotproduct(displacement, normal) == 0)
+        return CollisionData(false);
+    auto vecToNormal = normal - displacement;
+    if (dotproduct(vecToNormal, displacement) <= 0 ||
+        glm::length(vecToNormal) > glm::length(displacement))
+        return CollisionData(false);
+    auto t = (normal.x * ray_position.x + normal.y * ray_position.y +
+              normal.z * ray_position.z - normal.x * plane_position.x -
+              normal.y * plane_position.y - normal.z * plane_position.z) /
+             (-normal.x * displacement.x - normal.y * displacement.y -
+              normal.z * displacement.z);
+    auto collision_point = ray_position + t * displacement;
+    if (collision_point.x < min.x || collision_point.x > max.x ||
+        collision_point.y < min.y || collision_point.y > max.y ||
+        collision_point.z < min.z || collision_point.z > max.z)
+        return CollisionData(false);
+    return CollisionData(true, ray_position + t * displacement);
+}
+
+glm::vec4 PlaneCollider::get_min() { return min; }
+
+glm::vec4 PlaneCollider::get_max() { return max; }
