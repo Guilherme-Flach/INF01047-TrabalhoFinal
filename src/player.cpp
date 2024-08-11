@@ -1,4 +1,5 @@
 #include "engine/Physics/player.hpp"
+#include "GLFW/glfw3.h"
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Input/inputHandler.hpp"
@@ -73,6 +74,13 @@ Player::Player()
         if (playerToPanoramicDolly.get_isFinished()) {
             Loader::set_active_camera(&panoramicCamera);
             controlMode = PANORAMIC;
+
+            glfwSetInputMode(Loader::get_window(), GLFW_CURSOR,
+                             GLFW_CURSOR_NORMAL);
+
+            int width, height;
+            glfwGetFramebufferSize(Loader::get_window(), &width, &height);
+            glfwSetCursorPos(Loader::get_window(), width / 2.0f, height / 2.0f);
             playerToPanoramicDolly.set_progress(0.0f);
         }
     });
@@ -111,6 +119,8 @@ Player::Player()
             } else if (controlMode == PANORAMIC) {
                 Loader::set_active_camera(&panoramicToPlayerDolly);
                 controlMode = TRANSITIONING;
+                glfwSetInputMode(Loader::get_window(), GLFW_CURSOR,
+                                 GLFW_CURSOR_DISABLED);
 
                 const BezierPath_Quadratic cameraPath =
                     QuadraticInterpolator::createPath(

@@ -75,7 +75,7 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetScrollCallback(window, InputHandler::handleScroll);
     glfwSetCursorPos(window, 0, 0);
     glfwFocusWindow(window);
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Renderer &renderer = Renderer::instance();
 

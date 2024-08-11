@@ -36,8 +36,7 @@ glm::vec4 SolarSystem::getPlanetSpawnPos() {
         ((float)mouseX / (windowWidth / 2.0f) - 1.0f) * aspectRatio;
     double screenSpaceY = (1.0f - (float)mouseY / (windowHeight / 2.0f));
 
-    double viewRatio =
-        tan(((float)M_PI / player.get_panoramicCamera().get_fov()) / 2.00f);
+    double viewRatio = tan((player.get_panoramicCamera().get_fov()) / 2.00f);
 
     screenSpaceX = screenSpaceX * viewRatio;
     screenSpaceY = screenSpaceY * viewRatio;
@@ -81,7 +80,6 @@ glm::vec4 SolarSystem::getPlanetSpawnPos() {
     CollisionData collision = plane.test_collision(ray);
 
     if (collision.isColliding) {
-        PrintVector(collision.collisionPoint);
         return collision.collisionPoint;
     } else {
         std::cout << "powershell" << std::endl;
