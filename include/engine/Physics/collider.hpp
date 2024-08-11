@@ -101,7 +101,7 @@ class PlaneCollider : public Collider {
 
   protected:
     glm::vec4 normal;
-    glm::vec4 min, max;
+    glm::vec4 minPoint, maxPoint;
 
   public:
     CollisionData test_raycast(RaycastCollider ray);

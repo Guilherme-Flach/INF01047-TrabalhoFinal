@@ -62,7 +62,6 @@ glm::vec4 normalize(glm::vec4 v) {
     return glm::vec4(v.x / vector_size, v.y / vector_size, v.z / vector_size,
                      v.w);
 }
-
 glm::mat4 Matrix_Rotate(float angle, glm::vec4 axis) {
     float c = cos(angle);
     float s = sin(angle);
@@ -217,6 +216,12 @@ glm::mat3x4 Matrix_Orthogonalize(glm::mat3x4 basis) {
     basis[1] /= norm(basis[1]);
     basis[2] /= norm(basis[2]);
     return basis;
+}
+
+glm::mat4 Matrix_Invert(glm::mat4 m) {
+    return Matrix(m[0][0], m[1][0], m[2][0], -m[0][3], m[0][1], m[1][1],
+                  m[2][1], -m[1][3], m[0][2], m[2][1], m[2][2], -m[2][3],
+                  m[3][0], m[3][1], m[3][2], m[3][3]);
 }
 
 void PrintMatrix(glm::mat4 M) {

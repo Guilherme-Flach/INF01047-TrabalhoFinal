@@ -8,7 +8,7 @@
 #include <functional>
 
 CollisionData::CollisionData(bool isColliding)
-    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}) {};
+    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}){};
 CollisionData::CollisionData(bool isColliding, glm::vec4 collisionPoint)
     : isColliding(isColliding), collisionPoint(collisionPoint) {}
 
@@ -334,7 +334,7 @@ void CollisionsManager::add_object(PhysicsObject &object) {
 PlaneCollider::PlaneCollider(PhysicsObject *parent, glm::vec4 point,
                              glm::vec4 normal, glm::vec4 min, glm::vec4 max)
     : Collider(parent, point, ColliderType::PLANE_COLLIDER), normal(normal),
-      min(min), max(max) {}
+      minPoint(min), maxPoint(max) {}
 
 CollisionData PlaneCollider::test_raycast(RaycastCollider ray) {
     auto ray_position = ray.get_global_position();
@@ -343,22 +343,22 @@ CollisionData PlaneCollider::test_raycast(RaycastCollider ray) {
     if (dotproduct(displacement, normal) == 0)
         return CollisionData(false);
     auto vecToNormal = normal - displacement;
-    if (dotproduct(vecToNormal, displacement) <= 0 ||
-        glm::length(vecToNormal) > glm::length(displacement))
-        return CollisionData(false);
+    // if (dotproduct(vecToNormal, displacement) <= 0 ||
+    //     glm::length(vecToNormal) > glm::length(displacement))
+    //     return CollisionData(false);
     auto t = (normal.x * ray_position.x + normal.y * ray_position.y +
               normal.z * ray_position.z - normal.x * plane_position.x -
               normal.y * plane_position.y - normal.z * plane_position.z) /
              (-normal.x * displacement.x - normal.y * displacement.y -
               normal.z * displacement.z);
     auto collision_point = ray_position + t * displacement;
-    if (collision_point.x < min.x || collision_point.x > max.x ||
-        collision_point.y < min.y || collision_point.y > max.y ||
-        collision_point.z < min.z || collision_point.z > max.z)
-        return CollisionData(false);
+    // if (collision_point.x < minPoint.x || collision_point.x > maxPoint.x ||
+    //     collision_point.y < minPoint.y || collision_point.y > maxPoint.y ||
+    //     collision_point.z < minPoint.z || collision_point.z > maxPoint.z)
+    //     return CollisionData(false);
     return CollisionData(true, ray_position + t * displacement);
 }
 
-glm::vec4 PlaneCollider::get_min() { return min; }
+glm::vec4 PlaneCollider::get_min() { return minPoint; }
 
-glm::vec4 PlaneCollider::get_max() { return max; }
+glm::vec4 PlaneCollider::get_max() { return maxPoint; }

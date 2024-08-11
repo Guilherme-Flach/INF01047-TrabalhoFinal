@@ -12,7 +12,7 @@ const GLfloat Player::playerSpeed = 2.0f;
 const GLfloat Player::playerMass = 1.0f;
 
 const glm::vec4 Player::startingPosition = {49.0f, 49.0f, 49.0f, 1.0f};
-const glm::vec4 Player::panoramicCameraPosition = {50.0f, 50.0f, 50.0f, 1.0f};
+const glm::vec4 Player::panoramicCameraPosition = {0.01f, 50.0f, 0.01f, 1.0f};
 
 const glm::vec4 POSITION_INSIDE_SHIP = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 

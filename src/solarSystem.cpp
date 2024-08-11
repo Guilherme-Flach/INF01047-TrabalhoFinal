@@ -4,19 +4,94 @@
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/planet.hpp"
 #include "engine/Physics/player.hpp"
+#include "glm/ext/vector_float4.hpp"
+#include "glm/matrix.hpp"
 #include "matrices.hpp"
 #include <cstddef>
 #include <iostream>
 #include <algorithm>
 #include <fstream>
 #include <engine/Input/inputHandler.hpp>
+#include "engine/loader.hpp"
+#include "matrices.hpp"
+#include <cmath>
 
 const float SolarSystem::physicsUpdateTime = 1.0f / 50.0f;
 CollisionsManager SolarSystem::collisionsManager;
 
+// FONTE: Adapted from
+// https://gamedev.stackexchange.com/questions/12360/how-do-you-determine-which-object-surface-the-users-pointing-at-with-lwjgl/12370#12370
+glm::vec4 SolarSystem::getPlanetSpawnPos() {
+    // TODO: Maldade abaixo
+    int windowWidth, windowHeight;
+    glfwGetFramebufferSize(Loader::get_window(), &windowWidth, &windowHeight);
+
+    int mouseX = InputHandler::getMousePos().x;
+    int mouseY = InputHandler::getMousePos().y;
+
+    const float aspectRatio = (float)windowWidth / windowHeight;
+
+    // get the mouse position in screenSpace coords
+    double screenSpaceX =
+        ((float)mouseX / (windowWidth / 2.0f) - 1.0f) * aspectRatio;
+    double screenSpaceY = (1.0f - (float)mouseY / (windowHeight / 2.0f));
+
+    double viewRatio =
+        tan(((float)M_PI / player.get_panoramicCamera().get_fov()) / 2.00f);
+
+    screenSpaceX = screenSpaceX * viewRatio;
+    screenSpaceY = screenSpaceY * viewRatio;
+
+    // Find the far and near camera spaces
+    glm::vec4 cameraSpaceNear = glm::vec4(
+        (float)(screenSpaceX * player.get_panoramicCamera().get_nearPlane()),
+        (float)(screenSpaceY * player.get_panoramicCamera().get_nearPlane()),
+        (float)(-player.get_panoramicCamera().get_nearPlane()), 1);
+    glm::vec4 cameraSpaceFar = glm::vec4(
+        (float)(screenSpaceX * player.get_panoramicCamera().get_farPlane()),
+        (float)(screenSpaceY * player.get_panoramicCamera().get_farPlane()),
+        (float)(-player.get_panoramicCamera().get_farPlane()), 1);
+
+    // Unproject the 2D window into 3D to see where in 3D we're actually
+    // clicking
+    glm::mat4 tmpView = player.get_panoramicCamera().get_viewMatrix();
+    glm::mat4 invView = glm::inverse(tmpView);
+
+    glm::vec4 worldSpaceNear = invView * cameraSpaceNear;
+
+    glm::vec4 worldSpaceFar = invView * cameraSpaceFar;
+
+    // calculate the ray position and direction
+    glm::vec4 rayPosition =
+        glm::vec4(player.get_panoramicCamera().get_global_position());
+    glm::vec4 rayDirection = glm::vec4(
+        worldSpaceFar.x - worldSpaceNear.x, worldSpaceFar.y - worldSpaceNear.y,
+        worldSpaceFar.z - worldSpaceNear.z, 0.0f);
+
+    rayDirection = normalize(rayDirection);
+
+    PhysicsObject temp = PhysicsObject(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f);
+
+    RaycastCollider ray = RaycastCollider(&temp, rayPosition, rayDirection);
+
+    PlaneCollider plane = PlaneCollider(
+        &temp, ORIGIN, UP, glm::vec4(-20000.0f, 0.0f, -20000.0f, 1.0f),
+        glm::vec4(20000.0f));
+
+    CollisionData collision = plane.test_collision(ray);
+
+    if (collision.isColliding) {
+        PrintVector(collision.collisionPoint);
+        return collision.collisionPoint;
+    } else {
+        std::cout << "powershell" << std::endl;
+        return ORIGIN;
+    }
+}
+
 SolarSystem::SolarSystem()
     : planets(std::vector<Planet *>()), player(Player()),
-      timeSinceLastFrame(0.0f) {
+      timeSinceLastFrame(0.0f), spawnedPlanetSize(1.0f) {
     LoadConfigFromFile("../../data/startingconfig.txt");
 
     collisionsManager.add_object(player.get_ship());
@@ -24,16 +99,18 @@ SolarSystem::SolarSystem()
     InputHandler::addClickMapping(GLFW_MOUSE_BUTTON_1, [this](Action action) {
         const glm::vec4 direction = FRONT;
         if (action == GLFW_PRESS &&
-            player.get_controlMode() == Player::PILOTING_SHIP) {
+            player.get_controlMode() == Player::PANORAMIC) {
             const auto direction =
                 player.get_playerCamera().get_target()->get_global_position() -
                 player.get_playerCamera().get_global_position();
-            this->spawnPlanet(
-                player.get_playerCamera().get_target()->get_global_position() +
-                    10.0f * direction,
-                0.5f, 1.0f);
+            const glm::vec4 spawnPosition = getPlanetSpawnPos();
+            this->spawnPlanet(spawnPosition, 0.5f, 1.0f);
         }
     });
+}
+
+void SolarSystem::update(GLfloat deltaTime) {
+    this->spawnedPlanetSize += InputHandler::getScrollOffset().y;
 }
 
 void SolarSystem::FixedUpdate(GLfloat deltaTime) {

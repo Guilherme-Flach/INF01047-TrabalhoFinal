@@ -72,8 +72,9 @@ void Loader::start(std::function<void(void)> act) {
     glfwSetKeyCallback(window, InputHandler::handleKeyInput);
     glfwSetMouseButtonCallback(window, InputHandler::handleMouseClick);
     glfwSetCursorPosCallback(window, InputHandler::handleCursorPosChange);
+    glfwSetScrollCallback(window, InputHandler::handleScroll);
     glfwSetCursorPos(window, 0, 0);
-    // glfwFocusWindow(window);
+    glfwFocusWindow(window);
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Renderer &renderer = Renderer::instance();

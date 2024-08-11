@@ -18,6 +18,9 @@ class SolarSystem {
     float timeSinceLastFrame;
     static CollisionsManager collisionsManager;
 
+    GLfloat spawnedPlanetSize;
+
+    glm::vec4 getPlanetSpawnPos();
     Planet *ParsePlanetInfo(std::string line);
     void LoadConfigFromFile(const char *filename);
     glm::vec4 calculateGravityPull(int index, PhysicsObject *obj);
@@ -31,6 +34,8 @@ class SolarSystem {
     Player &get_player();
 
     void FixedUpdate(GLfloat deltaTime);
+
+    void update(GLfloat deltaTime);
 
     std::vector<Planet *> get_planets();
 };

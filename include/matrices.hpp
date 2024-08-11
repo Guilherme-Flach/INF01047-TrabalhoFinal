@@ -12,13 +12,13 @@
 static glm::vec4 ORIGIN = {0.0f, 0.0f, 0.0f, 1.0f};
 
 static glm::vec4 FRONT = {0.0f, 0.0f, +1.0f, 1.0f};
-static glm::vec4 BACK  = {0.0f, 0.0f, -1.0f, 1.0f};
+static glm::vec4 BACK = {0.0f, 0.0f, -1.0f, 1.0f};
 
-static glm::vec4 UP   = {0.0f, +1.0f, 0.0f, 1.0f};
+static glm::vec4 UP = {0.0f, +1.0f, 0.0f, 0.0f};
 static glm::vec4 DOWN = {0.0f, -1.0f, 0.0f, 1.0f};
 
-static glm::vec4 LEFT   = {+1.0f, 0.0f,  0.0f, 1.0f};
-static glm::vec4 RIGHT  = {-1.0f, 0.0f, 0.0f, 1.0f};
+static glm::vec4 LEFT = {+1.0f, 0.0f, 0.0f, 1.0f};
+static glm::vec4 RIGHT = {-1.0f, 0.0f, 0.0f, 1.0f};
 
 static glm::vec4 NONE = {0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -72,6 +72,7 @@ glm::mat3x4 Matrix_PopBasis(glm::mat3x4 child, glm::mat3x4 parent);
 glm::mat4 Matrix_ToParentCoordinates(glm::vec4 center, glm::mat3x4 basis);
 glm::vec4 Matrix_Project(glm::vec4 source, glm::vec4 target);
 glm::mat3x4 Matrix_Orthogonalize(glm::mat3x4 basis);
+glm::mat4 Matrix_Invert(glm::mat4 m);
 
 void PrintMatrix(glm::mat4 M);
 
