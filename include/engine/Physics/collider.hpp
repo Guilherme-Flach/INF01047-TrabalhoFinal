@@ -16,7 +16,12 @@ struct CollisionData {
     CollisionData(bool isColliding, glm::vec4 collisionPoint);
 };
 
-enum ColliderType { BOX_COLLIDER, SPHERE_COLLIDER, RAY_COLLIDER };
+enum ColliderType {
+    BOX_COLLIDER,
+    SPHERE_COLLIDER,
+    RAY_COLLIDER,
+    PLANE_COLLIDER
+};
 
 class Collider : public GameObject {
 
@@ -58,8 +63,8 @@ class SphereCollider : public Collider {
 class BoxCollider : public Collider {
 
   public:
-    BoxCollider(PhysicsObject *parent, glm::vec4 center, float width, float height,
-                float depth);
+    BoxCollider(PhysicsObject *parent, glm::vec4 center, float width,
+                float height, float depth);
 
   protected:
     float width, height, depth;
@@ -86,6 +91,23 @@ class RaycastCollider : public Collider {
     glm::vec4 get_min() override;
     glm::vec4 get_max() override;
     CollisionData test_collision(Collider &other) override;
+};
+
+class PlaneCollider : public Collider {
+
+  public:
+    PlaneCollider(PhysicsObject *parent, glm::vec4 point, glm::vec4 normal,
+                  glm::vec4 min, glm::vec4 max);
+
+  protected:
+    glm::vec4 normal;
+    glm::vec4 min, max;
+
+  public:
+    CollisionData test_raycast(RaycastCollider ray);
+    CollisionData test_collision(Collider &other) override;
+    glm::vec4 get_min() override;
+    glm::vec4 get_max() override;
 };
 
 class CollisionsManager {
