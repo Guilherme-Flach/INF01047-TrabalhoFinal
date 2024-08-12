@@ -73,14 +73,14 @@ Player::Player()
     playerToPanoramicDolly.set_onUpdate([this](GLfloat deltaTime) -> void {
         if (playerToPanoramicDolly.get_isFinished()) {
             Loader::set_active_camera(&panoramicCamera);
-            controlMode = PANORAMIC;
-
             glfwSetInputMode(Loader::get_window(), GLFW_CURSOR,
                              GLFW_CURSOR_NORMAL);
 
             int width, height;
             glfwGetFramebufferSize(Loader::get_window(), &width, &height);
             glfwSetCursorPos(Loader::get_window(), width / 2.0f, height / 2.0f);
+
+            controlMode = PANORAMIC;
             playerToPanoramicDolly.set_progress(0.0f);
         }
     });
