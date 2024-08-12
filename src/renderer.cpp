@@ -16,6 +16,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <string>
+#include <textrendering.hpp>
+#include <engine/loader.hpp>
 
 std::map<std::string, Texture> Renderer::textures =
     std::map<std::string, Texture>();
@@ -41,6 +43,8 @@ Renderer &Renderer::instance() {
 }
 
 void Renderer::setDebugMode(bool debugMode) { this->debugMode = debugMode; }
+
+
 
 void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera,
                                  GLFWwindow *window) {
@@ -222,6 +226,15 @@ GLuint Renderer::loadShader_Fragment(const char *filename) {
 
 void Renderer::addToRenderQueue(RenderMode renderMode, GameObject *object) {
     renderQueues[renderMode].push_back(object);
+}
+
+void Renderer::renderScene(Camera *camera, GLFWwindow *window) {
+    renderRenderQueue(GOURAUD, camera, window);
+    renderRenderQueue(PHONG, camera, window);
+
+    if (Loader::get_globalState(Loader::StateFlag::VIEW_TYPE) == Loader::StateValue::VIEW_SHIP) {
+        TextRendering_PrintString(window, ".", 0.0, 0.0, 2.0f);
+    }
 }
 
 Model3D *Renderer::loadModel(std::string name, const char *filename) {

@@ -15,6 +15,9 @@
 #include "engine/loader.hpp"
 #include "matrices.hpp"
 #include <cmath>
+#include <textrendering.hpp>
+#include <iomanip>
+#include <sstream>
 
 const float SolarSystem::physicsUpdateTime = 1.0f / 50.0f;
 CollisionsManager SolarSystem::collisionsManager;
@@ -102,13 +105,16 @@ SolarSystem::SolarSystem()
                 player.get_playerCamera().get_target()->get_global_position() -
                 player.get_playerCamera().get_global_position();
             const glm::vec4 spawnPosition = getPlanetSpawnPos();
-            this->spawnPlanet(spawnPosition, 0.5f, 1.0f);
+            this->spawnPlanet(spawnPosition, spawnedPlanetSize, spawnedPlanetSize * 2);
         }
     });
-}
 
-void SolarSystem::update(GLfloat deltaTime) {
-    this->spawnedPlanetSize += InputHandler::getScrollOffset().y;
+    InputHandler::addScrollCallback([this](int xoffset, int yoffset) {
+        spawnedPlanetSize += 0.05 * yoffset;
+        if (spawnedPlanetSize < 0.05) {
+            spawnedPlanetSize = 0.05;
+        }
+    });
 }
 
 void SolarSystem::FixedUpdate(GLfloat deltaTime) {
@@ -139,6 +145,10 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
 
         timeSinceLastFrame -= physicsUpdateTime;
     }
+
+    std::stringstream s;
+    s << "Planet Size: " << std::fixed << std::setprecision(2) << spawnedPlanetSize;
+    TextRendering_PrintString(Loader::get_window(), s.str(), -1.0f, -1.0f, 1.0f);
 }
 
 Player &SolarSystem::get_player() { return player; }

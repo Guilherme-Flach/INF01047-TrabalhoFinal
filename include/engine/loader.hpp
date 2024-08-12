@@ -12,14 +12,23 @@
 #include <vector>
 
 class Loader {
+  public:
+    enum StateFlag {
+      VIEW_TYPE
+    };
+
+    enum StateValue {
+      VIEW_PANORAMIC, VIEW_SHIP
+    };
 
   private:
     static float delta_t;
     static GLFWwindow *window;
     static Camera *active_camera;
+    static std::map<StateFlag, StateValue> stateFlags;
+
     std::vector<GameObject *> game_object_store;
     std::vector<Camera *> camera_store;
-
   public:
     int program_id = 0;
     InputHandler *inputHandler;
@@ -36,5 +45,9 @@ class Loader {
     static Camera *get_active_camera() { return active_camera; }
     static GLFWwindow *get_window() { return window; }
     static void set_active_camera(Camera *camera);
+
+    static void set_globalState(StateFlag flag, StateValue value) { stateFlags[flag] = value; };
+    static StateValue get_globalState(StateFlag flag) { return stateFlags[flag]; };
+
 };
 #endif // LOADER_HEADER

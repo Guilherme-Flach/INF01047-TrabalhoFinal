@@ -7,6 +7,8 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 
+#include "textrendering.hpp"
+
 #include "dejavufont.h"
 #include "utils.h"
 
@@ -190,7 +192,7 @@ void TextRendering_Init() {
 float textscale = 1.5f;
 
 void TextRendering_PrintString(GLFWwindow *window, const std::string &str,
-                               float x, float y, float scale = 1.0f) {
+                               float x, float y, float scale) {
     scale *= textscale;
     int width, height;
     glfwGetWindowSize(window, &width, &height);

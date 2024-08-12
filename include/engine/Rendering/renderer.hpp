@@ -48,6 +48,8 @@ class Renderer {
     void renderRenderQueue(RenderMode renderMode, Camera *camera,
                            GLFWwindow *window);
     void addToRenderQueue(RenderMode renderMode, GameObject *object);
+    void renderScene(Camera *camera, GLFWwindow *window);
+
     static Renderer &instance();
 
     Texture *loadTexture(std::string name, const char *filename);

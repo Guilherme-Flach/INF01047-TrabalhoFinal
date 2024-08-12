@@ -7,6 +7,7 @@
 #include "matrices.hpp"
 #include "engine/loader.hpp"
 #include <iostream>
+#include "engine/loader.hpp"
 
 const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
@@ -30,7 +31,7 @@ Player::Player()
     : PhysicsObject(ORIGIN, playerMass),
       playerCamera(FreeCamera(POSITION_INSIDE_SHIP, FRONT)),
       ship(Ship(startingPosition)), playerMovement({0.0f, 0.0f, 0.0f}),
-      isPiloting(true), controlMode(Player::PILOTING_SHIP),
+      isPiloting(true),
       panoramicCamera(Camera(panoramicCameraPosition, &g_OriginObject)),
       // Maldade a frente, essas inicializações são só pra ter algo nas dolly
       // cameras
@@ -64,7 +65,7 @@ Player::Player()
             playerCamera.get_farPlane(), 1.0f},
            {0.1 * M_PI, playerCamera.get_nearPlane(),
             playerCamera.get_farPlane(), 1.0f}}) {
-
+    set_controlMode(Player::PILOTING_SHIP);
     addChild(playerCamera);
     set_parent(ship);
     panoramicCamera.set_fov(0.6 * M_PI);
@@ -80,7 +81,7 @@ Player::Player()
             glfwGetFramebufferSize(Loader::get_window(), &width, &height);
             glfwSetCursorPos(Loader::get_window(), width / 2.0f, height / 2.0f);
 
-            controlMode = PANORAMIC;
+            set_controlMode(PANORAMIC);
             playerToPanoramicDolly.set_progress(0.0f);
         }
     });
@@ -88,7 +89,7 @@ Player::Player()
     panoramicToPlayerDolly.set_onUpdate([this](GLfloat deltaTime) -> void {
         if (panoramicToPlayerDolly.get_isFinished()) {
             Loader::set_active_camera(&playerCamera);
-            controlMode = PILOTING_SHIP;
+            set_controlMode(PILOTING_SHIP);
             panoramicToPlayerDolly.set_progress(0.0f);
         }
     });
@@ -259,10 +260,14 @@ Player::Player()
     static glm::vec2 prevPos = InputHandler::getMousePos();
     playerCamera.set_onUpdate([this](GLfloat deltaTime) -> void {
         glm::vec2 mousePos = InputHandler::getMousePos();
-        // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
         float dx = mousePos.x - prevPos.x;
         float dy = mousePos.y - prevPos.y;
 
+        if (controlMode != PILOTING_SHIP) {
+            prevPos.x = mousePos.x;
+            prevPos.y = mousePos.y;
+            return;
+        }
         playerCamera.rotate(-0.01f * dx, playerCamera.get_v_vector());
         playerCamera.rotate(-0.01f * dy, playerCamera.get_u_vector());
 
@@ -294,11 +299,14 @@ Player::Player()
     });
 }
 
+
 void Player::update(GLfloat deltaTime) {
+
     playerCamera.update(deltaTime);
     panoramicToPlayerDolly.update(deltaTime);
     playerToPanoramicDolly.update(deltaTime);
     GameObject::update(deltaTime);
+
 }
 
 void Player::physicsUpdate(GLfloat deltaTime) {
@@ -329,4 +337,14 @@ void Player::physicsUpdate(GLfloat deltaTime) {
         // }
         PhysicsObject::physicsUpdate(deltaTime);
     }
+}
+
+void Player::set_controlMode(ControlMode controlMode) {
+    if (controlMode == PILOTING_SHIP) {
+        Loader::set_globalState(Loader::StateFlag::VIEW_TYPE, Loader::StateValue::VIEW_SHIP);
+    } else if (controlMode == PANORAMIC) {
+        Loader::set_globalState(Loader::StateFlag::VIEW_TYPE, Loader::StateValue::VIEW_PANORAMIC);
+    }
+
+    this->controlMode = controlMode;
 }

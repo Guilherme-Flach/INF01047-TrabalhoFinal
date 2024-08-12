@@ -35,8 +35,6 @@ class SolarSystem {
 
     void FixedUpdate(GLfloat deltaTime);
 
-    void update(GLfloat deltaTime);
-
     std::vector<Planet *> get_planets();
 };
 

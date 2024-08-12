@@ -8,15 +8,13 @@
 #include "engine/Input/inputHandler.hpp"
 #include "engine/Rendering/renderer.hpp"
 #include "GLFW/glfw3.h"
-
-void TextRendering_Init();
-void TextRendering_ShowFramesPerSecond(GLFWwindow *window);
-void TextRendering_PrintString(GLFWwindow *window, const std::string &str,
-                               float x, float y, float scale = 1.0f);
+#include "textrendering.hpp"
 
 float Loader::delta_t = 0;
 GLFWwindow *Loader::window = nullptr;
 Camera *Loader::active_camera = nullptr;
+
+std::map<Loader::StateFlag, Loader::StateValue> Loader::stateFlags = std::map<StateFlag, StateValue>();
 
 Loader::Loader(int width, int height, char title[]) {
     int success = glfwInit();
@@ -105,11 +103,9 @@ void Loader::start(std::function<void(void)> act) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         act();
 
-        renderer.renderRenderQueue(Renderer::PHONG, active_camera, window);
-        renderer.renderRenderQueue(Renderer::GOURAUD, active_camera, window);
+        renderer.renderScene(active_camera, window);
 
         TextRendering_ShowFramesPerSecond(window);
-        TextRendering_PrintString(window, ".", 0.0, 0.0, 2.0f);
 
         glfwSwapBuffers(window);
 

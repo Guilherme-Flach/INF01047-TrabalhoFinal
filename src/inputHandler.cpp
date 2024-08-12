@@ -3,7 +3,7 @@
 
 InputHandler InputHandler::keyMaps = InputHandler();
 InputHandler InputHandler::mouseClickMaps = InputHandler();
-glm::vec2 InputHandler::scrollOffset = {0.0f, 0.0f};
+std::vector<std::function<void(int,int)>> InputHandler::scrollCallbacks = std::vector<std::function<void(int,int)>>();
 glm::vec2 InputHandler::mousePos = {0.0f, 0.0f};
 
 void InputHandler::handleKeyInput(GLFWwindow *window, int key, int scan_code,
@@ -36,7 +36,13 @@ void InputHandler::handleCursorPosChange(GLFWwindow *window, double xpos,
     mousePos = {xpos, ypos};
 }
 
+void InputHandler::addScrollCallback(std::function<void(int, int)> callback) {
+    scrollCallbacks.push_back(callback);
+}
+
 void InputHandler::handleScroll(GLFWwindow *window, double xoffset,
                                 double yoffset) {
-    scrollOffset = {xoffset, yoffset};
+    for (auto callback : scrollCallbacks) {
+        callback(xoffset, yoffset);
+    }
 }

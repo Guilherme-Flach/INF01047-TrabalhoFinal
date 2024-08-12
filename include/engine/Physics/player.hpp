@@ -41,11 +41,12 @@ class Player : public PhysicsObject {
   public:
     Player();
 
+    ControlMode get_controlMode() { return controlMode; }
     FreeCamera &get_playerCamera() { return playerCamera; }
     Camera &get_panoramicCamera() { return panoramicCamera; }
     Ship &get_ship() { return ship; }
 
-    ControlMode get_controlMode() { return controlMode; }
+    void set_controlMode(ControlMode ControlMode);
 
     void update(GLfloat deltaTime);
     void physicsUpdate(GLfloat deltaTime);

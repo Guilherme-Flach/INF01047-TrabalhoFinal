@@ -6,6 +6,7 @@
 #include <glm/vec4.hpp>
 #include <map>
 #include "GLFW/glfw3.h"
+#include <vector>
 
 typedef int Key;
 typedef int Action;
@@ -16,12 +17,14 @@ class InputHandler : public std::map<Key, std::function<void(Action)>> {
     static InputHandler keyMaps;
     static InputHandler mouseClickMaps;
     static glm::vec2 mousePos;
-    static glm::vec2 scrollOffset;
+    static std::vector<std::function<void(int, int)>> scrollCallbacks;
 
   public:
     static void addKeyMapping(Key data, std::function<void(Action)> action);
 
     static void addClickMapping(Key data, std::function<void(Action)> action);
+
+    static void addScrollCallback(std::function<void(int,int)> callback);
 
     static void handleKeyInput(GLFWwindow *window, int key, int scan_code,
                                int action, int mod);
@@ -36,7 +39,6 @@ class InputHandler : public std::map<Key, std::function<void(Action)>> {
                                       double ypos);
 
     static glm::vec2 getMousePos() { return mousePos; }
-    static glm::vec2 getScrollOffset() { return scrollOffset; }
 };
 
 #endif // KEYMAP_HEADER
