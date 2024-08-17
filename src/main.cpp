@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[]) {
     int width = 800, height = 800;
-    char title[] = "romano";
+    char title[] = "Universe Sandbox Ripoff";
 
     auto loader = Loader(width, height, title);
 
