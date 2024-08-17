@@ -1,6 +1,6 @@
 #include "engine/Physics/solarSystem.hpp"
 #include "engine/EngineObject/gameObject.hpp"
-#include "engine/Physics/collider.hpp"
+#include "engine/Physics/collisions.hpp"
 #include "engine/Physics/physicsObject.hpp"
 #include "engine/Physics/planet.hpp"
 #include "engine/Physics/player.hpp"
@@ -98,14 +98,11 @@ SolarSystem::SolarSystem()
     collisionsManager.add_object(player.get_ship());
 
     InputHandler::addClickMapping(GLFW_MOUSE_BUTTON_1, [this](Action action) {
-        const glm::vec4 direction = FRONT;
         if (action == GLFW_PRESS &&
             player.get_controlMode() == Player::PANORAMIC) {
-            const auto direction =
-                player.get_playerCamera().get_target()->get_global_position() -
-                player.get_playerCamera().get_global_position();
             const glm::vec4 spawnPosition = getPlanetSpawnPos();
-            this->spawnPlanet(spawnPosition, spawnedPlanetSize, spawnedPlanetSize * 2);
+            this->spawnPlanet(spawnPosition, spawnedPlanetSize,
+                              spawnedPlanetSize * 2);
         }
     });
 
@@ -121,17 +118,10 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
     // Update at a constant rate:
     timeSinceLastFrame += deltaTime;
     if (timeSinceLastFrame >= physicsUpdateTime) {
-        glm::vec4 pull;
         for (size_t i = 0; i < planets.size(); i++) {
             planets[i]->applyForce(calculateGravityPull(i, planets[i]) *
                                    physicsUpdateTime);
         }
-
-        // player.get_ship().applyForce(
-        //     calculateGravityPull(-1, &player.get_ship()) *
-        //     physicsUpdateTime);
-        // player.applyForce(calculateGravityPull(-1, &player) *
-        //                   physicsUpdateTime);
 
         player.get_ship().physicsUpdate(physicsUpdateTime);
         player.physicsUpdate(physicsUpdateTime);
@@ -147,8 +137,10 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
     }
 
     std::stringstream s;
-    s << "Planet Size: " << std::fixed << std::setprecision(2) << spawnedPlanetSize;
-    TextRendering_PrintString(Loader::get_window(), s.str(), -1.0f, -1.0f, 1.0f);
+    s << "Planet Size: " << std::fixed << std::setprecision(2)
+      << spawnedPlanetSize;
+    TextRendering_PrintString(Loader::get_window(), s.str(), -1.0f, -1.0f,
+                              1.0f);
 }
 
 Player &SolarSystem::get_player() { return player; }

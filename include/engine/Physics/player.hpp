@@ -3,7 +3,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
-#include "collider.hpp"
+#include "collisions.hpp"
 #include "engine/EngineObject/camera/dollyCamera.hpp"
 #include "engine/EngineObject/camera/freeCamera.hpp"
 #include "engine/Physics/physicsObject.hpp"

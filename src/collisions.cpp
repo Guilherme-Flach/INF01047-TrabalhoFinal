@@ -1,14 +1,13 @@
-#include "engine/Physics/collider.hpp"
+#include "engine/Physics/collisions.hpp"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
-#include "engine/Physics/planet.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
 #include <cmath>
 #include <functional>
 
 CollisionData::CollisionData(bool isColliding)
-    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}){};
+    : isColliding(isColliding), collisionPoint({0.0f, 0.0f, 0.0f, 0.0f}) {};
 CollisionData::CollisionData(bool isColliding, glm::vec4 collisionPoint)
     : isColliding(isColliding), collisionPoint(collisionPoint) {}
 

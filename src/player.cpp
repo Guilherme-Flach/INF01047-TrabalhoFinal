@@ -30,11 +30,22 @@ GameObject g_DollyObject = GameObject(GameObjectType::STANDARD, ORIGIN);
 Player::Player()
     : PhysicsObject(ORIGIN, playerMass),
       playerCamera(FreeCamera(POSITION_INSIDE_SHIP, FRONT)),
-      ship(Ship(startingPosition)), playerMovement({0.0f, 0.0f, 0.0f}),
-      isPiloting(true),
       panoramicCamera(Camera(panoramicCameraPosition, &g_OriginObject)),
-      // Maldade a frente, essas inicializações são só pra ter algo nas dolly
-      // cameras
+      panoramicToPlayerDolly(
+          QuadraticInterpolator::createPath(
+              playerCamera.get_global_position(),
+              panoramicCamera.get_global_position()),
+          transitionDurationCameraOut, &g_DollyObject,
+          QuadraticInterpolator::createPath(
+              playerCamera.get_target()->get_global_position(),
+              panoramicCamera.get_target()->get_global_position()),
+          transitionDurationTargetOut,
+          {{panoramicCamera.get_fov(), panoramicCamera.get_nearPlane(),
+            panoramicCamera.get_farPlane(), 1.0f},
+           {playerCamera.get_fov(), playerCamera.get_nearPlane(),
+            playerCamera.get_farPlane(), 1.0f},
+           {0.1 * M_PI, playerCamera.get_nearPlane(),
+            playerCamera.get_farPlane(), 1.0f}}),
       playerToPanoramicDolly(
           QuadraticInterpolator::createPath(
               playerCamera.get_global_position(),
@@ -50,21 +61,10 @@ Player::Player()
             playerCamera.get_farPlane(), 1.0f},
            {0.8 * M_PI, playerCamera.get_nearPlane(),
             playerCamera.get_farPlane(), 1.0f}}),
-      panoramicToPlayerDolly(
-          QuadraticInterpolator::createPath(
-              playerCamera.get_global_position(),
-              panoramicCamera.get_global_position()),
-          transitionDurationCameraOut, &g_DollyObject,
-          QuadraticInterpolator::createPath(
-              playerCamera.get_target()->get_global_position(),
-              panoramicCamera.get_target()->get_global_position()),
-          transitionDurationTargetOut,
-          {{panoramicCamera.get_fov(), panoramicCamera.get_nearPlane(),
-            panoramicCamera.get_farPlane(), 1.0f},
-           {playerCamera.get_fov(), playerCamera.get_nearPlane(),
-            playerCamera.get_farPlane(), 1.0f},
-           {0.1 * M_PI, playerCamera.get_nearPlane(),
-            playerCamera.get_farPlane(), 1.0f}}) {
+      ship(Ship(startingPosition)),
+      // Maldade a frente, essas inicializações são só pra ter algo nas dolly
+      // cameras
+      playerMovement({0.0f, 0.0f, 0.0f}), isPiloting(true) {
     set_controlMode(Player::PILOTING_SHIP);
     addChild(playerCamera);
     set_parent(ship);
@@ -299,14 +299,12 @@ Player::Player()
     });
 }
 
-
 void Player::update(GLfloat deltaTime) {
 
     playerCamera.update(deltaTime);
     panoramicToPlayerDolly.update(deltaTime);
     playerToPanoramicDolly.update(deltaTime);
     GameObject::update(deltaTime);
-
 }
 
 void Player::physicsUpdate(GLfloat deltaTime) {
@@ -341,9 +339,11 @@ void Player::physicsUpdate(GLfloat deltaTime) {
 
 void Player::set_controlMode(ControlMode controlMode) {
     if (controlMode == PILOTING_SHIP) {
-        Loader::set_globalState(Loader::StateFlag::VIEW_TYPE, Loader::StateValue::VIEW_SHIP);
+        Loader::set_globalState(Loader::StateFlag::VIEW_TYPE,
+                                Loader::StateValue::VIEW_SHIP);
     } else if (controlMode == PANORAMIC) {
-        Loader::set_globalState(Loader::StateFlag::VIEW_TYPE, Loader::StateValue::VIEW_PANORAMIC);
+        Loader::set_globalState(Loader::StateFlag::VIEW_TYPE,
+                                Loader::StateValue::VIEW_PANORAMIC);
     }
 
     this->controlMode = controlMode;

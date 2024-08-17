@@ -1,9 +1,7 @@
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/physicsObject.hpp"
-#include "engine/Physics/collider.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "matrices.hpp"
-#include <iostream>
 
 const float PhysicsObject::G_CONSTANT = 1.0f;
 const GLfloat PhysicsObject::speedLimit = 100.0f;
