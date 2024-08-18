@@ -9,7 +9,7 @@
 #include "glm/ext/vector_float4.hpp"
 #include "engine/Rendering/renderer.hpp"
 
-const int NUMTEXTURES = 5;
+const int NUMTEXTURES = 16;
 
 class Planet : public PhysicsObject {
   private:
@@ -24,7 +24,7 @@ class Planet : public PhysicsObject {
 
         const int textureIndex = planetCount % NUMTEXTURES;
         const auto texturePath =
-            "../../data/planets/" + std::to_string(textureIndex) + ".jpg";
+            "../../data/planets/" + std::to_string(textureIndex) + ".png";
         set_modelScaling(radius);
         texture = Renderer::instance().loadTexture(std::to_string(textureIndex),
                                                    texturePath.c_str());

@@ -122,7 +122,7 @@ SolarSystem::SolarSystem()
             }
 
             this->spawnPlanet(spawnPosition, spawnedPlanetSize,
-                              pow(spawnedPlanetSize * 2, 2),
+                              pow(spawnedPlanetSize, 2) * 2,
                               spawnedPlanetVelocity);
         }
     });
