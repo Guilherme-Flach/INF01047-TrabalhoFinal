@@ -2,6 +2,7 @@
 #define RENDERER_HEADER
 #include "engine/EngineObject/camera/camera.hpp"
 #include "engine/EngineObject/gameObject.hpp"
+#include "engine/Rendering/model3D.hpp"
 #include "model3D.hpp"
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
@@ -13,7 +14,7 @@
 
 class Renderer {
   public:
-    enum RenderMode { PHONG, GOURAUD };
+    enum RenderMode { PHONG, GOURAUD, SKYBOX };
 
     struct RenderProgram {
         GLuint program_id;
@@ -33,20 +34,26 @@ class Renderer {
 
     bool debugMode = false;
 
+    Model3D *skyboxModel;
+
+    GLuint skyboxTexture;
+
     void createProgram(RenderMode renderMode, const char *vertexShaderFile,
                        const char *fragmentShaderFile);
 
     void loadShader(const char *filename, GLuint shader_id);
     GLuint loadShader_Vertex(const char *filename);
     GLuint loadShader_Fragment(const char *filename);
+    GLuint loadCubemap(std::string path);
 
     void renderModel(Model3D model);
     void renderTexture(RenderMode renderMode, Texture texture);
-    void renderGameObject(GameObject *GameObject);
 
   public:
     void renderRenderQueue(RenderMode renderMode, Camera *camera,
                            GLFWwindow *window);
+    void renderSkybox(GLFWwindow *window, Camera *camera);
+
     void addToRenderQueue(RenderMode renderMode, GameObject *object);
     void renderScene(Camera *camera, GLFWwindow *window);
 

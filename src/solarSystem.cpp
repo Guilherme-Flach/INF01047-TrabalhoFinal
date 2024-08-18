@@ -326,6 +326,5 @@ Planet *SolarSystem::spawnPlanet(glm::vec4 position, GLfloat radius,
     collisionsManager.add_object(*planet);
     planets.push_back(planet);
     Renderer::instance().addToRenderQueue(Renderer::GOURAUD, planet);
-
     return planet;
 }

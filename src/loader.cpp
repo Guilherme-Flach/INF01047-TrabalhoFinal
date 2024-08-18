@@ -14,7 +14,8 @@ float Loader::delta_t = 0;
 GLFWwindow *Loader::window = nullptr;
 Camera *Loader::active_camera = nullptr;
 
-std::map<Loader::StateFlag, Loader::StateValue> Loader::stateFlags = std::map<StateFlag, StateValue>();
+std::map<Loader::StateFlag, Loader::StateValue> Loader::stateFlags =
+    std::map<StateFlag, StateValue>();
 
 Loader::Loader(int width, int height, char title[]) {
     int success = glfwInit();
@@ -85,7 +86,7 @@ void Loader::start(std::function<void(void)> act) {
         });
     glfwSetWindowSize(window, 800, 800);
 
-    glEnable(GL_CULL_FACE);
+    // glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

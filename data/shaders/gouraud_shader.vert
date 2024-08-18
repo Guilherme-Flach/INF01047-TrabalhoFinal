@@ -4,14 +4,6 @@ layout(location=0)in vec4 model_coefficients;
 layout(location=1)in vec4 normal_coefficients;
 layout(location=2)in vec2 texture_coefficients;
 
-struct Material{
-    vec3 Kd;
-    vec3 Ka;
-    vec3 KS;
-    float q;
-};
-
-uniform Material material;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -39,7 +31,7 @@ void main()
     vec4 n=normalize(normal);
     
     // Vetor que define o sentido da fonte de luz em relação ao ponto atual.
-    vec4 l=normalize(-p);
+    vec4 l = normalize(vec4(1.03, -7.03, 15.12, 1.0));
     
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v=normalize(camera_position-p);

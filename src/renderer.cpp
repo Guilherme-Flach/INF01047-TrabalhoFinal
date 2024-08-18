@@ -24,6 +24,26 @@ std::map<std::string, Texture> Renderer::textures =
 std::map<std::string, Model3D> Renderer::renderModels =
     std::map<std::string, Model3D>();
 
+float skyboxVertices[] = {
+    // positions
+    -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
+    1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
+
+    -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
+    -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,
+
+    1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f,
+
+    -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
+
+    -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,
+    1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f,
+
+    -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
+    1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
+
 Renderer::Renderer()
     : programs(std::map<RenderMode, RenderProgram>()),
       renderQueues(std::map<RenderMode, std::vector<GameObject *>>()) {
@@ -32,6 +52,14 @@ Renderer::Renderer()
 
     createProgram(GOURAUD, "../../data/shaders/gouraud_shader.vert",
                   "../../data/shaders/gouraud_shader.frag");
+
+    createProgram(SKYBOX, "../../data/shaders/skybox_shader.vert",
+                  "../../data/shaders/skybox_shader.frag");
+
+    // Load skybox
+    skyboxTexture = loadCubemap("../../data/skybox/");
+
+    skyboxModel = loadModel("skybox", "../../data/skybox/skybox.obj");
 }
 
 Renderer &Renderer::instance() {
@@ -92,8 +120,6 @@ void Renderer::renderTexture(RenderMode renderMode, Texture texture) {
 
     glUniform1i(programs[renderMode].texture0, 0);
 }
-
-void Renderer::renderGameObject(GameObject *GameObject) {}
 
 void Renderer::createProgram(RenderMode renderMode,
                              const char *vertexShaderFile,
@@ -226,7 +252,39 @@ void Renderer::addToRenderQueue(RenderMode renderMode, GameObject *object) {
     renderQueues[renderMode].push_back(object);
 }
 
+void Renderer::renderSkybox(GLFWwindow *window, Camera *camera) {
+    // FONTE: https://learnopengl.com/Advanced-OpenGL/Cubemaps (também usado
+    // para o vertex e fragment shader de skybox)
+    glDepthMask(GL_FALSE);
+    glDisable(GL_CULL_FACE);
+    glUseProgram(programs[SKYBOX].program_id);
+    glm::mat4 projection;
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    projection =
+        Matrix_Perspective(camera->get_fov(), (float)width / height,
+                           camera->get_nearPlane(), camera->get_farPlane());
+    glUniformMatrix4fv(programs[SKYBOX].projection_uniform, 1, GL_FALSE,
+                       glm::value_ptr(projection));
+
+    glUniformMatrix4fv(
+        programs[SKYBOX].view_uniform, 1, GL_FALSE,
+        glm::value_ptr(glm::mat4(glm::mat3(camera->get_viewMatrix()))));
+    glBindVertexArray(skyboxModel->vertexArrayId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+    glDrawElements(skyboxModel->renderType, skyboxModel->numIndices,
+                   GL_UNSIGNED_INT, 0);
+    glDepthMask(GL_TRUE);
+    glEnable(GL_CULL_FACE);
+}
+
 void Renderer::renderScene(Camera *camera, GLFWwindow *window) {
+
+    // Render Skybox
+    renderSkybox(window, camera);
+
     renderRenderQueue(GOURAUD, camera, window);
     renderRenderQueue(PHONG, camera, window);
 
@@ -300,4 +358,47 @@ Texture *Renderer::loadTexture(std::string name, const char *filename) {
     textures[name] = Texture{texture_id, sampler_id};
 
     return &textures[name];
+}
+
+GLuint Renderer::loadCubemap(std::string path) {
+    std::vector<std::string> faces = {"right.jpg",  "left.jpg",  "top.jpg",
+                                      "bottom.jpg", "front.jpg", "back.jpg"};
+
+    GLuint texture_id;
+    GLuint sampler_id;
+    glGenTextures(1, &texture_id);
+    glGenSamplers(1, &sampler_id);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++) {
+        unsigned char *data = stbi_load((path + faces[i]).c_str(), &width,
+                                        &height, &nrChannels, 3);
+        if (data) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width,
+                         height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        } else {
+            std::cout << "Cubemap tex failed to load at path: "
+                      << path + faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER,
+                        GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    textures["skybox"] = Texture{texture_id, sampler_id};
+
+    return texture_id;
 }
