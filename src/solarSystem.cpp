@@ -1,4 +1,5 @@
 #include "engine/Physics/solarSystem.hpp"
+#include "GLFW/glfw3.h"
 #include "engine/EngineObject/gameObject.hpp"
 #include "engine/Physics/collisions.hpp"
 #include "engine/Physics/physicsObject.hpp"
@@ -24,7 +25,7 @@ CollisionsManager SolarSystem::collisionsManager;
 
 // FONTE: Adapted from
 // https://gamedev.stackexchange.com/questions/12360/how-do-you-determine-which-object-surface-the-users-pointing-at-with-lwjgl/12370#12370
-glm::vec4 SolarSystem::getPlanetSpawnPos() {
+glm::vec4 SolarSystem::getPlanetSpawnPosWithMouse() {
     // TODO: Maldade abaixo
     int windowWidth, windowHeight;
     glfwGetFramebufferSize(Loader::get_window(), &windowWidth, &windowHeight);
@@ -85,24 +86,44 @@ glm::vec4 SolarSystem::getPlanetSpawnPos() {
     if (collision.isColliding) {
         return collision.collisionPoint;
     } else {
-        std::cout << "powershell" << std::endl;
         return ORIGIN;
     }
 }
 
+glm::vec4 SolarSystem::getPlanetSpawnPosWithPlayer() {
+    const auto direction =
+        player.get_playerCamera().get_target()->get_global_position() -
+        player.get_playerCamera().get_global_position();
+
+    return player.get_playerCamera().get_target()->get_global_position() +
+           (10.0f + 2 * spawnedPlanetSize) * direction;
+}
+
 SolarSystem::SolarSystem()
     : planets(std::vector<Planet *>()), player(Player()),
-      timeSinceLastFrame(0.0f), spawnedPlanetSize(1.0f) {
+      timeSinceLastFrame(0.0f), spawnedPlanetSize(1.0f),
+      spawnedPlanetVelocity(0.0f), spawnedPlanetVelocityIncreaseFlag(true) {
     LoadConfigFromFile("../../data/startingconfig.txt");
 
     collisionsManager.add_object(player.get_ship());
 
     InputHandler::addClickMapping(GLFW_MOUSE_BUTTON_1, [this](Action action) {
-        if (action == GLFW_PRESS &&
-            player.get_controlMode() == Player::PANORAMIC) {
-            const glm::vec4 spawnPosition = getPlanetSpawnPos();
+        if (action == GLFW_PRESS) {
+            glm::vec4 spawnPosition;
+            if (Loader::get_globalState(Loader::StateFlag::VIEW_TYPE) ==
+                Loader::StateValue::VIEW_PANORAMIC) {
+                // Spawn Planet on mouse position on screen
+                spawnPosition = getPlanetSpawnPosWithMouse();
+            } else if ((Loader::get_globalState(Loader::StateFlag::VIEW_TYPE) ==
+                        Loader::StateValue::VIEW_SHIP)) {
+                // Spawn planet where player is looking
+
+                spawnPosition = getPlanetSpawnPosWithPlayer();
+            }
+
             this->spawnPlanet(spawnPosition, spawnedPlanetSize,
-                              spawnedPlanetSize * 2);
+                              pow(spawnedPlanetSize * 2, 2),
+                              spawnedPlanetVelocity);
         }
     });
 
@@ -110,6 +131,44 @@ SolarSystem::SolarSystem()
         spawnedPlanetSize += 0.05 * yoffset;
         if (spawnedPlanetSize < 0.05) {
             spawnedPlanetSize = 0.05;
+        }
+    });
+
+    InputHandler::addKeyMapping(GLFW_KEY_LEFT_ALT, [this](Action action) {
+        if (action == GLFW_PRESS) {
+            spawnedPlanetVelocityIncreaseFlag = false;
+        } else if (action == GLFW_RELEASE) {
+            spawnedPlanetVelocityIncreaseFlag = true;
+        }
+    });
+
+    InputHandler::addKeyMapping(GLFW_KEY_1, [this](Action action) {
+        if (action == GLFW_PRESS) {
+            float increase = 0.5f;
+            if (!spawnedPlanetVelocityIncreaseFlag) {
+                increase = -increase;
+            }
+            spawnedPlanetVelocity.x += increase;
+        }
+    });
+
+    InputHandler::addKeyMapping(GLFW_KEY_2, [this](Action action) {
+        if (action == GLFW_PRESS) {
+            float increase = 0.5f;
+            if (!spawnedPlanetVelocityIncreaseFlag) {
+                increase = -increase;
+            }
+            spawnedPlanetVelocity.y += increase;
+        }
+    });
+
+    InputHandler::addKeyMapping(GLFW_KEY_3, [this](Action action) {
+        if (action == GLFW_PRESS) {
+            float increase = 0.5f;
+            if (!spawnedPlanetVelocityIncreaseFlag) {
+                increase = -increase;
+            }
+            spawnedPlanetVelocity.z += increase;
         }
     });
 }
@@ -136,11 +195,18 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
         timeSinceLastFrame -= physicsUpdateTime;
     }
 
+    // Maldade:
     std::stringstream s;
     s << "Planet Size: " << std::fixed << std::setprecision(2)
       << spawnedPlanetSize;
     TextRendering_PrintString(Loader::get_window(), s.str(), -1.0f, -1.0f,
                               1.0f);
+
+    TextRendering_PrintString(Loader::get_window(), "Planet Velocity", 0.69,
+                              -0.825, 1.0f);
+
+    TextRendering_PrintVector(Loader::get_window(), spawnedPlanetVelocity, 0.85,
+                              -0.87);
 }
 
 Player &SolarSystem::get_player() { return player; }
@@ -209,8 +275,8 @@ Planet *SolarSystem::ParsePlanetInfo(std::string line) {
     float vel_z = stof(line.substr(0, tokenLimiter));
     line = line.substr(tokenLimiter + 1); // erase until separator
 
-    Planet *p = spawnPlanet(glm::vec4(x, y, z, 1.0f), radius, surface_gravity);
-    p->set_velocity(glm::vec4(vel_x, vel_y, vel_z, 0.0f));
+    Planet *p = spawnPlanet(glm::vec4(x, y, z, 1.0f), radius, surface_gravity,
+                            glm::vec4(vel_x, vel_y, vel_z, 0.0f));
 
     return p;
 }
@@ -250,11 +316,12 @@ SolarSystem::~SolarSystem() {
 }
 
 Planet *SolarSystem::spawnPlanet(glm::vec4 position, GLfloat radius,
-                                 GLfloat mass) {
+                                 GLfloat mass, glm::vec4 startingVelocity) {
     Planet *planet = new Planet(position, radius, mass);
     auto collider =
         new SphereCollider(planet, {0.0, 0.0, 0.0, 1.0}, planet->get_radius());
     planet->addChild(*collider);
+    planet->set_velocity(startingVelocity);
 
     collisionsManager.add_object(*planet);
     planets.push_back(planet);

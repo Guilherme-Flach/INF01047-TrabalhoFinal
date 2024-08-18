@@ -44,8 +44,6 @@ Renderer &Renderer::instance() {
 
 void Renderer::setDebugMode(bool debugMode) { this->debugMode = debugMode; }
 
-
-
 void Renderer::renderRenderQueue(RenderMode renderMode, Camera *camera,
                                  GLFWwindow *window) {
     glUseProgram(programs[renderMode].program_id);
@@ -232,7 +230,8 @@ void Renderer::renderScene(Camera *camera, GLFWwindow *window) {
     renderRenderQueue(GOURAUD, camera, window);
     renderRenderQueue(PHONG, camera, window);
 
-    if (Loader::get_globalState(Loader::StateFlag::VIEW_TYPE) == Loader::StateValue::VIEW_SHIP) {
+    if (Loader::get_globalState(Loader::StateFlag::VIEW_TYPE) ==
+        Loader::StateValue::VIEW_SHIP) {
         TextRendering_PrintString(window, ".", 0.0, 0.0, 2.0f);
     }
 }

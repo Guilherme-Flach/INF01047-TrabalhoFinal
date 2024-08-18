@@ -281,7 +281,7 @@ void TextRendering_PrintMatrix(GLFWwindow *window, glm::mat4 M, float x,
 }
 
 void TextRendering_PrintVector(GLFWwindow *window, glm::vec4 v, float x,
-                               float y, float scale = 1.0f) {
+                               float y, float scale) {
     char buffer[10];
     float lineheight = TextRendering_LineHeight(window) * scale;
 

@@ -23,10 +23,11 @@ class Planet : public PhysicsObject {
         static int planetCount = 0;
 
         const int textureIndex = planetCount % NUMTEXTURES;
-        const auto texturePath = "../../data/planets/" + std::to_string(textureIndex) + ".jpg";
+        const auto texturePath =
+            "../../data/planets/" + std::to_string(textureIndex) + ".jpg";
         set_modelScaling(radius);
-            texture = Renderer::instance().loadTexture(
-                std::to_string(textureIndex), texturePath.c_str());
+        texture = Renderer::instance().loadTexture(std::to_string(textureIndex),
+                                                   texturePath.c_str());
         model = Renderer::instance().loadModel("planet",
                                                "../../data/planets/sphere.obj");
         planetCount++;
