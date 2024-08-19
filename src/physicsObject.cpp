@@ -5,7 +5,7 @@
 
 const float PhysicsObject::G_CONSTANT = 1.0f;
 const GLfloat PhysicsObject::speedLimit = 100.0f;
-const GLfloat PhysicsObject::collisionAttenuation = 0.0;
+const GLfloat PhysicsObject::collisionAttenuation = -0.5f;
 
 PhysicsObject::PhysicsObject(glm::vec4 position, GLfloat mass)
     : GameObject(GameObjectType::STANDARD, position), drag(0), mass(mass),
@@ -81,9 +81,10 @@ void PhysicsObject::handle_collision(glm::vec4 collision_point,
     auto second_acceleration = new_velocity_second - other.velocity;
 
     // Multiply by 0.5 since every collision will be counted twice
-    accelerate(first_acceleration * 0.5f);
-    other.accelerate(second_acceleration * 0.5f);
+    accelerate(first_acceleration * (0.5f - (collisionAttenuation / 2.0f)));
+    other.accelerate(second_acceleration * (0.5f));
 
-    translate(first_acceleration * deltaTime * 0.5f);
-    other.translate(second_acceleration * deltaTime * 0.5f);
+    translate(first_acceleration * deltaTime * (0.5f));
+    other.translate(second_acceleration * deltaTime *
+                    (0.5f - (collisionAttenuation / 2.0f)));
 }

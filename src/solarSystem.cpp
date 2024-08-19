@@ -37,6 +37,7 @@ glm::vec4 SolarSystem::getPlanetSpawnPosWithMouse() {
 
     // get the mouse position in screenSpace coords
     double screenSpaceX =
+
         ((float)mouseX / (windowWidth / 2.0f) - 1.0f) * aspectRatio;
     double screenSpaceY = (1.0f - (float)mouseY / (windowHeight / 2.0f));
 
@@ -176,6 +177,7 @@ SolarSystem::SolarSystem()
 void SolarSystem::FixedUpdate(GLfloat deltaTime) {
     // Update at a constant rate:
     timeSinceLastFrame += deltaTime;
+
     if (timeSinceLastFrame >= physicsUpdateTime) {
         for (size_t i = 0; i < planets.size(); i++) {
             planets[i]->applyForce(calculateGravityPull(i, planets[i]) *
@@ -193,6 +195,10 @@ void SolarSystem::FixedUpdate(GLfloat deltaTime) {
         collisionsManager.handle_collisions(physicsUpdateTime);
 
         timeSinceLastFrame -= physicsUpdateTime;
+    }
+
+    for (auto planet : planets) {
+        planet->update(deltaTime);
     }
 
     // Maldade:
@@ -318,13 +324,10 @@ SolarSystem::~SolarSystem() {
 Planet *SolarSystem::spawnPlanet(glm::vec4 position, GLfloat radius,
                                  GLfloat mass, glm::vec4 startingVelocity) {
     Planet *planet = new Planet(position, radius, mass);
-    auto collider =
-        new SphereCollider(planet, {0.0, 0.0, 0.0, 1.0}, planet->get_radius());
-    planet->addChild(*collider);
     planet->set_velocity(startingVelocity);
+    planets.push_back(planet);
 
     collisionsManager.add_object(*planet);
-    planets.push_back(planet);
-    Renderer::instance().addToRenderQueue(Renderer::GOURAUD, planet);
+
     return planet;
 }

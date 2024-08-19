@@ -4,9 +4,16 @@
 #include "engine/Rendering/model3D.hpp"
 #include "engine/loader.hpp"
 #include <csetjmp>
+#include <cstddef>
+#include <ctime>
 #include <functional>
 
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
+    rand();
+    rand();
+    rand();
+
     int width = 800, height = 800;
     char title[] = "Universe Sandbox Ripoff";
 

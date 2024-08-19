@@ -13,16 +13,17 @@ const GLfloat Player::speedLimit = 10.0f;
 const GLfloat Player::playerSpeed = 2.0f;
 const GLfloat Player::playerMass = 1.0f;
 
-const glm::vec4 Player::startingPosition = {49.0f, 49.0f, 49.0f, 1.0f};
-const glm::vec4 Player::panoramicCameraPosition = {0.01f, 50.0f, 0.01f, 1.0f};
+const glm::vec4 Player::startingPosition = {10.0f, 10.0f, 10.0f, 1.0f};
+const glm::vec4 Player::panoramicCameraPosition = {10.01f, -40.0f, 10.01f,
+                                                   1.0f};
 
 const glm::vec4 POSITION_INSIDE_SHIP = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-const GLfloat transitionDurationCameraIn = 0.10f;
-const GLfloat transitionDurationTargetIn = 0.20f;
+const GLfloat transitionDurationCameraIn = 0.55f;
+const GLfloat transitionDurationTargetIn = 0.40f;
 
-const GLfloat transitionDurationCameraOut = 0.6f;
-const GLfloat transitionDurationTargetOut = 0.2f;
+const GLfloat transitionDurationCameraOut = 5.6f;
+const GLfloat transitionDurationTargetOut = 5.0f;
 
 GameObject g_OriginObject = GameObject(GameObjectType::STANDARD, ORIGIN);
 GameObject g_DollyObject = GameObject(GameObjectType::STANDARD, ORIGIN);
@@ -35,11 +36,11 @@ Player::Player()
           QuadraticInterpolator::createPath(
               playerCamera.get_global_position(),
               panoramicCamera.get_global_position()),
-          transitionDurationCameraOut, &g_DollyObject,
+          transitionDurationCameraIn, &g_DollyObject,
           QuadraticInterpolator::createPath(
               playerCamera.get_target()->get_global_position(),
               panoramicCamera.get_target()->get_global_position()),
-          transitionDurationTargetOut,
+          transitionDurationTargetIn,
           {{panoramicCamera.get_fov(), panoramicCamera.get_nearPlane(),
             panoramicCamera.get_farPlane(), 1.0f},
            {playerCamera.get_fov(), playerCamera.get_nearPlane(),
@@ -50,11 +51,11 @@ Player::Player()
           QuadraticInterpolator::createPath(
               playerCamera.get_global_position(),
               panoramicCamera.get_global_position()),
-          transitionDurationCameraIn, &g_DollyObject,
+          transitionDurationCameraOut, &g_DollyObject,
           QuadraticInterpolator::createPath(
               playerCamera.get_target()->get_global_position(),
               panoramicCamera.get_target()->get_global_position()),
-          transitionDurationTargetIn,
+          transitionDurationTargetOut,
           {{playerCamera.get_fov(), playerCamera.get_nearPlane(),
             playerCamera.get_farPlane(), 1.0f},
            {0.6 * M_PI, playerCamera.get_nearPlane(),
@@ -326,13 +327,6 @@ void Player::physicsUpdate(GLfloat deltaTime) {
                             shipBasis[2]);
         playerCamera.set_up_vector(shipBasis[1]);
     } else {
-        // if (currentPlanet != nullptr) {
-        //     const glm::vec4 out_vector = this->get_global_position() -
-        //                                  currentPlanet->get_global_position();
-        //     const float distance = norm(out_vector);
-        //     playerCamera->set_up_vector(out_vector / distance);
-        //     set_up_vector(out_vector / distance);
-        // }
         PhysicsObject::physicsUpdate(deltaTime);
     }
 }
