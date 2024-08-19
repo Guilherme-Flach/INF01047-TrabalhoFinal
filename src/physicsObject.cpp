@@ -5,7 +5,7 @@
 
 const float PhysicsObject::G_CONSTANT = 1.0f;
 const GLfloat PhysicsObject::speedLimit = 100.0f;
-const GLfloat PhysicsObject::collisionAttenuation = -0.5f;
+const GLfloat PhysicsObject::collisionAttenuation = -1.5f;
 
 PhysicsObject::PhysicsObject(glm::vec4 position, GLfloat mass)
     : GameObject(GameObjectType::STANDARD, position), drag(0), mass(mass),
