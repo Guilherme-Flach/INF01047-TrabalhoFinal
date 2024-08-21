@@ -65,6 +65,18 @@ Vínicius Spadotto:
 
 ### Linux
 
-Para compilar em um sistema _Linux_, basta executar, na raiz do projeto
+Para compilar e executar este projeto no Linux, primeiro instalemos
+as bibliotecas necessárias. Para tanto, execute o comando abaixo em um terminal.
+Esse é normalmente suficiente em uma instalação de Linux Ubuntu:
+
+    sudo apt-get install build-essential make libx11-dev libxrandr-dev \
+                         libxinerama-dev libxcursor-dev libxcb1-dev libxext-dev \
+                         libxrender-dev libxfixes-dev libxau-dev libxdmcp-dev
+
+No caso do Linux Mint, talvez seja necessário instalar mais algumas bibliotecas:
+
+    sudo apt-get install libmesa-dev libxxf86vm-dev
+
+Finalmente, para compilar, basta executar, na raiz do projeto
 
     make && make run
