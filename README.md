@@ -1,7 +1,9 @@
 # INF01047-TrabalhoFinal
+
 Repositório para o trabalho final da cadeira INF01047 - Fundamentos de Computação Gráfica.
 
 Alunos:
+
 - Guilherme Ismael Flach - 00342108
 - Vinícius Daniel Spadotto - 00341554
 
@@ -25,12 +27,14 @@ Ter construído essa fundação sólida foi uma escolha que definitivamente se p
 ## Contribuições
 
 Guilherme Flach:
+
 - Rendering
 - DollyCamera
 - Movimentação / Física
 - Lógica de controle e criação de planetas
 
 Vínicius Spadotto:
+
 - Colisões
 - Sistema de GameObjects / Troca de Bases
 - Testes
@@ -58,3 +62,9 @@ Vínicius Spadotto:
 **E/Q** - Rotacionam a nave no sentido horário/anti-horário
 
 ## Compilação
+
+### Linux
+
+Para compilar em um sistema _Linux_, basta executar, na raiz do projeto
+
+    make && make run
